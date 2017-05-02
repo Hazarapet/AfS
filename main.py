@@ -1,9 +1,11 @@
 import cv2
+import sys
 import time
 import json
 import plots
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from keras.optimizers import SGD, Adam
 from utils import common as common_util
 from models.A.model import model as A_model
@@ -19,8 +21,8 @@ t_acc_graph = np.array([])
 v_loss_graph = np.array([])
 v_acc_graph = np.array([])
 
-x_train = []
-y_train = []
+X = []
+y = []
 
 print 'data loading...'
 # loading the data
@@ -32,16 +34,29 @@ labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
 label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
 
+for f, tags in df_train.values[:100]:
+    img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
+    assert img is not None
 
-# for f, tags in df_train.values[:20000]:
-#     img = cv2.imread('../input/train-jpg/{}.jpg'.format(f))
-#     targets = np.zeros(17)
-#     for t in tags.split(' '):
-#         targets[label_map[t]] = 1
-#     x_train.append(cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)))
-#     y_train.append(targets)
+    if img is not None:
+        targets = np.zeros(17)
+        for t in tags.split(' '):
+            targets[label_map[t]] = 1
+        X.append(cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)))
+        y.append(targets)
 
-print 'model loading...'
+X = np.array(X, np.float16) / 255.
+y = np.array(y, np.uint8)
+
+# data splitting
+# we should shuffle all examples
+[X, y] = common_util.parallel_shuffle(X, y)
+
+# splitting to train and validation set
+index = int(len(X) * 0.8)
+x_train, y_train, x_val, y_val = X[:index], y[:index], X[index:], y[index:]
+
+print '\nmodel loading...'
 [model, structure] = A_model()
 
 adam = Adam(lr=0.0001, decay=0.)

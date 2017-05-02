@@ -18,12 +18,12 @@ def iterate_minibatches(inputs, batchsize=10):
         yield np.array(inputs)[- (len(inputs) % batchsize):]
 
 
-def parallel_shuffle(X, y, shuffle=True):
+def parallel_shuffle(x, y, shuffle=True):
     if shuffle:
-        count = len(X)
+        count = len(x)
         indices = range(count)
         np.random.shuffle(indices)
-        return [X[indices], y[indices]]
+        return [[x[i] for i in indices], [y[i] for i in indices]]
 
-    return None
+    return [x, y]
 

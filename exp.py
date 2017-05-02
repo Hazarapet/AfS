@@ -1,11 +1,10 @@
+import cv2
 import numpy as np
-from utils import common as common_util
+import pandas as pd
+from tqdm import tqdm
+import math, sys
 
-array1 = np.arange(9)
-array2 = 2 * np.arange(9)
-array3 = 3 * np.arange(9)
+a = range(3)
 
-[a1, a2] = common_util.parallel_shuffle(array1, array1)
-
-print array1, a1
-print array1, a2
+print sys.getsizeof(np.array([1], dtype='float16'))
+print sys.getsizeof(np.array([1, 2], dtype="float16"))
