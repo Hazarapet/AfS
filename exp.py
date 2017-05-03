@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 img = cv2.imread('resource/train-jpg/{}.jpg'.format('train_696'))
 img = np.array(img, np.float32) / 255.
 

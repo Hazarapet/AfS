@@ -10,7 +10,7 @@ from utils import common as common_util
 from models.A.model import model as A_model
 
 st_time = time.time()
-N_EPOCH = 5
+N_EPOCH = 20
 BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -33,27 +33,13 @@ labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
 label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
 
-for f, tags in df_train.values[:100]:
-    img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
-    assert img is not None
-
-    if img is not None:
-        targets = np.zeros(17)
-        for t in tags.split(' '):
-            targets[label_map[t]] = 1
-        X.append(cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)))
-        y.append(targets)
-
-X = np.array(X, np.float16) / 255.
-y = np.array(y, np.uint8)
-
-# data splitting
 # we should shuffle all examples
-[X, y] = common_util.parallel_shuffle(X, y)
+np.random.shuffle(df_train.values)
 
 # splitting to train and validation set
-index = int(len(X) * 0.8)
-x_train, y_train, x_val, y_val = X[:index], y[:index], X[index:], y[index:]
+index = int(len(df_train.values) * 0.8)
+train, val = df_train.values[:index], df_train.values[index:]
+
 
 print '\nmodel loading...'
 [model, structure] = A_model()
@@ -73,29 +59,82 @@ for epoch in range(N_EPOCH):
     trained_batch = 0
 
     # we should shuffle the train set
-    [x_train, y_train] = common_util.parallel_shuffle(x_train, y_train)
+    np.random.shuffle(train)
 
-    for [x_batch, y_batch] in common_util.iterate_minibatches([x_train, y_train]):
+    for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
+
+        t_batch_inputs = []
+        t_batch_labels = []
+
         # accumulate the examples' count
-        trained_batch += len(x_batch)
+        trained_batch += len(min_batch)
+
+        # now we should load min_batch's images and collect them
+        for f, tags in min_batch:
+            img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
+            assert img is not None
+
+            if img is not None:
+                targets = np.zeros(17)
+                for t in tags.split(' '):
+                    targets[label_map[t]] = 1
+
+                img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float16)
+                img[:, :, 0] -= 103.939
+                img[:, :, 1] -= 116.779
+                img[:, :, 2] -= 123.68
+                img = img.transpose((2, 0, 1))
+
+                t_batch_inputs.append(img)
+                t_batch_labels.append(targets)
+
+        t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
+        t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
         # collecting for plotting
-        [t_loss, t_acc] = model.train_on_batch(x_batch, y_batch)
+        [t_loss, t_acc] = model.train_on_batch(t_batch_inputs, t_batch_labels)
         t_loss_graph = np.append(t_loss_graph, [t_loss])
         t_acc_graph = np.append(t_acc_graph, [t_acc])
 
         print "examples: {}/{}, loss: {:.4f}, accuracy: {:.3f}".format(trained_batch,
-               len(x_train),
+               len(train),
                float(t_loss),
                float(t_acc))
 
     # ===== Validation =====
-    [v_loss, v_acc] = model.evaluate(x_train, y_train, batch_size=BATCH_SIZE)
+    v_batch_inputs = []
+    v_batch_labels = []
+
+    np.random.shuffle(val)
+
+    # load val's images
+    for f, tags in val:
+        img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
+        assert img is not None
+
+        if img is not None:
+            targets = np.zeros(17)
+            for t in tags.split(' '):
+                targets[label_map[t]] = 1
+
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float16)
+            img[:, :, 0] -= 103.939
+            img[:, :, 1] -= 116.779
+            img[:, :, 2] -= 123.68
+            img = img.transpose((2, 0, 1))
+
+            v_batch_inputs.append(img)
+            v_batch_labels.append(targets)
+
+    v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
+    v_batch_labels = np.array(v_batch_labels).astype(np.int8)
+
+    [v_loss, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE)
     v_loss_graph = np.append(v_loss_graph, [v_loss])
     v_acc_graph = np.append(v_acc_graph, [v_acc])
 
     print "Val Examples: {}, loss: {:.4f}, accuracy: {:.3f}, l_rate: {:.5f}".format(
-        len(x_train),
+        len(val),
         float(v_loss),
         float(v_acc),
         float(model.optimizer.lr.get_value()))
@@ -108,6 +147,7 @@ model_filename = structure + \
                  '-val_l:' + str(round(np.min(v_loss_graph), 3)) + \
                  '-val_a:' + str(round(np.max(v_acc_graph), 3)) + \
                  '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
+
 # saving the weights
 model.save_weights(model_filename + '.h5')
 
@@ -120,7 +160,7 @@ with open(model_filename + '.json', 'w') as outfile:
 plots.plot_curve(values=t_loss_graph, title='Training Loss', file_name=model_filename + '_tr_loss.jpg')
 plots.plot_curve(values=t_acc_graph, title='Training Accuracy', file_name=model_filename + '_tr_acc.jpg', y_axis='Accuracy')
 plots.plot_curve(values=v_loss_graph, title='Val Loss', file_name=model_filename + '_val_loss.jpg')
-plots.plot_curve(values=t_acc_graph, title='Val Accuracy', file_name=model_filename + '_val_acc.jpg', y_axis='Accuracy')
+plots.plot_curve(values=v_acc_graph, title='Val Accuracy', file_name=model_filename + '_val_acc.jpg', y_axis='Accuracy')
 
 print 'Loss and Accuracy plots are ready'
 
