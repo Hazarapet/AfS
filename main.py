@@ -5,7 +5,6 @@ import json
 import plots
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
 from keras.optimizers import SGD, Adam
 from utils import common as common_util
 from models.A.model import model as A_model
