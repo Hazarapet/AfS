@@ -1,16 +1,18 @@
-import json
+import os
 import cv2
+import json
 import numpy as np
 import pandas as pd
+from utils import common as common_util
 from sklearn.metrics import fbeta_score
 from keras.models import model_from_json
 
+BATCH_SIZE = 300
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
-file_p = 'resource/test128x128/26547074743__flickr.jpg'
-weights_path = 'models/A/structures/tr_l:0.221-tr_a:0.938-val_l:0.214-val_a:0.933-time:03-05-2017-16:37:57-dur:14.568.h5'
-model_structure = 'models/A/structures/tr_l:0.221-tr_a:0.938-val_l:0.214-val_a:0.933-time:03-05-2017-16:37:57-dur:14.568.json'
+weights_path = 'models/A/structures/tr_l:0.058-tr_a:0.983-val_l:0.108-val_a:0.962-time:03-05-2017-21:33:39-dur:283.181.h5'
+model_structure = 'models/A/structures/tr_l:0.058-tr_a:0.983-val_l:0.108-val_a:0.962-time:03-05-2017-21:33:39-dur:283.181.json'
 
 with open(model_structure, 'r') as model_json:
     model = model_from_json(json.loads(model_json.read()))
@@ -27,43 +29,49 @@ labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
 label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
 
-# we should shuffle all examples
-np.random.shuffle(df_train.values)
-
-# splitting to train and validation set
-index = int(len(df_train.values) * 0.8)
-train, val = df_train.values[:index], df_train.values[index:]
-
-v_batch_inputs = []
-v_batch_labels = []
-
+count = 0
+result = []
+files = []
 print 'images loading...'
-# load val's images
-for f, tags in val:
-    img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
-    assert img is not None
+X_test = os.listdir('resource/test-jpg')
 
-    if img is not None:
-        targets = np.zeros(17)
-        for t in tags.split(' '):
-            targets[label_map[t]] = 1
+for min_batch in common_util.iterate_minibatches(X_test, batchsize=BATCH_SIZE):
+    test_batch_inputs = []
 
-        img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float16)
-        img[:, :, 0] -= 103.939
-        img[:, :, 1] -= 116.779
-        img[:, :, 2] -= 123.68
-        img = img.transpose((2, 0, 1))
+    # load val's images
+    for f in min_batch:
+        img = cv2.imread('resource/test-jpg/{}'.format(f))
+        assert img is not None
 
-        v_batch_inputs.append(img)
-        v_batch_labels.append(targets)
+        if img is not None:
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float16)
+            img[:, :, 0] -= 103.939
+            img[:, :, 1] -= 116.779
+            img[:, :, 2] -= 123.68
+            img = img.transpose((2, 0, 1))
 
-v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
-v_batch_labels = np.array(v_batch_labels).astype(np.int8)
+            test_batch_inputs.append(img)
 
-print 'predicting...'
-p_valid = model.predict(v_batch_inputs, batch_size=80)
+    count += len(test_batch_inputs)
+    test_batch_inputs = np.array(test_batch_inputs).astype(np.float16)
 
-print 'some results:'
-print v_batch_labels[:10], p_valid[:10]
+    p_test = model.predict_on_batch(test_batch_inputs)
+    result.extend(p_test)
+    files.extend(min_batch)
 
-print 'F2_Score', fbeta_score(v_batch_labels, np.array(p_valid) > 0.5, beta=2, average='samples')
+    print '{}/{} predicted'.format(count, len(X_test))
+
+thres = [0.1, 0.23, 0.04, 0.22, 0.16, 0.2, 0.26, 0.24, 0.23, 0.14, 0.33, 0.19, 0.17, 0.07, 0.25, 0.24, 0.12]
+threz = [0.1, 0.30, 0.04, 0.33, 0.16, 0.2, 0.26, 0.20, 0.23, 0.14, 0.23, 0.19, 0.17, 0.07, 0.27, 0.25, 0.12]
+
+df_test = pd.DataFrame([[p.replace('.jpg', ''), p] for p in X_test])
+df_test.columns = ['image_name', 'tags']
+
+tags = []
+for r in result:
+    r = list(r > threz)
+    t = [inv_label_map[i] for i, j in enumerate(r) if j]
+    tags.append(' '.join(t))
+
+df_test['tags'] = tags
+df_test.to_csv('submission_0.csv', index=False)
