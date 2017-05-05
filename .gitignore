@@ -2,5 +2,6 @@
 *~
 *.pyc
 */*.pyc
+*.log
 resource/
 models/*/structures/
