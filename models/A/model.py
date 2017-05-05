@@ -6,15 +6,9 @@ from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 def model(weights_path=None):
-    _regular_input = Sequential()
-    _regular_input.add(ZeroPadding2D((1, 1), input_shape=(3, 128, 128), name='regular_input'))
-
-    _sobel_input = Sequential()
-    _sobel_input.add(ZeroPadding2D((1, 1), input_shape=(3, 128, 128), name='sobel_input'))
 
     _model = Sequential()
-    _model.add(merge([_regular_input, _sobel_input], mode='concat'))
-
+    _model.add(ZeroPadding2D((1, 1), input_shape=(3, 128, 128), name='sobel_input'))
     _model.add(Conv2D(64, (3, 3)))
     _model.add(BatchNormalization())
     _model.add(Activation('relu'))

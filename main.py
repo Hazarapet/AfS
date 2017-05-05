@@ -65,7 +65,7 @@ for epoch in range(N_EPOCH):
 
     for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
 
-        t_batch_inputs = []
+        # t_batch_inputs = []
         t_batch_sobel_inputs = []
         t_batch_labels = []
 
@@ -90,16 +90,16 @@ for epoch in range(N_EPOCH):
 
                 mag, angle = UtilImage.img_sobel(img)
 
-                t_batch_inputs.append(img)
+                # t_batch_inputs.append(img)
                 t_batch_sobel_inputs.append(mag)
                 t_batch_labels.append(targets)
 
         t_batch_sobel_inputs = np.array(t_batch_sobel_inputs).astype(np.float16)
-        t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
+        # t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
         # collecting for plotting
-        [t_loss, t_acc] = model.train_on_batch([t_batch_inputs, t_batch_sobel_inputs], t_batch_labels)
+        [t_loss, t_acc] = model.train_on_batch(t_batch_sobel_inputs, t_batch_labels)
         t_loss_graph = np.append(t_loss_graph, [t_loss])
         t_acc_graph = np.append(t_acc_graph, [t_acc])
 
@@ -133,15 +133,15 @@ for epoch in range(N_EPOCH):
 
             mag, angle = UtilImage.img_sobel(img)
 
-            v_batch_inputs.append(img)
+            # v_batch_inputs.append(img)
             v_batch_sobel_inputs.append(mag)
             v_batch_labels.append(targets)
 
     v_batch_sobel_inputs = np.array(v_batch_sobel_inputs).astype(np.float16)
-    v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
+    # v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
     v_batch_labels = np.array(v_batch_labels).astype(np.int8)
 
-    [v_loss, v_acc] = model.evaluate([v_batch_inputs, v_batch_sobel_inputs], v_batch_labels, batch_size=BATCH_SIZE)
+    [v_loss, v_acc] = model.evaluate(v_batch_sobel_inputs, v_batch_labels, batch_size=BATCH_SIZE)
     v_loss_graph = np.append(v_loss_graph, [v_loss])
     v_acc_graph = np.append(v_acc_graph, [v_acc])
 
