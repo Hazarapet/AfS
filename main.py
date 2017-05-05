@@ -83,12 +83,13 @@ for epoch in range(N_EPOCH):
                     targets[label_map[t]] = 1
 
                 img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
-                img[:, :, 0] -= 103.939
-                img[:, :, 1] -= 116.779
-                img[:, :, 2] -= 123.68
-                img = img.transpose((2, 0, 1))
+                # img[:, :, 0] -= 103.939
+                # img[:, :, 1] -= 116.779
+                # img[:, :, 2] -= 123.68
+                # img = img.transpose((2, 0, 1))
 
                 mag, angle = UtilImage.img_sobel(img)
+                mag = mag.transpose((2, 0, 1))
 
                 # t_batch_inputs.append(img)
                 t_batch_sobel_inputs.append(mag)
@@ -126,12 +127,13 @@ for epoch in range(N_EPOCH):
                 targets[label_map[t]] = 1
 
             img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
-            img[:, :, 0] -= 103.939
-            img[:, :, 1] -= 116.779
-            img[:, :, 2] -= 123.68
-            img = img.transpose((2, 0, 1))
+            # img[:, :, 0] -= 103.939
+            # img[:, :, 1] -= 116.779
+            # img[:, :, 2] -= 123.68
+            # img = img.transpose((2, 0, 1))
 
             mag, angle = UtilImage.img_sobel(img)
+            mag = mag.transpose((2, 0, 1))
 
             # v_batch_inputs.append(img)
             v_batch_sobel_inputs.append(mag)
