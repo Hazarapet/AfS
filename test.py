@@ -7,7 +7,7 @@ from utils import common as common_util
 from sklearn.metrics import fbeta_score
 from keras.models import model_from_json
 
-BATCH_SIZE = 300
+BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
