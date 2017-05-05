@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.A.model import model as A_model
 
 st_time = time.time()
-N_EPOCH = 5
+N_EPOCH = 40
 BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -44,9 +44,9 @@ train, val = df_train.values[:index], df_train.values[index:]
 
 
 print '\nmodel loading...'
-[model, structure] = A_model('models/A/structures/tr_l:0.095-tr_a:0.65-val_l:0.135-val_a:0.35-time:05-05-2017-17:24:19-dur:254.928.h5')
+[model, structure] = A_model()
 
-adam = Adam(lr=0.0001, decay=0.)
+adam = Adam(lr=0.001, decay=0.)
 
 model.compile(loss=components.reg_binary_cross_entropy(l=0.2),
               optimizer=adam,
@@ -145,6 +145,14 @@ for epoch in range(N_EPOCH):
     v_loss_graph = np.append(v_loss_graph, [v_loss])
     v_acc_graph = np.append(v_acc_graph, [v_acc])
 
+    if epoch == 5:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(0.0001)
+
+    if epoch == 25:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(0.00001)
+
     print "Val Examples: {}, loss: {:.4f}, accuracy: {:.3f}, l_rate: {:.5f}".format(
         len(val),
         float(v_loss),
@@ -174,7 +182,7 @@ plots.plot_curve(values=t_acc_graph, title='Training Accuracy', file_name=model_
 plots.plot_curve(values=v_loss_graph, title='Val Loss', file_name=model_filename + '_val_loss.jpg')
 plots.plot_curve(values=v_acc_graph, title='Val Accuracy', file_name=model_filename + '_val_acc.jpg', y_axis='Accuracy')
 
-print 'Loss and Accuracy plots are ready'
+print 'Loss and Accuracy plots are done!'
 
 print('\n{:.2f}m Runtime'.format((time.time() - st_time) / 60))
 print '====== End ======'
