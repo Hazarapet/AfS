@@ -11,8 +11,8 @@ BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
-weights_path = 'models/A/structures/tr_l:0.058-tr_a:0.983-val_l:0.108-val_a:0.962-time:03-05-2017-21:33:39-dur:283.181.h5'
-model_structure = 'models/A/structures/tr_l:0.058-tr_a:0.983-val_l:0.108-val_a:0.962-time:03-05-2017-21:33:39-dur:283.181.json'
+weights_path = 'models/A/structures/tr_l:0.073-tr_a:0.55-val_l:0.121-val_a:0.33-time:05-05-2017-21:31:27-dur:131.542.h5'
+model_structure = 'models/A/structures/tr_l:0.073-tr_a:0.55-val_l:0.121-val_a:0.33-time:05-05-2017-21:31:27-dur:131.542.json'
 
 with open(model_structure, 'r') as model_json:
     model = model_from_json(json.loads(model_json.read()))
@@ -69,7 +69,7 @@ df_test.columns = ['image_name', 'tags']
 
 tags = []
 for r in result:
-    r = list(r > threz)
+    r = list(r > .2)
     t = [inv_label_map[i] for i, j in enumerate(r) if j]
     tags.append(' '.join(t))
 
