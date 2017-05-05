@@ -11,7 +11,7 @@ from utils import common as common_util
 from models.A.model import model as A_model
 
 st_time = time.time()
-N_EPOCH = 20
+N_EPOCH = 5
 BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -43,7 +43,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 
 
 print '\nmodel loading...'
-[model, structure] = A_model()
+[model, structure] = A_model('models/A/structures/tr_l:0.095-tr_a:0.65-val_l:0.135-val_a:0.35-time:05-05-2017-17:24:19-dur:254.928.h5')
 
 adam = Adam(lr=0.0001, decay=0.)
 

@@ -13,7 +13,7 @@ def model(weights_path=None):
 
     _model.add(ZeroPadding2D((1, 1)))
     _model.add(Conv2D(64, (3, 3)))
-    # _model.add(BatchNormalization())
+    _model.add(BatchNormalization())
     _model.add(Activation('relu'))
 
     _model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
