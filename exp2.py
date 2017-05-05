@@ -1,12 +1,18 @@
 from PIL import Image
 import pandas as pd
+import numpy as np
+import theano.tensor as T
+import theano
+import keras.backend as K
 
-df_train = pd.read_csv('train.csv')
+X = T.matrix('x')
+B = X * [1, 1, 0]
+D = B > .5
+D = D * .5
+H = X - D
 
-flatten = lambda l: [item for sublist in l for item in sublist]
-labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
+f = theano.function([X], H)
+r = np.random.random((2, 3)).astype(np.float16)
 
-label_map = {l: i for i, l in enumerate(labels)}
-inv_label_map = {i: l for l, i in label_map.items()}
-
-print inv_label_map
+print r
+print f(r)
