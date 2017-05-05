@@ -4,17 +4,21 @@ import pandas as pd
 import numpy as np
 import theano.tensor as T
 import theano
+from utils.common import f2_score
 import keras.backend as K
 
-df_train = pd.read_csv('train.csv')
+y = [[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0],
+     [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+     [1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0],
+     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]]
 
-flatten = lambda l: [item for sublist in l for item in sublist]
-labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
+# Note that with f2 score, your predictions need to be binary
+# If you have probabilities, you will need to do some form of thresholding beforehand
+p = [[0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0],
+     [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+     [1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
+     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
+     [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]]
 
-label_map = {l: i for i, l in enumerate(labels)}
-inv_label_map = {i: l for l, i in label_map.items()}
-
-df_labels = pd.DataFrame([[i, l] for i, l in enumerate(labels)])
-df_labels.columns = ['class', 'label']
-
-df_labels.to_csv('labels.csv', index=False)
+print "F2: ", f2_score(y, p)

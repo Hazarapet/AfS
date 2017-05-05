@@ -75,3 +75,4 @@ for r in result:
 
 df_test['tags'] = tags
 df_test.to_csv('submission_0.csv', index=False)
+
