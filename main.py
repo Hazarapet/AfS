@@ -82,7 +82,7 @@ for epoch in range(N_EPOCH):
                 for t in tags.split(' '):
                     targets[label_map[t]] = 1
 
-                img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float16)
+                img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
                 img[:, :, 0] -= 103.939
                 img[:, :, 1] -= 116.779
                 img[:, :, 2] -= 123.68
@@ -125,7 +125,7 @@ for epoch in range(N_EPOCH):
             for t in tags.split(' '):
                 targets[label_map[t]] = 1
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float16)
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
             img[:, :, 0] -= 103.939
             img[:, :, 1] -= 116.779
             img[:, :, 2] -= 123.68
