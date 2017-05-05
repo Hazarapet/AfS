@@ -1,10 +1,4 @@
-import json
-from PIL import Image
 import pandas as pd
-import numpy as np
-import theano.tensor as T
-import theano
-import keras.backend as K
 
 df_train = pd.read_csv('train.csv')
 

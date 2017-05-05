@@ -5,12 +5,13 @@ import json
 import plots
 import numpy as np
 import pandas as pd
+from utils import components
 from keras.optimizers import SGD, Adam
 from utils import common as common_util
 from models.A.model import model as A_model
 
 st_time = time.time()
-N_EPOCH = 20
+N_EPOCH = 10
 BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -46,7 +47,7 @@ print '\nmodel loading...'
 
 adam = Adam(lr=0.0001, decay=0.)
 
-model.compile(loss='binary_crossentropy',
+model.compile(loss=components.reg_binary_cross_entropy(l=0.2),
               optimizer=adam,
               metrics=['accuracy'])
 
