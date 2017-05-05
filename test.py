@@ -11,8 +11,8 @@ BATCH_SIZE = 300
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
-weights_path = 'models/A/structures/tr_l:0.095-tr_a:0.65-val_l:0.135-val_a:0.35-time:05-05-2017-17:24:19-dur:254.928.h5'
-model_structure = 'models/A/structures/tr_l:0.095-tr_a:0.65-val_l:0.135-val_a:0.35-time:05-05-2017-17:24:19-dur:254.928.json'
+weights_path = 'models/A/structures/tr_l:0.058-tr_a:0.983-val_l:0.108-val_a:0.962-time:03-05-2017-21:33:39-dur:283.181.h5'
+model_structure = 'models/A/structures/tr_l:0.058-tr_a:0.983-val_l:0.108-val_a:0.962-time:03-05-2017-21:33:39-dur:283.181.json'
 
 with open(model_structure, 'r') as model_json:
     model = model_from_json(json.loads(model_json.read()))
@@ -62,14 +62,14 @@ for min_batch in common_util.iterate_minibatches(X_test, batchsize=BATCH_SIZE):
     print '{}/{} predicted'.format(count, len(X_test))
 
 thres = [0.1, 0.23, 0.04, 0.22, 0.16, 0.2, 0.26, 0.24, 0.23, 0.14, 0.33, 0.19, 0.17, 0.07, 0.25, 0.24, 0.12]
-threz = [0.1, 0.30, 0.04, 0.33, 0.16, 0.2, 0.26, 0.20, 0.23, 0.14, 0.23, 0.19, 0.17, 0.07, 0.27, 0.25, 0.12]
+threz = [0.2, 0.3, 0.2, 0.33, 0.18, 0.2, 0.26, 0.2, 0.23, 0.18, 0.23, 0.19, 0.18, 0.18, 0.3, 0.25, 0.2]
 
 df_test = pd.DataFrame([[p.replace('.jpg', ''), p] for p in X_test])
 df_test.columns = ['image_name', 'tags']
 
 tags = []
 for r in result:
-    r = list(r > .2)
+    r = list(r > threz)
     t = [inv_label_map[i] for i, j in enumerate(r) if j]
     tags.append(' '.join(t))
 
