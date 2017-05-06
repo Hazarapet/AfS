@@ -15,7 +15,7 @@ sys.stdout = open('logging.log', 'w')
 
 st_time = time.time()
 N_EPOCH = 40
-BATCH_SIZE = 120
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -50,7 +50,7 @@ print '\nmodel loading...'
 
 adam = Adam(lr=0.001, decay=0.)
 
-model.compile(loss=components.reg_binary_cross_entropy(l=0.2),
+model.compile(loss=components.reg_binary_cross_entropy(l=0.1, p=0.6),
               optimizer=adam,
               metrics=['accuracy'])
 
@@ -67,7 +67,7 @@ for epoch in range(N_EPOCH):
 
     for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
 
-        # t_batch_inputs = []
+        t_batch_inputs = []
         t_batch_sobel_inputs = []
         t_batch_labels = []
 
@@ -85,24 +85,23 @@ for epoch in range(N_EPOCH):
                     targets[label_map[t]] = 1
 
                 img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
-                # img[:, :, 0] -= 103.939
-                # img[:, :, 1] -= 116.779
-                # img[:, :, 2] -= 123.68
-                # img = img.transpose((2, 0, 1))
+                img[:, :, 0] -= 103.939
+                img[:, :, 1] -= 116.779
+                img[:, :, 2] -= 123.68
+                img = img.transpose((2, 0, 1))
 
                 mag, angle = UtilImage.img_sobel(img)
-                mag = mag.transpose((2, 0, 1))
 
-                # t_batch_inputs.append(img)
+                t_batch_inputs.append(img)
                 t_batch_sobel_inputs.append(mag)
                 t_batch_labels.append(targets)
 
         t_batch_sobel_inputs = np.array(t_batch_sobel_inputs).astype(np.float16)
-        # t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
+        t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
         # collecting for plotting
-        [t_loss, t_acc] = model.train_on_batch(t_batch_sobel_inputs, t_batch_labels)
+        [t_loss, t_acc] = model.train_on_batch([t_batch_inputs, t_batch_sobel_inputs], t_batch_labels)
         t_loss_graph = np.append(t_loss_graph, [t_loss])
         t_acc_graph = np.append(t_acc_graph, [t_acc])
 
@@ -129,23 +128,22 @@ for epoch in range(N_EPOCH):
                 targets[label_map[t]] = 1
 
             img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
-            # img[:, :, 0] -= 103.939
-            # img[:, :, 1] -= 116.779
-            # img[:, :, 2] -= 123.68
-            # img = img.transpose((2, 0, 1))
+            img[:, :, 0] -= 103.939
+            img[:, :, 1] -= 116.779
+            img[:, :, 2] -= 123.68
+            img = img.transpose((2, 0, 1))
 
             mag, angle = UtilImage.img_sobel(img)
-            mag = mag.transpose((2, 0, 1))
 
-            # v_batch_inputs.append(img)
+            v_batch_inputs.append(img)
             v_batch_sobel_inputs.append(mag)
             v_batch_labels.append(targets)
 
     v_batch_sobel_inputs = np.array(v_batch_sobel_inputs).astype(np.float16)
-    # v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
+    v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
     v_batch_labels = np.array(v_batch_labels).astype(np.int8)
 
-    [v_loss, v_acc] = model.evaluate(v_batch_sobel_inputs, v_batch_labels, batch_size=BATCH_SIZE)
+    [v_loss, v_acc] = model.evaluate([v_batch_inputs, v_batch_sobel_inputs], v_batch_labels, batch_size=BATCH_SIZE)
     v_loss_graph = np.append(v_loss_graph, [v_loss])
     v_acc_graph = np.append(v_acc_graph, [v_acc])
 

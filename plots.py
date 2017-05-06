@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 
 def plot_curve(values, title, file_name, x_axis='Step', y_axis='Loss'):
     plt.figure(title)

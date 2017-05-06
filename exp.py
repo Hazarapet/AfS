@@ -11,7 +11,7 @@ model.add(Dense(11, activation='relu', input_dim=100))
 model.add(Dense(3, activation='sigmoid'))
 
 model.compile(optimizer='adam',
-              loss=components.reg_binary_cross_entropy(2),
+              loss=components.reg_binary_cross_entropy(0.2),
               metrics=['accuracy'])
 
 # Generate dummy data
