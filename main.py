@@ -11,8 +11,6 @@ from keras.optimizers import SGD, Adam
 from utils import common as common_util
 from models.A.model import model as A_model
 
-sys.stdout = open('logging.log', 'w')
-
 st_time = time.time()
 N_EPOCH = 40
 BATCH_SIZE = 100
