@@ -4,10 +4,11 @@ import json
 import numpy as np
 import pandas as pd
 from utils import common as common_util
+from utils import image as UtilImage
 from sklearn.metrics import fbeta_score
 from keras.models import model_from_json
 
-BATCH_SIZE = 80
+BATCH_SIZE = 300
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -37,6 +38,7 @@ X_test = os.listdir('resource/test-jpg')
 
 for min_batch in common_util.iterate_minibatches(X_test, batchsize=BATCH_SIZE):
     test_batch_inputs = []
+    test_batch_sobel_inputs = []
 
     # load val's images
     for f in min_batch:
@@ -44,18 +46,22 @@ for min_batch in common_util.iterate_minibatches(X_test, batchsize=BATCH_SIZE):
         assert img is not None
 
         if img is not None:
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float16)
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
             img[:, :, 0] -= 103.939
             img[:, :, 1] -= 116.779
             img[:, :, 2] -= 123.68
             img = img.transpose((2, 0, 1))
 
+            mag, angle = UtilImage.img_sobel(img)
+
             test_batch_inputs.append(img)
+            test_batch_sobel_inputs.append(mag)
 
     count += len(test_batch_inputs)
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float16)
+    test_batch_sobel_inputs = np.array(test_batch_sobel_inputs).astype(np.float16)
 
-    p_test = model.predict_on_batch(test_batch_inputs)
+    p_test = model.predict_on_batch([test_batch_inputs, test_batch_sobel_inputs])
     result.extend(p_test)
     files.extend(min_batch)
 
