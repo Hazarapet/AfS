@@ -11,8 +11,8 @@ BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
-weights_path = 'models/A/structures/tr_l:0.073-tr_a:0.55-val_l:0.121-val_a:0.33-time:05-05-2017-21:31:27-dur:131.542.h5'
-model_structure = 'models/A/structures/tr_l:0.073-tr_a:0.55-val_l:0.121-val_a:0.33-time:05-05-2017-21:31:27-dur:131.542.json'
+weights_path = 'models/A/structures/tr_l:0.07-tr_a:0.533-val_l:0.132-val_a:0.366-time:06-05-2017-07:49:27-dur:561.309.h5'
+model_structure = 'models/A/structures/tr_l:0.07-tr_a:0.533-val_l:0.132-val_a:0.366-time:06-05-2017-07:49:27-dur:561.309.json'
 
 with open(model_structure, 'r') as model_json:
     model = model_from_json(json.loads(model_json.read()))
