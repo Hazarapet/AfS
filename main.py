@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.A.model import model as A_model
 
 st_time = time.time()
-N_EPOCH = 40
+N_EPOCH = 20
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -46,7 +46,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 print '\nmodel loading...'
 [model, structure] = A_model()
 
-adam = Adam(lr=0.001, decay=0.)
+adam = Adam(lr=0.0003, decay=0.)
 
 model.compile(loss=components.reg_binary_cross_entropy(l=0.1, p=0.6),
               optimizer=adam,
@@ -149,7 +149,7 @@ for epoch in range(N_EPOCH):
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(0.0001)
 
-    if epoch == 25:
+    if epoch == 15:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(0.00001)
 
