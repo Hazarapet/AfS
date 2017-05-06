@@ -1,5 +1,5 @@
 from keras.models import Sequential
-from keras.layers import merge, Input
+from keras.layers import merge, Input, Layer
 from keras.layers.core import Flatten, Dense, Dropout, Activation
 from keras.layers.convolutional import Conv2D, MaxPooling2D, ZeroPadding2D
 from keras.layers.normalization import BatchNormalization
@@ -11,7 +11,7 @@ def model(weights_path=None):
     merged = merge([_regular_input, _sobel_input], mode='concat')
 
     _model = Sequential()
-    _model.add(merged)
+    _model.add(Layer(merged))
     _model.add(ZeroPadding2D((1, 1)))
     _model.add(Conv2D(64, (3, 3)))
     _model.add(BatchNormalization())
