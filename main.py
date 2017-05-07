@@ -48,7 +48,7 @@ print '\nmodel loading...'
 
 adam = Adam(lr=1e-5, decay=0.)
 
-model.compile(loss=components.reg_binary_cross_entropy(l=0.1, p=0.6),
+model.compile(loss=components.reg_binary_cross_entropy(l=0.001, p=0.7),
               optimizer=adam,
               metrics=['accuracy'])
 
