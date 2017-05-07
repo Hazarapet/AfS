@@ -44,7 +44,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 
 
 print '\nmodel loading...'
-[model, structure] = A_model('models/A/structures/tr_l:0.051-tr_a:0.58-val_l:0.125-val_a:0.452-time:06-05-2017-15:02:42-dur:300.927.h5')
+[model, structure] = A_model('models/A/structures/tr_l:0.058-tr_a:0.983-val_l:0.108-val_a:0.962-time:03-05-2017-21:33:39-dur:283.181.h5')
 
 adam = Adam(lr=1e-5, decay=0.)
 
@@ -88,18 +88,18 @@ for epoch in range(N_EPOCH):
                 img[:, :, 2] -= 123.68
                 img = img.transpose((2, 0, 1))
 
-                mag, angle = UtilImage.img_sobel(img)
+                # mag, angle = UtilImage.img_sobel(img)
 
                 t_batch_inputs.append(img)
-                t_batch_sobel_inputs.append(mag)
+                # t_batch_sobel_inputs.append(mag)
                 t_batch_labels.append(targets)
 
-        t_batch_sobel_inputs = np.array(t_batch_sobel_inputs).astype(np.float16)
+        # t_batch_sobel_inputs = np.array(t_batch_sobel_inputs).astype(np.float16)
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
         # collecting for plotting
-        [t_loss, t_acc] = model.train_on_batch([t_batch_inputs, t_batch_sobel_inputs], t_batch_labels)
+        [t_loss, t_acc] = model.train_on_batch(t_batch_inputs, t_batch_labels)
         t_loss_graph = np.append(t_loss_graph, [t_loss])
         t_acc_graph = np.append(t_acc_graph, [t_acc])
 
@@ -110,7 +110,7 @@ for epoch in range(N_EPOCH):
 
     # ===== Validation =====
     v_batch_inputs = []
-    v_batch_sobel_inputs = []
+    # v_batch_sobel_inputs = []
     v_batch_labels = []
 
     np.random.shuffle(val)
@@ -131,17 +131,17 @@ for epoch in range(N_EPOCH):
             img[:, :, 2] -= 123.68
             img = img.transpose((2, 0, 1))
 
-            mag, angle = UtilImage.img_sobel(img)
+            # mag, angle = UtilImage.img_sobel(img)
 
             v_batch_inputs.append(img)
-            v_batch_sobel_inputs.append(mag)
+            # v_batch_sobel_inputs.append(mag)
             v_batch_labels.append(targets)
 
-    v_batch_sobel_inputs = np.array(v_batch_sobel_inputs).astype(np.float16)
+    # v_batch_sobel_inputs = np.array(v_batch_sobel_inputs).astype(np.float16)
     v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
     v_batch_labels = np.array(v_batch_labels).astype(np.int8)
 
-    [v_loss, v_acc] = model.evaluate([v_batch_inputs, v_batch_sobel_inputs], v_batch_labels, batch_size=BATCH_SIZE)
+    [v_loss, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE)
     v_loss_graph = np.append(v_loss_graph, [v_loss])
     v_acc_graph = np.append(v_acc_graph, [v_acc])
 

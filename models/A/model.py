@@ -6,13 +6,13 @@ from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 def model(weights_path=None):
-    _regular_input = layers.Input(shape=(3, 128, 128), name='regular_input')
-    _sobel_input = layers.Input(shape=(3, 128, 128), name='sobel_input')
-    merged = layers.concatenate([_regular_input, _sobel_input], axis=1)
+    # _regular_input = layers.Input(shape=(3, 128, 128), name='regular_input')
+    # _sobel_input = layers.Input(shape=(3, 128, 128), name='sobel_input')
+    # merged = layers.concatenate([_regular_input, _sobel_input], axis=1)
 
     _model = Sequential()
-    _model.add(Model([_regular_input, _sobel_input], merged))
-    _model.add(ZeroPadding2D((1, 1)))
+    # _model.add(Model([_regular_input, _sobel_input], merged))
+    _model.add(ZeroPadding2D((1, 1), input_shape=(3, 128, 128)))
     _model.add(Conv2D(64, (3, 3)))
     _model.add(BatchNormalization())
     _model.add(Activation('relu'))
@@ -60,23 +60,6 @@ def model(weights_path=None):
 
     _model.add(ZeroPadding2D((1, 1)))
     _model.add(Conv2D(256, (3, 3)))
-    # _model.add(BatchNormalization())
-    _model.add(Activation('relu'))
-
-    _model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2)))
-
-    _model.add(ZeroPadding2D((1, 1)))
-    _model.add(Conv2D(512, (3, 3)))
-    # _model.add(BatchNormalization())
-    _model.add(Activation('relu'))
-
-    _model.add(ZeroPadding2D((1, 1)))
-    _model.add(Conv2D(512, (3, 3)))
-    # _model.add(BatchNormalization())
-    _model.add(Activation('relu'))
-
-    _model.add(ZeroPadding2D((1, 1)))
-    _model.add(Conv2D(512, (3, 3)))
     # _model.add(BatchNormalization())
     _model.add(Activation('relu'))
 
