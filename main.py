@@ -27,7 +27,7 @@ y = []
 
 print 'data loading...'
 # loading the data
-df_train = pd.read_csv('train.csv')
+df_train = pd.read_csv('train-augmented.csv')
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
@@ -73,7 +73,7 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
+            img = cv2.imread('resource/train-augmented-jpg/{}.jpg'.format(f))
             assert img is not None
 
             if img is not None:
@@ -116,7 +116,7 @@ for epoch in range(N_EPOCH):
 
     # load val's images
     for f, tags in val:
-        img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
+        img = cv2.imread('resource/train-augmented-jpg/{}.jpg'.format(f))
         assert img is not None
 
         if img is not None:
