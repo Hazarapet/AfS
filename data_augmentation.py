@@ -66,4 +66,4 @@ def image_data_augmentation(horizontal_flip=False, vertical_flip=False, rotation
 
 
 if __name__ == '__main__':
-    image_data_augmentation(horizontal_flip=True)
+    image_data_augmentation(horizontal_flip=True, vertical_flip=True, rotation=90)
