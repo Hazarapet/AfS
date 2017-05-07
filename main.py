@@ -43,9 +43,9 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = A_model('models/A/structures/tr_l:0.058-tr_a:0.983-val_l:0.108-val_a:0.962-time:03-05-2017-21:33:39-dur:283.181.h5')
+[model, structure] = A_model()
 
-adam = Adam(lr=1e-5, decay=0.)
+adam = Adam(lr=1e-3, decay=0.)
 
 model.compile(loss='binary_crossentropy',
               optimizer=adam,
@@ -146,11 +146,11 @@ for epoch in range(N_EPOCH):
 
     if epoch == 5:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(0.00001)
+        model.optimizer.lr.set_value(1e-4)
 
-    if epoch == 15:
+    if epoch == 35:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(0.00001)
+        model.optimizer.lr.set_value(1e-5)
 
     print "Val Examples: {}, loss: {:.4f}, accuracy: {:.3f}, l_rate: {:.5f}".format(
         len(val),
