@@ -12,8 +12,8 @@ BATCH_SIZE = 300
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
-weights_path = 'models/A/structures/tr_l:0.051-tr_a:0.58-val_l:0.125-val_a:0.452-time:06-05-2017-15:02:42-dur:300.927.h5'
-model_structure = 'models/A/structures/tr_l:0.051-tr_a:0.58-val_l:0.125-val_a:0.452-time:06-05-2017-15:02:42-dur:300.927.json'
+weights_path = 'models/A/structures/tr_l:0.054-tr_a:0.985-val_l:0.086-val_a:0.969-time:07-05-2017-02:58:14-dur:140.571.h5'
+model_structure = 'models/A/structures/tr_l:0.054-tr_a:0.985-val_l:0.086-val_a:0.969-time:07-05-2017-02:58:14-dur:140.571.json'
 
 with open(model_structure, 'r') as model_json:
     model = model_from_json(json.loads(model_json.read()))
@@ -38,7 +38,7 @@ X_test = os.listdir('resource/test-jpg')
 
 for min_batch in common_util.iterate_minibatches(X_test, batchsize=BATCH_SIZE):
     test_batch_inputs = []
-    test_batch_sobel_inputs = []
+    # test_batch_sobel_inputs = []
 
     # load val's images
     for f in min_batch:
@@ -52,16 +52,16 @@ for min_batch in common_util.iterate_minibatches(X_test, batchsize=BATCH_SIZE):
             img[:, :, 2] -= 123.68
             img = img.transpose((2, 0, 1))
 
-            mag, angle = UtilImage.img_sobel(img)
+            # mag, angle = UtilImage.img_sobel(img)
 
             test_batch_inputs.append(img)
-            test_batch_sobel_inputs.append(mag)
+            # test_batch_sobel_inputs.append(mag)
 
     count += len(test_batch_inputs)
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float16)
-    test_batch_sobel_inputs = np.array(test_batch_sobel_inputs).astype(np.float16)
+    # test_batch_sobel_inputs = np.array(test_batch_sobel_inputs).astype(np.float16)
 
-    p_test = model.predict_on_batch([test_batch_inputs, test_batch_sobel_inputs])
+    p_test = model.predict_on_batch(test_batch_inputs)
     result.extend(p_test)
     files.extend(min_batch)
 
