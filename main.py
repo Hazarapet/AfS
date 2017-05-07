@@ -42,13 +42,12 @@ np.random.shuffle(df_train.values)
 index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
-
-print '\nmodel loading...'
+print 'model loading...'
 [model, structure] = A_model('models/A/structures/tr_l:0.058-tr_a:0.983-val_l:0.108-val_a:0.962-time:03-05-2017-21:33:39-dur:283.181.h5')
 
 adam = Adam(lr=1e-5, decay=0.)
 
-model.compile(loss=components.reg_binary_cross_entropy(l=0, p=0.7),
+model.compile(loss='binary_crossentropy',
               optimizer=adam,
               metrics=['accuracy'])
 
