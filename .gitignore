@@ -5,3 +5,4 @@
 *.log
 resource/
 models/*/structures/
+train-augmented.csv

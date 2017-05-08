@@ -10,9 +10,10 @@ from utils import components
 from keras.optimizers import SGD, Adam
 from utils import common as common_util
 from models.A.model import model as A_model
+from models.UNET.model import model as unet_model
 
 st_time = time.time()
-N_EPOCH = 40
+N_EPOCH = 10
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -27,7 +28,7 @@ y = []
 
 print 'data loading...'
 # loading the data
-df_train = pd.read_csv('train-augmented.csv')
+df_train = pd.read_csv('train.csv')
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
@@ -43,7 +44,7 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = A_model()
+[model, structure] = unet_model()
 
 adam = Adam(lr=3e-4, decay=0.)
 
