@@ -13,8 +13,8 @@ from models.A.model import model as A_model
 from models.UNET.model import model as unet_model
 
 st_time = time.time()
-N_EPOCH = 10
-BATCH_SIZE = 100
+N_EPOCH = 20
+BATCH_SIZE = 120
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -28,7 +28,7 @@ y = []
 
 print 'data loading...'
 # loading the data
-df_train = pd.read_csv('train.csv')
+df_train = pd.read_csv('train-augmented.csv')
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
@@ -149,7 +149,7 @@ for epoch in range(N_EPOCH):
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-4)
 
-    if epoch == 35:
+    if epoch == 19:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-5)
 
