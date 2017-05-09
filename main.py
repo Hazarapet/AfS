@@ -14,7 +14,7 @@ from models.UNET.model import model as unet_model
 
 st_time = time.time()
 N_EPOCH = 30
-BATCH_SIZE = 120
+BATCH_SIZE = 130
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 

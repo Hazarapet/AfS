@@ -26,6 +26,7 @@ def create_folder(dir_name=None):
 
     os.makedirs(dir_name)
 
+
 def parallel_shuffle(x, y, shuffle=True):
     if shuffle:
         count = len(x)
@@ -34,4 +35,3 @@ def parallel_shuffle(x, y, shuffle=True):
         return [[x[i] for i in indices], [y[i] for i in indices]]
 
     return [x, y]
-

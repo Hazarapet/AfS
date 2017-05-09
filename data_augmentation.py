@@ -12,11 +12,11 @@ from utils import common
 # if vertical:
 #     im = im.transpose(Image.FLIP_TOP_BOTTOM)
 
-COMMON_TAGS = ['clear', 'primary', 'agriculture']
+COMMON_TAGS = ['primary', 'agriculture']
 
 
 def image_data_augmentation(horizontal_flip=False, vertical_flip=False, rotation=0):
-    df_train = pd.read_csv('train.csv')
+    df_train = pd.read_csv('train_v2.csv')
 
     tags = df_train['tags'].values
     images = df_train['image_name'].values
