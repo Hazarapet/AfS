@@ -12,8 +12,8 @@ BATCH_SIZE = 300
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
-weights_path = 'models/A/structures/tr_l:0.054-tr_a:0.985-val_l:0.086-val_a:0.969-time:07-05-2017-02:58:14-dur:140.571.h5'
-model_structure = 'models/A/structures/tr_l:0.054-tr_a:0.985-val_l:0.086-val_a:0.969-time:07-05-2017-02:58:14-dur:140.571.json'
+weights_path = 'models/UNET/structures/tr_l:0.047-tr_a:0.986-val_l:0.113-val_a:0.958-time:09-05-2017-18:23:50-dur:235.216.h5'
+model_structure = 'models/UNET/structures/tr_l:0.047-tr_a:0.986-val_l:0.113-val_a:0.958-time:09-05-2017-18:23:50-dur:235.216.json'
 
 with open(model_structure, 'r') as model_json:
     model = model_from_json(json.loads(model_json.read()))
@@ -22,7 +22,7 @@ with open(model_structure, 'r') as model_json:
 
 print 'train.csv loading...'
 # loading the data
-df_train = pd.read_csv('train.csv')
+df_train = pd.read_csv('train_v2.csv')
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
