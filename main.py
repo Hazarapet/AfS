@@ -13,7 +13,7 @@ from models.A.model import model as A_model
 from models.UNET.model import model as unet_model
 
 st_time = time.time()
-N_EPOCH = 20
+N_EPOCH = 30
 BATCH_SIZE = 120
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -145,11 +145,11 @@ for epoch in range(N_EPOCH):
     v_loss_graph = np.append(v_loss_graph, [v_loss])
     v_acc_graph = np.append(v_acc_graph, [v_acc])
 
-    if epoch == 5:
+    if epoch == 10:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-4)
 
-    if epoch == 19:
+    if epoch == 25:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-5)
 

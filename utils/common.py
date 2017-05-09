@@ -1,5 +1,7 @@
-from sklearn.metrics import fbeta_score
+import os
+import shutil
 import numpy as np
+from sklearn.metrics import fbeta_score
 
 def f2_score(y_true, y_pred):
     # fbeta_score throws a confusing error if inputs are not numpy arrays
@@ -17,6 +19,12 @@ def iterate_minibatches(inputs, batchsize=10):
     if len(inputs) % batchsize != 0:
         yield np.array(inputs)[- (len(inputs) % batchsize):]
 
+
+def create_folder(dir_name=None):
+    if os.path.exists(dir_name) and dir_name:
+        shutil.rmtree(dir_name)
+
+    os.makedirs(dir_name)
 
 def parallel_shuffle(x, y, shuffle=True):
     if shuffle:

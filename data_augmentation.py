@@ -4,6 +4,7 @@ import shutil
 import numpy as np
 import pandas as pd
 from PIL import Image
+from utils import common
 
 # if horizontal:
 #     im = im.transpose(Image.FLIP_LEFT_RIGHT)
@@ -14,12 +15,6 @@ from PIL import Image
 COMMON_TAGS = ['clear', 'primary', 'agriculture']
 
 
-def create_folder(dir_name=None):
-    if os.path.exists(dir_name) and dir_name:
-        shutil.rmtree(dir_name)
-
-    os.makedirs(dir_name)
-
 def image_data_augmentation(horizontal_flip=False, vertical_flip=False, rotation=0):
     df_train = pd.read_csv('train.csv')
 
@@ -27,7 +22,7 @@ def image_data_augmentation(horizontal_flip=False, vertical_flip=False, rotation
     images = df_train['image_name'].values
     img_dest_name = 'resource/train-augmented-jpg/'
 
-    create_folder(img_dest_name)
+    common.create_folder(img_dest_name)
     count = 0
 
     for f, t in df_train.values:
