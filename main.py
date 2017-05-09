@@ -149,7 +149,7 @@ for epoch in range(N_EPOCH):
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-4)
 
-    if epoch == 25:
+    if epoch == 20:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-5)
 
