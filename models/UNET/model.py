@@ -14,10 +14,10 @@ def model(weights_path=None):
     pool1 = MaxPooling2D(pool_size=(2, 2))(bn2)
 
     conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)
-    # bn3 = BatchNormalization()(conv2)
-    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv2)
-    # bn4 = BatchNormalization()(conv2)
-    pool2 = MaxPooling2D(pool_size=(2, 2))(conv2)
+    bn3 = BatchNormalization()(conv2)
+    conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(bn3)
+    bn4 = BatchNormalization()(conv2)
+    pool2 = MaxPooling2D(pool_size=(2, 2))(bn4)
 
     conv3 = Conv2D(128, (3, 3), activation='relu', padding='same')(pool2)
     # bn5 = BatchNormalization()(conv3)
@@ -46,7 +46,7 @@ def model(weights_path=None):
     conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(dr2)
     conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv7)
 
-    up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), conv2], axis=1)
+    up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), bn4], axis=1)
     dr3 = Dropout(0.5)(up8)
     conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(dr3)
     conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv8)
@@ -65,6 +65,10 @@ def model(weights_path=None):
 
     # Dense layers
     _model.add(Flatten())
+
+    _model.add(Dense(256, kernel_regularizer=l2(1e-4)))
+    _model.add(Activation('relu'))
+    _model.add(Dropout(0.5))
 
     _model.add(Dense(256, kernel_regularizer=l2(1e-4)))
     _model.add(Activation('relu'))

@@ -13,8 +13,8 @@ from models.A.model import model as A_model
 from models.UNET.model import model as unet_model
 
 st_time = time.time()
-N_EPOCH = 30
-BATCH_SIZE = 100
+N_EPOCH = 20
+BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -152,6 +152,22 @@ for epoch in range(N_EPOCH):
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-5)
+
+    # if model has reach to good results, we save that model
+    if v_loss < 0.1:
+        timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
+        model_filename = structure + '_good_' + \
+                         'tr_l:' + str(round(np.min(t_loss_graph), 3)) + \
+                         '-tr_a:' + str(round(np.max(t_acc_graph), 3)) + \
+                         '-val_l:' + str(round(v_loss, 3)) + \
+                         '-val_a:' + str(round(v_acc, 3)) + \
+                         '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
+        # saving the weights
+        model.save_weights(model_filename + '.h5')
+
+        with open(model_filename + '.json', 'w') as outfile:
+            json_string = model.to_json()
+            json.dump(json_string, outfile)
 
     print "Val Examples: {}, loss: {:.4f}, accuracy: {:.3f}, l_rate: {:.5f}".format(
         len(val),
