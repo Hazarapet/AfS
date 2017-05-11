@@ -24,6 +24,7 @@ if __name__ == '__main__':
     gband = data.GetRasterBand(2)
     bband = data.GetRasterBand(3)
     nirband = data.GetRasterBand(4)
+    
     red = rband.ReadAsArray()
     green = gband.ReadAsArray()
     blue = bband.ReadAsArray()
