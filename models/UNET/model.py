@@ -37,22 +37,22 @@ def model(weights_path=None):
     # bn10 = BatchNormalization()(conv5)
 
     up6 = concatenate([UpSampling2D(size=(2, 2))(conv5), conv4], axis=1)
-    dr1 = Dropout(0.5)(up6)
+    dr1 = Dropout(0.2)(up6)
     conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(dr1)
     conv6 = Conv2D(256, (3, 3), activation='relu', padding='same')(conv6)
 
     up7 = concatenate([UpSampling2D(size=(2, 2))(conv6), conv3], axis=1)
-    dr2 = Dropout(0.5)(up7)
+    dr2 = Dropout(0.2)(up7)
     conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(dr2)
     conv7 = Conv2D(128, (3, 3), activation='relu', padding='same')(conv7)
 
     up8 = concatenate([UpSampling2D(size=(2, 2))(conv7), bn4], axis=1)
-    dr3 = Dropout(0.5)(up8)
+    dr3 = Dropout(0.2)(up8)
     conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(dr3)
     conv8 = Conv2D(64, (3, 3), activation='relu', padding='same')(conv8)
 
     up9 = concatenate([UpSampling2D(size=(2, 2))(conv8), bn2], axis=1)
-    dr4 = Dropout(0.5)(up9)
+    dr4 = Dropout(0.2)(up9)
     conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(dr4)
     conv9 = Conv2D(32, (3, 3), activation='relu', padding='same')(conv9)
 

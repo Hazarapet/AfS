@@ -13,7 +13,7 @@ from models.A.model import model as A_model
 from models.UNET.model import model as unet_model
 
 st_time = time.time()
-N_EPOCH = 20
+N_EPOCH = 7
 BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -44,9 +44,9 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = unet_model()
+[model, structure] = unet_model('models/UNET/structures/tr_l:0.049-tr_a:0.987-val_l:0.116-val_a:0.96-time:11-05-2017-02:39:02-dur:640.645.h5')
 
-adam = Adam(lr=3e-4, decay=0.)
+adam = Adam(lr=1e-5, decay=0.)
 
 model.compile(loss='binary_crossentropy',
               optimizer=adam,
@@ -147,7 +147,7 @@ for epoch in range(N_EPOCH):
 
     if epoch == 15:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-5)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()

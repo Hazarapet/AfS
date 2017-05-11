@@ -67,7 +67,7 @@ for min_batch in common_util.iterate_minibatches(X_test, batchsize=BATCH_SIZE):
 
     print '{}/{} predicted'.format(count, len(X_test))
 
-thres = [0.1, 0.23, 0.04, 0.22, 0.16, 0.2, 0.26, 0.24, 0.23, 0.14, 0.33, 0.19, 0.17, 0.07, 0.25, 0.24, 0.12]
+thres = [0.085, 0.2375, 0.19, 0.2625, 0.16, 0.0875, 0.205, 0.1925, 0.265, 0.1625, 0.1375, 0.2175, 0.2225, 0.0475, 0.245, 0.21, 0.14] # Heng CherKeng's example
 threz = [0.22, 0.3, 0.24, 0.33, 0.24, 0.24, 0.26, 0.25, 0.26, 0.24, 0.25, 0.24, 0.24, 0.24, 0.3, 0.25, 0.24]
 
 df_test = pd.DataFrame([[p.replace('.jpg', ''), p] for p in X_test])
