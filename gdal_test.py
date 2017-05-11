@@ -5,8 +5,8 @@ from gdalconst import *
 import matplotlib.pyplot as plt
 from utils import image as image_util
 
-tif_sample = 'resource/train-tif-sample/train_10008.tif'
-jpg_sample = 'resource/train-jpg-sample/train_10008.jpg'
+tif_sample = 'resource/train-tif-sample/train_10056.tif'
+jpg_sample = 'resource/train-jpg-sample/train_10056.jpg'
 
 def read_tif(path):
     data = gdal.Open(path)
@@ -27,18 +27,20 @@ if __name__ == '__main__':
 
     jpg = Image.open(jpg_sample)
 
-    rgb = np.array([red, green, blue])
-    rgb = rgb.transpose((1, 2, 0))
-    mag, angle = image_util.img_sobel(green)
+    # rgb = np.array([red, green, blue])
+    # rgb = rgb.transpose((1, 2, 0))
+    # mag, angle = image_util.img_sobel(green)
 
     ndvi = (nir - red)/(nir + red)
+
+    ndwi = (green - nir)/(green + nir)
 
     print np.max(red), np.max(ndvi)
 
     plt.figure('jpg')
     plt.imshow(jpg)
-    # plt.figure('blooming')
-    # plt.imshow(mag, cmap="gray")
+    plt.figure('ndwi')
+    plt.imshow(ndwi, cmap="gray")
     plt.figure('ndvi')
     plt.imshow(ndvi, cmap='gray')
     plt.show()
