@@ -8,12 +8,12 @@ from utils import image as UtilImage
 from sklearn.metrics import fbeta_score
 from keras.models import model_from_json
 
-BATCH_SIZE = 300
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
-weights_path = 'models/UNET/structures/tr_l:0.047-tr_a:0.986-val_l:0.113-val_a:0.958-time:09-05-2017-18:23:50-dur:235.216.h5'
-model_structure = 'models/UNET/structures/tr_l:0.047-tr_a:0.986-val_l:0.113-val_a:0.958-time:09-05-2017-18:23:50-dur:235.216.json'
+weights_path = 'models/UNET/structures/tr_l:0.049-tr_a:0.987-val_l:0.116-val_a:0.96-time:11-05-2017-02:39:02-dur:640.645.h5'
+model_structure = 'models/UNET/structures/tr_l:0.049-tr_a:0.987-val_l:0.116-val_a:0.96-time:11-05-2017-02:39:02-dur:640.645.json'
 
 with open(model_structure, 'r') as model_json:
     model = model_from_json(json.loads(model_json.read()))
@@ -75,7 +75,7 @@ df_test.columns = ['image_name', 'tags']
 
 tags = []
 for r in result:
-    r = list(r > .2)
+    r = list(r > .19)
     t = [inv_label_map[i] for i, j in enumerate(r) if j]
     tags.append(' '.join(t))
 
