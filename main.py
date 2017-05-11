@@ -154,10 +154,10 @@ for epoch in range(N_EPOCH):
         model.optimizer.lr.set_value(1e-5)
 
     # if model has reach to good results, we save that model
-    if v_loss < 0.1:
+    if v_loss < 0.07:
         timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
-        model_filename = structure + '_good_' + \
-                         'tr_l:' + str(round(np.min(t_loss_graph), 3)) + \
+        model_filename = structure + 'good-epoch:' + str(epoch) + \
+                         '-tr_l:' + str(round(np.min(t_loss_graph), 3)) + \
                          '-tr_a:' + str(round(np.max(t_acc_graph), 3)) + \
                          '-val_l:' + str(round(v_loss, 3)) + \
                          '-val_a:' + str(round(v_acc, 3)) + \
