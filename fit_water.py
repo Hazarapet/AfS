@@ -10,11 +10,10 @@ from utils import components
 from utils import image as UtilImage
 from keras.optimizers import SGD, Adam
 from utils import common as common_util
-from models.A.model import model as A_model
-from models.UNET.model import model as unet_model
+from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 7
+N_EPOCH = 1
 BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -45,9 +44,9 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = unet_model()
+[model, structure] = water_model()
 
-adam = Adam(lr=1e-5, decay=0.)
+adam = Adam(lr=1e-4, decay=0.)
 
 model.compile(loss='binary_crossentropy',
               optimizer=adam,
@@ -67,7 +66,6 @@ for epoch in range(N_EPOCH):
     for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
 
         t_batch_inputs = []
-        t_batch_sobel_inputs = []
         t_batch_labels = []
 
         # accumulate the examples' count
@@ -75,23 +73,19 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            rgbn, ndwi, ndvi, evi, savi = UtilImage.process_tif('resource/train-tif/{}.tif'.format(f))
+            rgbn, ndwi, _, _, _ = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = np.zeros(17)
+                targets = 0
                 for t in tags.split(' '):
-                    targets[label_map[t]] = 1
+                    if t == 'water':
+                        targets = 1
 
-                r_augmented = tfa.augment(rgbn[0])
-
-
-                t_batch_inputs.append(rgbn)
-                # t_batch_sobel_inputs.append(mag)
+                t_batch_inputs.append([rgbn[0], rgbn[1], rgbn[2], ndwi])
                 t_batch_labels.append(targets)
 
-        # t_batch_sobel_inputs = np.array(t_batch_sobel_inputs).astype(np.float16)
-        t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
+        t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
         # collecting for plotting
@@ -106,35 +100,25 @@ for epoch in range(N_EPOCH):
 
     # ===== Validation =====
     v_batch_inputs = []
-    # v_batch_sobel_inputs = []
     v_batch_labels = []
 
     np.random.shuffle(val)
 
     # load val's images
     for f, tags in val:
-        img = cv2.imread('resource/train-augmented-jpg/{}.jpg'.format(f))
-        assert img is not None
+        rgbn, ndwi, _, _, _ = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+        assert rgbn is not None
 
-        if img is not None:
-            targets = np.zeros(17)
+        if rgbn is not None:
+            targets = 0
             for t in tags.split(' '):
-                targets[label_map[t]] = 1
+                if t == 'water':
+                    targets = 1
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
-            img[:, :, 0] -= 103.939
-            img[:, :, 1] -= 116.779
-            img[:, :, 2] -= 123.68
-            img = img.transpose((2, 0, 1))
-
-            # mag, angle = UtilImage.img_sobel(img)
-
-            v_batch_inputs.append(img)
-            # v_batch_sobel_inputs.append(mag)
+            v_batch_inputs.append([rgbn[0], rgbn[1], rgbn[2], ndwi])
             v_batch_labels.append(targets)
 
-    # v_batch_sobel_inputs = np.array(v_batch_sobel_inputs).astype(np.float16)
-    v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
+    v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
     v_batch_labels = np.array(v_batch_labels).astype(np.int8)
 
     [v_loss, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE)

@@ -1,22 +1,23 @@
+import cv2
 import numpy as np
 
 def rotate90(array, axis=(0, 1)):
-    return np.rot90(array, 1, axis=axis)
+    return np.rot90(array, axes=axis)
 
 def rotate180(array, axis=(0, 1)):
     return np.rot90(array, 2, axes=axis)
 
-def flip_h(array, axis=(0, 1)):
+def flip_h(array):
     return np.fliplr(array)
 
-def flip_v(array, axis=(0, 1)):
+def flip_v(array):
     return np.flipud(array)
 
-def augment(example, rot90=False, rot180=False, f_v=False, f_h=False, axis=(0, 1)):
+def augment(example, rot90=False, rot180=False, f_v=False, f_h=False):
     augmented = []
 
     if rot90:
-        augmented.append(rotate90(example, axis=axis))
+        augmented.append(rotate90(example))
 
     if rot180:
         augmented.append(rotate180(example))

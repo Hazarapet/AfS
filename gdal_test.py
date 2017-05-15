@@ -5,6 +5,7 @@ from PIL import Image
 from gdalconst import *
 import matplotlib.pyplot as plt
 from utils import image as image_util
+from sklearn.preprocessing import MinMaxScaler
 
 tif_sample = 'resource/train-tif-sample/train_10051.tif'
 jpg_sample = 'resource/train-jpg-sample/train_10051.jpg'
@@ -28,8 +29,13 @@ if __name__ == '__main__':
 
     jpg = Image.open(jpg_sample)
 
-    rgb = np.array([red, green, blue]).astype(np.int8)
-    # mag, angle = image_util.img_sobel(green)
+    rgb = np.array([red, green, blue])
+    # rgb = rgb.transpose((1, 2, 0))
+    rescaleIMG = np.reshape(rgb, (-1, 1))
+    scaler = MinMaxScaler(feature_range=(0, 255))
+    rescaleIMG = scaler.fit_transform(rescaleIMG)  # .astype(np.float32)
+    img2_scaled = (np.reshape(rescaleIMG, rgb.shape)).astype(np.uint8)
+    img2_scaled = img2_scaled.transpose((1, 2, 0))
 
     ndvi = (nir - red)/(nir + red)
 
@@ -39,7 +45,15 @@ if __name__ == '__main__':
 
     savi = (1 + 0.5) * (nir - red)/(nir + red + 0.5)
 
-    print 1
+    print img2_scaled.shape, np.max(rgb)
+
+    # img = Image.fromarray(np.uint8(rgb), "RGB")
+
+    plt.figure('jpg')
+    plt.imshow(img2_scaled)
+    plt.show()
+    sys.exit(0)
+
 
     plt.figure('jpg')
     plt.imshow(jpg)
