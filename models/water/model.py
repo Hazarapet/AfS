@@ -11,7 +11,7 @@ def model(weights_path=None):
     bn1 = BatchNormalization()(conv1)
     conv1 = Conv2D(32, (3, 3), activation='relu', padding='same')(bn1)
     bn2 = BatchNormalization()(conv1)
-    pool1 = MaxPooling2D(pool_size=(3, 3))(bn2)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(bn2)
 
     conv2 = Conv2D(64, (3, 3), activation='relu', padding='same')(pool1)
     bn3 = BatchNormalization()(conv2)
