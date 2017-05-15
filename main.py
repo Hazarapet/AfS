@@ -5,8 +5,9 @@ import json
 import plots
 import numpy as np
 import pandas as pd
-from utils import image as UtilImage
+import tif_data_augmentation as tfa
 from utils import components
+from utils import image as UtilImage
 from keras.optimizers import SGD, Adam
 from utils import common as common_util
 from models.A.model import model as A_model
@@ -44,7 +45,7 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = unet_model('models/UNET/structures/tr_l:0.049-tr_a:0.987-val_l:0.116-val_a:0.96-time:11-05-2017-02:39:02-dur:640.645.h5')
+[model, structure] = unet_model()
 
 adam = Adam(lr=1e-5, decay=0.)
 
@@ -74,23 +75,18 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            img = cv2.imread('resource/train-augmented-jpg/{}.jpg'.format(f))
-            assert img is not None
+            rgbn, ndwi, ndvi, evi, savi = UtilImage.process_tif('resource/train-tif/{}.tif'.format(f))
+            assert rgbn is not None
 
-            if img is not None:
+            if rgbn is not None:
                 targets = np.zeros(17)
                 for t in tags.split(' '):
                     targets[label_map[t]] = 1
 
-                img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
-                img[:, :, 0] -= 103.939
-                img[:, :, 1] -= 116.779
-                img[:, :, 2] -= 123.68
-                img = img.transpose((2, 0, 1))
+                r_augmented = tfa.augment(rgbn[0])
 
-                # mag, angle = UtilImage.img_sobel(img)
 
-                t_batch_inputs.append(img)
+                t_batch_inputs.append(rgbn)
                 # t_batch_sobel_inputs.append(mag)
                 t_batch_labels.append(targets)
 

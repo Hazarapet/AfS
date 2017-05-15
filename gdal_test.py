@@ -1,3 +1,4 @@
+import sys
 import gdal
 import numpy as np
 from PIL import Image
@@ -5,8 +6,8 @@ from gdalconst import *
 import matplotlib.pyplot as plt
 from utils import image as image_util
 
-tif_sample = 'resource/train-tif-sample/train_10056.tif'
-jpg_sample = 'resource/train-jpg-sample/train_10056.jpg'
+tif_sample = 'resource/train-tif-sample/train_10051.tif'
+jpg_sample = 'resource/train-jpg-sample/train_10051.jpg'
 
 def read_tif(path):
     data = gdal.Open(path)
@@ -27,15 +28,18 @@ if __name__ == '__main__':
 
     jpg = Image.open(jpg_sample)
 
-    # rgb = np.array([red, green, blue])
-    # rgb = rgb.transpose((1, 2, 0))
+    rgb = np.array([red, green, blue]).astype(np.int8)
     # mag, angle = image_util.img_sobel(green)
 
     ndvi = (nir - red)/(nir + red)
 
     ndwi = (green - nir)/(green + nir)
 
-    print np.max(red), np.max(ndvi)
+    evi = 2.5 * (nir - red)/(nir + 6 * red - 7.5 * blue + 1)
+
+    savi = (1 + 0.5) * (nir - red)/(nir + red + 0.5)
+
+    print 1
 
     plt.figure('jpg')
     plt.imshow(jpg)
@@ -43,5 +47,9 @@ if __name__ == '__main__':
     plt.imshow(ndwi, cmap="gray")
     plt.figure('ndvi')
     plt.imshow(ndvi, cmap='gray')
+    plt.figure('evi')
+    plt.imshow(evi, cmap='gray')
+    plt.figure('savi')
+    plt.imshow(savi, cmap='gray')
     plt.show()
 
