@@ -14,7 +14,7 @@ from models.water.model import model as water_model
 
 st_time = time.time()
 N_EPOCH = 1
-BATCH_SIZE = 80
+BATCH_SIZE = 40
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
