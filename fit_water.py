@@ -28,7 +28,7 @@ y = []
 
 print 'data loading...'
 # loading the data
-df_train = pd.read_csv('train-v2.csv')
+df_train = pd.read_csv('train_v2.csv')
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
