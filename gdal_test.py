@@ -46,19 +46,17 @@ if __name__ == '__main__':
 
     savi = (1 + 0.5) * (nir - red)/(nir + red + 0.5)
 
-    print np.max(ndwi)
+    print np.max(ndvi), np.min(ndvi), np.max(savi), np.min(savi)
 
     # img = Image.fromarray(np.uint8(rgb), "RGB")
 
-    plt.figure('red')
-    plt.imshow(red, cmap="gray")
-    plt.figure('red resized')
-    plt.imshow(cv2.resize(red, (64, 64)), cmap="gray")
-    cv2.imwrite('messigray.jpg', cv2.resize(red, (64, 64)))
+    plt.figure('ndwi fl')
+    plt.imshow(np.fliplr(ndwi), cmap="gray")
+    plt.figure('ndwi')
+    plt.imshow(ndwi, cmap="gray")
     plt.show()
+
     sys.exit(0)
-
-
     plt.figure('jpg')
     plt.imshow(jpg)
     plt.figure('ndwi')
