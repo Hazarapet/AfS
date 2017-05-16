@@ -48,7 +48,7 @@ print 'model loading...'
 [model, structure] = water_model()
 
 for layer in model.layers:
-    print layer.input_shape, layer.output_shape
+    print layer.name, layer.input_shape, layer.output_shape
 
 sys.exit(0)
 adam = Adam(lr=1e-4, decay=0.)
