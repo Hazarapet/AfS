@@ -1,3 +1,4 @@
+import cv2
 import sys
 import gdal
 import numpy as np
@@ -31,11 +32,11 @@ if __name__ == '__main__':
 
     rgb = np.array([red, green, blue])
     # rgb = rgb.transpose((1, 2, 0))
-    rescaleIMG = np.reshape(rgb, (-1, 1))
-    scaler = MinMaxScaler(feature_range=(0, 255))
-    rescaleIMG = scaler.fit_transform(rescaleIMG)  # .astype(np.float32)
-    img2_scaled = (np.reshape(rescaleIMG, rgb.shape)).astype(np.uint8)
-    img2_scaled = img2_scaled.transpose((1, 2, 0))
+    # rescaleIMG = np.reshape(rgb, (-1, 1))
+    # scaler = MinMaxScaler(feature_range=(0, 255))
+    # rescaleIMG = scaler.fit_transform(rescaleIMG)  # .astype(np.float32)
+    # img2_scaled = (np.reshape(rescaleIMG, rgb.shape)).astype(np.uint8)
+    # img2_scaled = img2_scaled.transpose((1, 2, 0))
 
     ndvi = (nir - red)/(nir + red)
 
@@ -45,12 +46,15 @@ if __name__ == '__main__':
 
     savi = (1 + 0.5) * (nir - red)/(nir + red + 0.5)
 
-    print img2_scaled.shape, np.max(rgb)
+    print np.max(ndwi)
 
     # img = Image.fromarray(np.uint8(rgb), "RGB")
 
-    plt.figure('jpg')
-    plt.imshow(img2_scaled)
+    plt.figure('red')
+    plt.imshow(red, cmap="gray")
+    plt.figure('red resized')
+    plt.imshow(cv2.resize(red, (64, 64)), cmap="gray")
+    cv2.imwrite('messigray.jpg', cv2.resize(red, (64, 64)))
     plt.show()
     sys.exit(0)
 
