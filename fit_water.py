@@ -47,6 +47,10 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = water_model()
 
+for layer in model.layers:
+    print layer.input_shape, layer.output_shape
+
+sys.exit(0)
 adam = Adam(lr=1e-4, decay=0.)
 
 model.compile(loss='binary_crossentropy',
