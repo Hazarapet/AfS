@@ -89,8 +89,32 @@ for epoch in range(N_EPOCH):
                 b = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                t_batch_inputs.append([r, g, b, ndwi])
+                inputs = [r, g, b, ndwi]
+
+                t_batch_inputs.append([r, g, b, inputs])
                 t_batch_labels.append(targets)
+
+                if targets == 1:
+                    # --- augmentation ---
+                    # rotate 90
+                    rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
+                    t_batch_inputs.append(rt90_inputs)
+                    t_batch_labels.append(targets)
+
+                    # rotate 180
+                    rt180_inputs = np.rot90(inputs, 2, axes=(1, 2))
+                    t_batch_inputs.append(rt180_inputs)
+                    t_batch_labels.append(targets)
+
+                    # flip h
+                    flip_h_inputs = np.fliplr(inputs)
+                    t_batch_inputs.append(flip_h_inputs)
+                    t_batch_labels.append(targets)
+
+                    # flip v
+                    flip_v_inputs = np.flipud(inputs)
+                    t_batch_inputs.append(flip_v_inputs)
+                    t_batch_labels.append(targets)
 
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
