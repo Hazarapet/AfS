@@ -109,7 +109,7 @@ for epoch in range(N_EPOCH):
     np.random.shuffle(val)
     v_labels = []
 
-    for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
+    for min_batch in common_util.iterate_minibatches(val, batchsize=BATCH_SIZE):
         v_batch_inputs = []
         v_batch_labels = []
 
@@ -138,7 +138,7 @@ for epoch in range(N_EPOCH):
         v_batch_labels = np.array(v_batch_labels).astype(np.int8)
 
         [v_loss, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
-        [v_p] = model.predict(v_batch_inputs, batch_size=BATCH_SIZE)
+        [v_p] = model.predict_on_batch(v_batch_inputs)
 
         v_loss_graph = np.append(v_loss_graph, [v_loss])
         v_acc_graph = np.append(v_acc_graph, [v_acc])
