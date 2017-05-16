@@ -125,7 +125,7 @@ for epoch in range(N_EPOCH):
 
         [v_loss, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE)
         [v_p] = model.predict(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE)
-        
+
         v_loss_graph = np.append(v_loss_graph, [v_loss])
         v_acc_graph = np.append(v_acc_graph, [v_acc])
         v_predict = np.append(v_predict, [v_p])
