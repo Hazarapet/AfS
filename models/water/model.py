@@ -17,7 +17,7 @@ def model(weights_path=None):
     bn3 = BatchNormalization()(conv2)
     conv2 = Conv2D(64, (3, 3), activation='elu', padding='same')(bn3)
     bn4 = BatchNormalization()(conv2)
-    pool2 = MaxPooling2D(pool_size=(3, 3))(bn4)
+    pool2 = MaxPooling2D(pool_size=(2, 2))(bn4)
 
     conv3 = Conv2D(128, (3, 3), activation='elu', padding='same')(pool2)
     # bn5 = BatchNormalization()(conv3)
