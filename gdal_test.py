@@ -1,45 +1,73 @@
+import cv2
+import sys
 import gdal
 import numpy as np
+from PIL import Image
 from gdalconst import *
 import matplotlib.pyplot as plt
 from utils import image as image_util
+from sklearn.preprocessing import MinMaxScaler
 
-tif_sample = 'resource/train-tif-sample/train_10087.tif'
+tif_sample = 'resource/train-tif-sample/train_10051.tif'
+jpg_sample = 'resource/train-jpg-sample/train_10051.jpg'
 
-def read_gdalImg(path):
+def read_tif(path):
     data = gdal.Open(path)
-    rband = data.GetRasterBand(1)
+    rband = data.GetRasterBand(3)
     gband = data.GetRasterBand(2)
-    bband = data.GetRasterBand(3)
+    bband = data.GetRasterBand(1)
     nirband = data.GetRasterBand(4)
-    red = rband.ReadAsArray().astype(np.uint8)
-    green = gband.ReadAsArray().astype(np.uint8)
-    blue = bband.ReadAsArray().astype(np.uint8)
-    nir = nirband.ReadAsArray().astype(np.uint8)
+
+    red = rband.ReadAsArray().astype(np.float32)
+    green = gband.ReadAsArray().astype(np.float32)
+    blue = bband.ReadAsArray().astype(np.float32)
+    nir = nirband.ReadAsArray().astype(np.float32)
+
     return red, green, blue, nir
 
 if __name__ == '__main__':
-    data = gdal.Open(tif_sample)
-    rband = data.GetRasterBand(1)
-    gband = data.GetRasterBand(2)
-    bband = data.GetRasterBand(3)
-    nirband = data.GetRasterBand(4)
-    
-    red = rband.ReadAsArray()
-    green = gband.ReadAsArray()
-    blue = bband.ReadAsArray()
-    nir = nirband.ReadAsArray()
+    red, green, blue, nir = read_tif(tif_sample)
+
+    jpg = Image.open(jpg_sample)
 
     rgb = np.array([red, green, blue])
-    rgb = rgb.transpose((1, 2, 0))
-    mag, angle = image_util.img_sobel(green)
+    # rgb = rgb.transpose((1, 2, 0))
+    # rescaleIMG = np.reshape(rgb, (-1, 1))
+    # scaler = MinMaxScaler(feature_range=(0, 255))
+    # rescaleIMG = scaler.fit_transform(rescaleIMG)  # .astype(np.float32)
+    # img2_scaled = (np.reshape(rescaleIMG, rgb.shape)).astype(np.uint8)
+    # img2_scaled = img2_scaled.transpose((1, 2, 0))
+
     ndvi = (nir - red)/(nir + red)
 
-    print np.max(green)
+    ndwi = (green - nir)/(green + nir)
 
-    plt.figure('green')
-    plt.imshow(green, cmap='gray')
-    plt.figure('blooming')
-    plt.imshow(mag > 500, cmap="gray")
+    evi = 2.5 * (nir - red)/(nir + 6 * red - 7.5 * blue + 1)
+
+    savi = (1 + 0.5) * (nir - red)/(nir + red + 0.5)
+
+    print np.max(ndwi)
+
+    # img = Image.fromarray(np.uint8(rgb), "RGB")
+
+    plt.figure('red')
+    plt.imshow(red, cmap="gray")
+    plt.figure('red resized')
+    plt.imshow(cv2.resize(red, (64, 64)), cmap="gray")
+    cv2.imwrite('messigray.jpg', cv2.resize(red, (64, 64)))
+    plt.show()
+    sys.exit(0)
+
+
+    plt.figure('jpg')
+    plt.imshow(jpg)
+    plt.figure('ndwi')
+    plt.imshow(ndwi, cmap="gray")
+    plt.figure('ndvi')
+    plt.imshow(ndvi, cmap='gray')
+    plt.figure('evi')
+    plt.imshow(evi, cmap='gray')
+    plt.figure('savi')
+    plt.imshow(savi, cmap='gray')
     plt.show()
 

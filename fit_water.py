@@ -5,16 +5,16 @@ import json
 import plots
 import numpy as np
 import pandas as pd
-from utils import image as UtilImage
+import tif_data_augmentation as tfa
 from utils import components
+from utils import image as UtilImage
 from keras.optimizers import SGD, Adam
 from utils import common as common_util
-from models.A.model import model as A_model
-from models.UNET.model import model as unet_model
+from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 7
-BATCH_SIZE = 80
+N_EPOCH = 1
+BATCH_SIZE = 60
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -22,13 +22,14 @@ t_loss_graph = np.array([])
 t_acc_graph = np.array([])
 v_loss_graph = np.array([])
 v_acc_graph = np.array([])
+v_predict = np.array([])
 
 X = []
 y = []
 
 print 'data loading...'
 # loading the data
-df_train = pd.read_csv('train-augmented.csv')
+df_train = pd.read_csv('train_v2.csv')
 
 flatten = lambda l: [item for sublist in l for item in sublist]
 labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
@@ -44,9 +45,9 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = unet_model('models/UNET/structures/tr_l:0.049-tr_a:0.987-val_l:0.116-val_a:0.96-time:11-05-2017-02:39:02-dur:640.645.h5')
+[model, structure] = water_model()
 
-adam = Adam(lr=1e-5, decay=0.)
+adam = Adam(lr=1e-4, decay=0.)
 
 model.compile(loss='binary_crossentropy',
               optimizer=adam,
@@ -66,7 +67,6 @@ for epoch in range(N_EPOCH):
     for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
 
         t_batch_inputs = []
-        t_batch_sobel_inputs = []
         t_batch_labels = []
 
         # accumulate the examples' count
@@ -74,28 +74,25 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            img = cv2.imread('resource/train-augmented-jpg/{}.jpg'.format(f))
-            assert img is not None
+            rgbn, ndwi, _, _, _ = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+            assert rgbn is not None
 
-            if img is not None:
-                targets = np.zeros(17)
+            if rgbn is not None:
+                targets = 0
                 for t in tags.split(' '):
-                    targets[label_map[t]] = 1
+                    if t == 'water':
+                        targets = 1
 
-                img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
-                img[:, :, 0] -= 103.939
-                img[:, :, 1] -= 116.779
-                img[:, :, 2] -= 123.68
-                img = img.transpose((2, 0, 1))
+                # resize
+                r = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
+                g = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
+                b = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                # mag, angle = UtilImage.img_sobel(img)
-
-                t_batch_inputs.append(img)
-                # t_batch_sobel_inputs.append(mag)
+                t_batch_inputs.append([r, g, b, ndwi])
                 t_batch_labels.append(targets)
 
-        # t_batch_sobel_inputs = np.array(t_batch_sobel_inputs).astype(np.float16)
-        t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
+        t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
         # collecting for plotting
@@ -109,41 +106,43 @@ for epoch in range(N_EPOCH):
                float(t_acc))
 
     # ===== Validation =====
-    v_batch_inputs = []
-    # v_batch_sobel_inputs = []
-    v_batch_labels = []
-
     np.random.shuffle(val)
+    v_labels = []
 
-    # load val's images
-    for f, tags in val:
-        img = cv2.imread('resource/train-augmented-jpg/{}.jpg'.format(f))
-        assert img is not None
+    for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
+        v_batch_inputs = []
+        v_batch_labels = []
 
-        if img is not None:
-            targets = np.zeros(17)
-            for t in tags.split(' '):
-                targets[label_map[t]] = 1
+        # load val's images
+        for f, tags in min_batch:
+            rgbn, ndwi, _, _, _ = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+            assert rgbn is not None
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
-            img[:, :, 0] -= 103.939
-            img[:, :, 1] -= 116.779
-            img[:, :, 2] -= 123.68
-            img = img.transpose((2, 0, 1))
+            if rgbn is not None:
+                targets = 0
+                for t in tags.split(' '):
+                    if t == 'water':
+                        targets = 1
 
-            # mag, angle = UtilImage.img_sobel(img)
+                # resize
+                r = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
+                g = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
+                b = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
-            v_batch_inputs.append(img)
-            # v_batch_sobel_inputs.append(mag)
-            v_batch_labels.append(targets)
+                v_batch_inputs.append([r, g, b, ndwi])
+                v_batch_labels.append(targets)
+                v_labels.append(targets)
 
-    # v_batch_sobel_inputs = np.array(v_batch_sobel_inputs).astype(np.float16)
-    v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
-    v_batch_labels = np.array(v_batch_labels).astype(np.int8)
+        v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
+        v_batch_labels = np.array(v_batch_labels).astype(np.int8)
 
-    [v_loss, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE)
-    v_loss_graph = np.append(v_loss_graph, [v_loss])
-    v_acc_graph = np.append(v_acc_graph, [v_acc])
+        [v_loss, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
+        [v_p] = model.predict(v_batch_inputs, batch_size=BATCH_SIZE)
+
+        v_loss_graph = np.append(v_loss_graph, [v_loss])
+        v_acc_graph = np.append(v_acc_graph, [v_acc])
+        v_predict = np.append(v_predict, [v_p])
 
     if epoch == 15:
         lr = model.optimizer.lr.get_value()
@@ -154,7 +153,7 @@ for epoch in range(N_EPOCH):
         model.optimizer.lr.set_value(1e-5)
 
     # if model has reach to good results, we save that model
-    if v_loss < 0.07:
+    if v_loss < 0.0002:
         timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
         model_filename = structure + 'good-epoch:' + str(epoch) + \
                          '-tr_l:' + str(round(np.min(t_loss_graph), 3)) + \
@@ -169,10 +168,13 @@ for epoch in range(N_EPOCH):
             json_string = model.to_json()
             json.dump(json_string, outfile)
 
-    print "Val Examples: {}, loss: {:.4f}, accuracy: {:.3f}, l_rate: {:.5f}".format(
+    v_labels = np.array(v_labels).astype(np.uint8)
+
+    print "Val Examples: {}, loss: {:.5f}, accuracy: {:.5f}, f2: {:.5f}, l_rate: {:.5f}".format(
         len(val),
         float(v_loss),
         float(v_acc),
+        float(common_util.f2_score(v_labels, v_predict > .5)),
         float(model.optimizer.lr.get_value()))
 
 # create file name to save the state with useful information
