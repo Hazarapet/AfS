@@ -1,4 +1,4 @@
-from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, UpSampling2D
+from keras.layers import Input, concatenate, Conv2D, MaxPooling2D, UpSampling2D, AveragePooling2D
 from keras.models import Sequential, Model
 from keras.layers.core import Flatten, Dense, Dropout, Activation
 from keras.layers.convolutional import Conv2D, MaxPooling2D, ZeroPadding2D
@@ -12,7 +12,7 @@ def model(weights_path=None):
     conv1 = Conv2D(32, (3, 3), activation='elu', padding='same')(bn1)
     bn2 = BatchNormalization()(conv1)
 
-    pool1 = MaxPooling2D(pool_size=(2, 2))(bn2)
+    pool1 = MaxPooling2D(pool_size=(4, 4))(bn2)
 
     conv2 = Conv2D(64, (3, 3), activation='elu', padding='same')(pool1)
     bn3 = BatchNormalization()(conv2)
@@ -43,7 +43,7 @@ def model(weights_path=None):
     conv6 = Conv2D(64, (3, 3), activation='elu', padding='same')(dr2)
     conv6 = Conv2D(64, (3, 3), activation='elu', padding='same')(conv6)
 
-    up8 = concatenate([UpSampling2D(size=(2, 2))(conv6), bn2], axis=1)
+    up8 = concatenate([UpSampling2D(size=(4, 4))(conv6), bn2], axis=1)
     dr3 = Dropout(0.4)(up8)
     conv7 = Conv2D(32, (3, 3), activation='elu', padding='same')(dr3)
     conv7 = Conv2D(32, (3, 3), activation='elu', padding='same')(conv7)

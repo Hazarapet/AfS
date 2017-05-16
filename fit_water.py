@@ -13,8 +13,8 @@ from utils import common as common_util
 from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 5
-BATCH_SIZE = 20
+N_EPOCH = 1
+BATCH_SIZE = 40
 IMAGE_WIDTH = 256
 IMAGE_HEIGH = 256
 
@@ -47,10 +47,6 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = water_model()
 
-for layer in model.layers:
-    print layer.name, layer.input_shape, layer.output_shape
-
-sys.exit(0)
 adam = Adam(lr=1e-4, decay=0.)
 
 model.compile(loss='binary_crossentropy',
