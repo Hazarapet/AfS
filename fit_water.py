@@ -107,39 +107,42 @@ for epoch in range(N_EPOCH):
 
     # ===== Validation =====
     np.random.shuffle(val)
+    v_labels = []
 
-    v_batch_inputs = []
-    v_batch_labels = []
+    for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
+        v_batch_inputs = []
+        v_batch_labels = []
 
-    # load val's images
-    for f, tags in val:
-        rgbn, ndwi, _, _, _ = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
-        assert rgbn is not None
+        # load val's images
+        for f, tags in min_batch:
+            rgbn, ndwi, _, _, _ = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+            assert rgbn is not None
 
-        if rgbn is not None:
-            targets = 0
-            for t in tags.split(' '):
-                if t == 'water':
-                    targets = 1
+            if rgbn is not None:
+                targets = 0
+                for t in tags.split(' '):
+                    if t == 'water':
+                        targets = 1
 
-            # resize
-            r = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
-            g = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
-            b = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
-            ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                # resize
+                r = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
+                g = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
+                b = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
-            v_batch_inputs.append([r, g, b, ndwi])
-            v_batch_labels.append(targets)
+                v_batch_inputs.append([r, g, b, ndwi])
+                v_batch_labels.append(targets)
+                v_labels.append(targets)
 
-    v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
-    v_batch_labels = np.array(v_batch_labels).astype(np.int8)
+        v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
+        v_batch_labels = np.array(v_batch_labels).astype(np.int8)
 
-    [v_loss, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE)
-    [v_p] = model.predict(v_batch_inputs, batch_size=BATCH_SIZE)
+        [v_loss, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
+        [v_p] = model.predict(v_batch_inputs, batch_size=BATCH_SIZE)
 
-    v_loss_graph = np.append(v_loss_graph, [v_loss])
-    v_acc_graph = np.append(v_acc_graph, [v_acc])
-    v_predict = np.append(v_predict, [v_p])
+        v_loss_graph = np.append(v_loss_graph, [v_loss])
+        v_acc_graph = np.append(v_acc_graph, [v_acc])
+        v_predict = np.append(v_predict, [v_p])
 
     if epoch == 15:
         lr = model.optimizer.lr.get_value()
@@ -165,11 +168,13 @@ for epoch in range(N_EPOCH):
             json_string = model.to_json()
             json.dump(json_string, outfile)
 
+    v_labels = np.array(v_labels).astype(np.uint8)
+
     print "Val Examples: {}, loss: {:.5f}, accuracy: {:.5f}, f2: {:.5f}, l_rate: {:.5f}".format(
         len(val),
         float(v_loss),
         float(v_acc),
-        float(common_util.f2_score(v_batch_labels, v_predict > .5)),
+        float(common_util.f2_score(v_labels, v_predict > .5)),
         float(model.optimizer.lr.get_value()))
 
 # create file name to save the state with useful information

@@ -28,17 +28,17 @@ def model(weights_path=None):
     conv4 = Conv2D(256, (3, 3), activation='elu', padding='same')(conv4)
 
     up6 = concatenate([UpSampling2D(size=(2, 2))(conv4), conv3], axis=1)
-    dr1 = Dropout(0.4)(up6)
+    dr1 = Dropout(0.2)(up6)
     conv5 = Conv2D(128, (3, 3), activation='elu', padding='same')(dr1)
     conv5 = Conv2D(128, (3, 3), activation='elu', padding='same')(conv5)
 
     up7 = concatenate([UpSampling2D(size=(2, 2))(conv5), conv2], axis=1)
-    dr2 = Dropout(0.4)(up7)
+    dr2 = Dropout(0.2)(up7)
     conv6 = Conv2D(64, (3, 3), activation='elu', padding='same')(dr2)
     conv6 = Conv2D(64, (3, 3), activation='elu', padding='same')(conv6)
 
     up8 = concatenate([UpSampling2D(size=(2, 2))(conv6), bn2], axis=1)
-    dr3 = Dropout(0.4)(up8)
+    dr3 = Dropout(0.2)(up8)
     conv7 = Conv2D(32, (3, 3), activation='elu', padding='same')(dr3)
     conv7 = Conv2D(32, (3, 3), activation='elu', padding='same')(conv7)
 
