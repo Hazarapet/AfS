@@ -14,7 +14,7 @@ from models.water.model import model as water_model
 
 st_time = time.time()
 N_EPOCH = 1
-BATCH_SIZE = 50
+BATCH_SIZE = 40
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -85,6 +85,7 @@ for epoch in range(N_EPOCH):
                         targets = 1
 
                 # resize
+                # float32 only just for resizing.We will cast back float16 again
                 r = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 g = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 b = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
