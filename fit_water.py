@@ -52,7 +52,7 @@ adam = Adam(lr=1e-4, decay=0.)
 
 model.compile(loss='binary_crossentropy',
               optimizer=adam,
-              metrics=[common_util.mean_pred, 'accuracy'])
+              metrics=['accuracy', 'accuracy'])
 
 print model.inputs
 print "training..."
