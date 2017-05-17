@@ -198,7 +198,7 @@ for epoch in range(N_EPOCH):
         len(val),
         float(v_loss),
         float(v_acc),
-        float(common_util.f2_score_alt(v_labels, v_predict > .23)),
+        float(common_util.f2_score_alt(v_labels, v_predict > .5)),
         float(model.optimizer.lr.get_value()))
 
 # create file name to save the state with useful information
