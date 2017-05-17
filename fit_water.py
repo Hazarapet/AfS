@@ -117,7 +117,7 @@ for epoch in range(N_EPOCH):
                     t_batch_inputs.append(flip_v_inputs)
                     t_batch_labels.append(targets)
 
-        t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
+        t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
         # collecting for plotting
@@ -158,7 +158,7 @@ for epoch in range(N_EPOCH):
             v_batch_inputs.append([r, g, b, ndwi])
             v_batch_labels.append(targets)
 
-    v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
+    v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
     v_batch_labels = np.array(v_batch_labels).astype(np.int8)
 
     [v_loss, v_f2, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE)
