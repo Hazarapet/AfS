@@ -91,7 +91,7 @@ for epoch in range(N_EPOCH):
 
                 inputs = [r, g, b, ndwi]
 
-                t_batch_inputs.append([r, g, b, inputs])
+                t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
                 if targets == 1:
