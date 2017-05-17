@@ -85,10 +85,10 @@ for epoch in range(N_EPOCH):
                         targets = 1
 
                 # resize
-                r = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
-                g = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
-                b = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                r = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                g = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                b = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 inputs = [r, g, b, ndwi]
 
