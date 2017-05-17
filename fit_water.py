@@ -14,7 +14,7 @@ from models.water.model import model as water_model
 
 st_time = time.time()
 N_EPOCH = 1
-BATCH_SIZE = 40
+BATCH_SIZE = 50
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -52,7 +52,7 @@ adam = Adam(lr=1e-4, decay=0.)
 
 model.compile(loss='binary_crossentropy',
               optimizer=adam,
-              metrics=['accuracy', 'accuracy'])
+              metrics=[common_util.f2_score, 'accuracy'])
 
 print model.inputs
 print "training..."
@@ -126,7 +126,7 @@ for epoch in range(N_EPOCH):
         t_acc_graph = np.append(t_acc_graph, [t_acc])
         t_f2_graph = np.append(t_f2_graph, [t_f2])
 
-        print "examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {.:5f}".format(trained_batch,
+        print "examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}".format(trained_batch,
                len(train),
                float(t_loss),
                float(t_acc),
@@ -164,8 +164,8 @@ for epoch in range(N_EPOCH):
     [v_loss, v_f2, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE)
 
     v_loss_graph = np.append(v_loss_graph, [v_loss])
-    v_acc_graph = np.append(v_acc_graph, [v_acc])
     v_f2_graph = np.append(v_f2_graph, [v_f2])
+    v_acc_graph = np.append(v_acc_graph, [v_acc])
 
     if epoch == 15:
         lr = model.optimizer.lr.get_value()
