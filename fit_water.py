@@ -13,16 +13,17 @@ from utils import common as common_util
 from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 10
+N_EPOCH = 1
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
+t_f2_graph = np.array([])
 v_loss_graph = np.array([])
 v_acc_graph = np.array([])
-v_predict = np.array([])
+v_f2_graph = np.array([])
 
 X = []
 y = []
@@ -51,7 +52,7 @@ adam = Adam(lr=1e-4, decay=0.)
 
 model.compile(loss='binary_crossentropy',
               optimizer=adam,
-              metrics=['accuracy'])
+              metrics=[common_util.f2_score, 'accuracy'])
 
 print model.inputs
 print "training..."
@@ -120,18 +121,19 @@ for epoch in range(N_EPOCH):
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
         # collecting for plotting
-        [t_loss, t_acc] = model.train_on_batch(t_batch_inputs, t_batch_labels)
+        [t_loss, t_f2,  t_acc] = model.train_on_batch(t_batch_inputs, t_batch_labels)
         t_loss_graph = np.append(t_loss_graph, [t_loss])
+        t_f2_graph = np.append(t_f2_graph, [t_f2])
         t_acc_graph = np.append(t_acc_graph, [t_acc])
 
-        print "examples: {}/{}, loss: {:.4f}, accuracy: {:.3f}".format(trained_batch,
+        print "examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {.:5f}".format(trained_batch,
                len(train),
                float(t_loss),
+               float(t_f2),
                float(t_acc))
 
     # ===== Validation =====
     np.random.shuffle(val)
-    # v_labels = []
 
     for min_batch in common_util.iterate_minibatches(val, batchsize=BATCH_SIZE):
         v_batch_inputs = []
@@ -156,17 +158,15 @@ for epoch in range(N_EPOCH):
 
                 v_batch_inputs.append([r, g, b, ndwi])
                 v_batch_labels.append(targets)
-                # v_labels.append(targets)
 
         v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
         v_batch_labels = np.array(v_batch_labels).astype(np.int8)
 
-        [v_loss, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
-        # [v_p] = model.predict_on_batch(v_batch_inputs)
+        [v_loss, v_f2, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
 
         v_loss_graph = np.append(v_loss_graph, [v_loss])
+        v_f2_graph = np.append(v_f2_graph, [v_f2])
         v_acc_graph = np.append(v_acc_graph, [v_acc])
-        # v_predict = np.append(v_predict, [v_p])
 
     if epoch == 15:
         lr = model.optimizer.lr.get_value()
@@ -180,10 +180,12 @@ for epoch in range(N_EPOCH):
     if v_loss < 0.0002:
         timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
         model_filename = structure + 'good-epoch:' + str(epoch) + \
-                         '-tr_l:' + str(round(np.min(t_loss_graph), 3)) + \
-                         '-tr_a:' + str(round(np.max(t_acc_graph), 3)) + \
-                         '-val_l:' + str(round(v_loss, 3)) + \
-                         '-val_a:' + str(round(v_acc, 3)) + \
+                         '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
+                         '-tr_a:' + str(round(np.max(t_acc_graph), 4)) + \
+                         '-tr_f2:' + str(round(np.max(t_f2_graph), 4)) + \
+                         '-val_l:' + str(round(v_loss, 4)) + \
+                         '-val_a:' + str(round(v_acc, 4)) + \
+                         '-val_f2:' + str(round(v_f2, 4)) + \
                          '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
         # saving the weights
         model.save_weights(model_filename + '.h5')
@@ -192,23 +194,22 @@ for epoch in range(N_EPOCH):
             json_string = model.to_json()
             json.dump(json_string, outfile)
 
-    v_labels = np.array(v_labels).astype(np.uint8)
-
-    print "Val Examples: {}, loss: {:.5f}, accuracy: {:.5f}, f2: {:.5f}, l_rate: {:.5f}".format(
+    print "Val Examples: {}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}, l_rate: {:.5f}".format(
         len(val),
         float(v_loss),
         float(v_acc),
-        # float(common_util.f2_score(v_labels, v_predict > .5)),
-        float(77.77),
+        float(v_f2),
         float(model.optimizer.lr.get_value()))
 
 # create file name to save the state with useful information
 timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
 model_filename = structure + \
-                 'tr_l:' + str(round(np.min(t_loss_graph), 3)) + \
-                 '-tr_a:' + str(round(np.max(t_acc_graph), 3)) + \
-                 '-val_l:' + str(round(np.min(v_loss_graph), 3)) + \
-                 '-val_a:' + str(round(np.max(v_acc_graph), 3)) + \
+                 'tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
+                 '-tr_a:' + str(round(np.max(t_acc_graph), 4)) + \
+                 '-tr_f2:' + str(round(np.max(t_f2_graph), 4)) + \
+                 '-val_l:' + str(round(np.min(v_loss_graph), 4)) + \
+                 '-val_a:' + str(round(np.max(v_acc_graph), 4)) + \
+                 '-val_f2:' + str(round(np.max(v_f2_graph), 4)) + \
                  '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
 
 # saving the weights
@@ -220,10 +221,8 @@ with open(model_filename + '.json', 'w') as outfile:
 
 # --------------------------------------
 # --------- Plotting Curves -----------
-plots.plot_curve(values=t_loss_graph, title='Training Loss', file_name=model_filename + '_tr_loss.jpg')
-plots.plot_curve(values=t_acc_graph, title='Training Accuracy', file_name=model_filename + '_tr_acc.jpg', y_axis='Accuracy')
-plots.plot_curve(values=v_loss_graph, title='Val Loss', file_name=model_filename + '_val_loss.jpg')
-plots.plot_curve(values=v_acc_graph, title='Val Accuracy', file_name=model_filename + '_val_acc.jpg', y_axis='Accuracy')
+plots.plot_curve(values=[t_loss_graph, t_acc_graph, t_f2_graph], labels=['Train Loss', 'Train Acc', 'Train F2'], file_name=model_filename + '_train.jpg')
+plots.plot_curve(values=[v_loss_graph, v_acc_graph, v_f2_graph], labels=['Val Loss', 'Val Acc', 'Val F2'], file_name=model_filename + '_val.jpg')
 
 print 'Loss and Accuracy plots are done!'
 
