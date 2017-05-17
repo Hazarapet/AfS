@@ -49,10 +49,10 @@ def model(weights_path=None):
     _model = Sequential()
     _model.add(_m)
 
-    _model.add(Conv2D(64, (3, 3)))
+    _model.add(Conv2D(32, (3, 3)))
     _model.add(Activation('relu'))
 
-    _model.add(Conv2D(64, (3, 3)))
+    _model.add(Conv2D(32, (3, 3)))
     _model.add(Activation('relu'))
 
     _model.add(MaxPooling2D(pool_size=(2, 2)))
