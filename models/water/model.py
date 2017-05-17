@@ -7,12 +7,14 @@ from keras.regularizers import l2
 
 def model(weights_path=None):
     inputs = Input(shape=(4, 128, 128))
-    conv1 = Conv2D(32, (3, 3), activation='elu', padding='same')(inputs)
+    conv1 = Conv2D(32, (3, 3), padding='same')(inputs)
     bn1 = BatchNormalization()(conv1)
-    conv1 = Conv2D(32, (3, 3), activation='elu', padding='same')(bn1)
+    conv1 = Activation('relu')(bn1)
+    conv1 = Conv2D(32, (3, 3), padding='same')(conv1)
     bn2 = BatchNormalization()(conv1)
+    conv1 = Activation('relu')(bn2)
 
-    pool1 = MaxPooling2D(pool_size=(2, 2))(bn2)
+    pool1 = MaxPooling2D(pool_size=(2, 2))(conv1)
 
     conv2 = Conv2D(64, (3, 3), activation='elu', padding='same')(pool1)
     conv2 = Conv2D(64, (3, 3), activation='elu', padding='same')(conv2)
@@ -49,18 +51,18 @@ def model(weights_path=None):
     _model = Sequential()
     _model.add(_m)
 
-    _model.add(Conv2D(64, (3, 3)))
+    _model.add(Conv2D(32, (3, 3)))
     _model.add(Activation('relu'))
 
-    _model.add(Conv2D(64, (3, 3)))
+    _model.add(Conv2D(32, (3, 3)))
     _model.add(Activation('relu'))
 
     _model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    _model.add(Conv2D(128, (3, 3)))
+    _model.add(Conv2D(64, (3, 3)))
     _model.add(Activation('relu'))
 
-    _model.add(Conv2D(128, (3, 3)))
+    _model.add(Conv2D(64, (3, 3)))
     _model.add(Activation('relu'))
 
     _model.add(MaxPooling2D(pool_size=(2, 2)))

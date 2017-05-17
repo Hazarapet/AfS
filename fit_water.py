@@ -14,7 +14,7 @@ from models.water.model import model as water_model
 
 st_time = time.time()
 N_EPOCH = 10
-BATCH_SIZE = 10
+BATCH_SIZE = 20
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -192,7 +192,7 @@ for epoch in range(N_EPOCH):
             json_string = model.to_json()
             json.dump(json_string, outfile)
 
-    v_labels = np.array(v_labels).astype(np.uint8)
+    # v_labels = np.array(v_labels).astype(np.uint8)
 
     print "Val Examples: {}, loss: {:.5f}, accuracy: {:.5f}, f2: {:.5f}, l_rate: {:.5f}".format(
         len(val),
