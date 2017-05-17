@@ -4,4 +4,4 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
-print [True, True, False, True, False] * 1
+print np.array([True, False]) * .1
