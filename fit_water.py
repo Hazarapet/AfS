@@ -14,7 +14,7 @@ from models.water.model import model as water_model
 
 st_time = time.time()
 N_EPOCH = 1
-BATCH_SIZE = 100
+BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -134,7 +134,7 @@ for epoch in range(N_EPOCH):
 
     # ===== Validation =====
     np.random.shuffle(val)
-    
+
     v_batch_inputs = []
     v_batch_labels = []
 
