@@ -5,6 +5,7 @@ from keras.layers.convolutional import Conv2D, MaxPooling2D, ZeroPadding2D
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
+
 def model(weights_path=None):
     inputs = Input(shape=(4, 128, 128))
     conv1 = Conv2D(32, (3, 3), padding='same')(inputs)
