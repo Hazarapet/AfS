@@ -23,13 +23,17 @@ def f2_score(y_true, y_pred, threshold_shift=0):
 
     tp = K.sum(K.round(y_true * y_pred_bin)) + K.epsilon()
     fp = K.sum(K.round(K.clip(y_pred_bin - y_true, 0, 1)))
-    fn = K.sum(K.round(K.clip(y_true - y_pred, 0, 1)))
+    fn = K.sum(K.round(K.clip(y_true - y_pred_bin, 0, 1)))
 
     precision = tp / (tp + fp)
     recall = tp / (tp + fn)
 
     beta_squared = beta ** 2
     return (beta_squared + 1) * (precision * recall) / (beta_squared * precision + recall + K.epsilon())
+
+
+def mean_pred(y_true, y_pred):
+    return K.mean(y_pred)
 
 
 def iterate_minibatches(inputs, batchsize=10):

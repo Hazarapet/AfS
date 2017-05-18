@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from utils import image as image_util
 from sklearn.preprocessing import MinMaxScaler
 
-tif_sample = 'resource/train-tif-sample/train_10051.tif'
-jpg_sample = 'resource/train-jpg-sample/train_10051.jpg'
+tif_sample = 'resource/train-tif-sample/train_10080.tif'
+jpg_sample = 'resource/train-jpg-sample/train_10080.jpg'
 
 def read_tif(path):
     data = gdal.Open(path)
@@ -18,10 +18,10 @@ def read_tif(path):
     bband = data.GetRasterBand(1)
     nirband = data.GetRasterBand(4)
 
-    red = rband.ReadAsArray().astype(np.float32)
-    green = gband.ReadAsArray().astype(np.float32)
-    blue = bband.ReadAsArray().astype(np.float32)
-    nir = nirband.ReadAsArray().astype(np.float32)
+    red = rband.ReadAsArray().astype(np.float16)
+    green = gband.ReadAsArray().astype(np.float16)
+    blue = bband.ReadAsArray().astype(np.float16)
+    nir = nirband.ReadAsArray().astype(np.float16)
 
     return red, green, blue, nir
 
@@ -46,18 +46,17 @@ if __name__ == '__main__':
 
     savi = (1 + 0.5) * (nir - red)/(nir + red + 0.5)
 
-    print np.max(ndwi)
+    M = [[np.cos(30), -np.sin(30)], [np.sin(30), np.cos(30)]]
+    dst = np.dot(ndvi, M)
 
-    # img = Image.fromarray(np.uint8(rgb), "RGB")
+    print np.max(red), np.min(red)
 
-    plt.figure('red')
-    plt.imshow(red, cmap="gray")
-    plt.figure('red resized')
-    plt.imshow(cv2.resize(red, (64, 64)), cmap="gray")
-    cv2.imwrite('messigray.jpg', cv2.resize(red, (64, 64)))
+    plt.figure('jpg')
+    plt.imshow(dst, cmap='gray')
+    plt.figure('ndvi')
+    plt.imshow(ndvi, cmap='gray')
     plt.show()
     sys.exit(0)
-
 
     plt.figure('jpg')
     plt.imshow(jpg)

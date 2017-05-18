@@ -1,27 +1,15 @@
+import sys
 import cv2
 import json
 import numpy as np
 from PIL import Image
-import keras.backend as K
-import utils.common as common
+import matplotlib.pyplot as plt
 
-y_true = [[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0],
-     [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
-     [1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
-     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0],
-     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]]
+A = np.arange(27).reshape((3, 3, 3))
+B = np.arange(9).reshape((3, 3))
 
-# Note that with f2 score, your predictions need to be binary
-# If you have probabilities, you will need to do some form of thresholding beforehand
-y_pred = [[0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0],
-     [1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-     [1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1],
-     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
-     [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]]
+A1 = np.rot90(A, axes=(1, 2))
+A2 = np.flip(A, 2)
 
-y_true, y_pred, = np.array(y_true).astype(np.float16), np.array(y_pred).astype(np.float16)
-
-fbeta_keras = common.f2_score(K.variable(y_true), K.variable(y_pred)).eval(session=K.get_session())
-fbeta_sklearn = common.f2_score_alt(y_true, y_pred)
-
-print('Scores are {:.3f} (sklearn) and {:.3f} (keras)'.format(fbeta_sklearn, fbeta_keras))
+print A, 'end'
+print A2, 'end'

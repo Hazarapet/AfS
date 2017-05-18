@@ -5,24 +5,25 @@ import json
 import plots
 import numpy as np
 import pandas as pd
-import tif_data_augmentation as tfa
 from utils import components
+import tif_data_augmentation as tfa
 from utils import image as UtilImage
 from keras.optimizers import SGD, Adam
 from utils import common as common_util
 from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 1
-BATCH_SIZE = 60
+N_EPOCH = 15
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
+t_f2_graph = np.array([])
 v_loss_graph = np.array([])
 v_acc_graph = np.array([])
-v_predict = np.array([])
+v_f2_graph = np.array([])
 
 X = []
 y = []
@@ -47,11 +48,11 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = water_model()
 
-adam = Adam(lr=1e-4, decay=0.)
+adam = Adam(lr=1e-3, decay=0.)
 
-model.compile(loss='binary_crossentropy',
+model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
-              metrics=['accuracy'])
+              metrics=[common_util.f2_score, 'accuracy'])
 
 print model.inputs
 print "training..."
@@ -70,7 +71,7 @@ for epoch in range(N_EPOCH):
         t_batch_labels = []
 
         # accumulate the examples' count
-        trained_batch += len(min_batch)
+        # trained_batch += len(min_batch)
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
@@ -84,82 +85,113 @@ for epoch in range(N_EPOCH):
                         targets = 1
 
                 # resize
-                r = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
-                g = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
-                b = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                # float32 only just for resizing.We will cast back float16 again
+                r = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                g = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                b = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                t_batch_inputs.append([r, g, b, ndwi])
+                inputs = [r, g, b, ndwi]
+
+                t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-        t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
+                if targets == 1:
+                    # --- augmentation ---
+                    # rotate 90
+                    rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
+                    t_batch_inputs.append(rt90_inputs)
+                    t_batch_labels.append(targets)
+
+                    # rotate 180
+                    rt180_inputs = np.rot90(inputs, 2, axes=(1, 2))
+                    t_batch_inputs.append(rt180_inputs)
+                    t_batch_labels.append(targets)
+
+                    # flip h
+                    flip_h_inputs = np.flip(inputs, 2)
+                    t_batch_inputs.append(flip_h_inputs)
+                    t_batch_labels.append(targets)
+
+                    # flip v
+                    flip_v_inputs = np.flip(inputs, 1)
+                    t_batch_inputs.append(flip_v_inputs)
+                    t_batch_labels.append(targets)
+
+        t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
-        # collecting for plotting
-        [t_loss, t_acc] = model.train_on_batch(t_batch_inputs, t_batch_labels)
-        t_loss_graph = np.append(t_loss_graph, [t_loss])
-        t_acc_graph = np.append(t_acc_graph, [t_acc])
+        for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
+            # collecting for plotting
+            t_i = np.stack(min_b[:, 0])  # inputs
+            t_l = min_b[:, 1]  # labels
 
-        print "examples: {}/{}, loss: {:.4f}, accuracy: {:.3f}".format(trained_batch,
-               len(train),
-               float(t_loss),
-               float(t_acc))
+            trained_batch += len(t_l)
+
+            [t_loss, t_f2, t_acc] = model.train_on_batch(t_i, t_l)
+            t_loss_graph = np.append(t_loss_graph, [t_loss])
+            t_acc_graph = np.append(t_acc_graph, [t_acc])
+            t_f2_graph = np.append(t_f2_graph, [t_f2])
+
+            print "examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}".format(trained_batch,
+                   len(train),
+                   float(t_loss),
+                   float(t_acc),
+                   float(t_f2))
 
     # ===== Validation =====
     np.random.shuffle(val)
-    v_labels = []
 
-    for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
-        v_batch_inputs = []
-        v_batch_labels = []
+    v_batch_inputs = []
+    v_batch_labels = []
 
-        # load val's images
-        for f, tags in min_batch:
-            rgbn, ndwi, _, _, _ = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
-            assert rgbn is not None
+    # load val's images
+    for f, tags in val:
+        rgbn, ndwi, _, _, _ = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+        assert rgbn is not None
 
-            if rgbn is not None:
-                targets = 0
-                for t in tags.split(' '):
-                    if t == 'water':
-                        targets = 1
+        if rgbn is not None:
+            targets = 0
+            for t in tags.split(' '):
+                if t == 'water':
+                    targets = 1
 
-                # resize
-                r = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
-                g = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
-                b = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
+            # resize
+            r = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+            g = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+            b = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+            ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                v_batch_inputs.append([r, g, b, ndwi])
-                v_batch_labels.append(targets)
-                v_labels.append(targets)
+            v_batch_inputs.append([r, g, b, ndwi])
+            v_batch_labels.append(targets)
 
-        v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
-        v_batch_labels = np.array(v_batch_labels).astype(np.int8)
+    v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
+    v_batch_labels = np.array(v_batch_labels).astype(np.int8)
 
-        [v_loss, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
-        [v_p] = model.predict(v_batch_inputs, batch_size=BATCH_SIZE)
+    [v_loss, v_f2, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE)
 
-        v_loss_graph = np.append(v_loss_graph, [v_loss])
-        v_acc_graph = np.append(v_acc_graph, [v_acc])
-        v_predict = np.append(v_predict, [v_p])
+    v_loss_graph = np.append(v_loss_graph, [v_loss])
+    v_f2_graph = np.append(v_f2_graph, [v_f2])
+    v_acc_graph = np.append(v_acc_graph, [v_acc])
+
+    if epoch == 10:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(3e-4)
 
     if epoch == 15:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
-
-    if epoch == 20:
-        lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
+        model.optimizer.lr.set_value(1e-4)
 
     # if model has reach to good results, we save that model
     if v_loss < 0.0002:
         timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
         model_filename = structure + 'good-epoch:' + str(epoch) + \
-                         '-tr_l:' + str(round(np.min(t_loss_graph), 3)) + \
-                         '-tr_a:' + str(round(np.max(t_acc_graph), 3)) + \
-                         '-val_l:' + str(round(v_loss, 3)) + \
-                         '-val_a:' + str(round(v_acc, 3)) + \
+                         '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
+                         '-tr_a:' + str(round(np.max(t_acc_graph), 4)) + \
+                         '-tr_f2:' + str(round(np.max(t_f2_graph), 4)) + \
+                         '-val_l:' + str(round(v_loss, 4)) + \
+                         '-val_a:' + str(round(v_acc, 4)) + \
+                         '-val_f2:' + str(round(v_f2, 4)) + \
                          '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
         # saving the weights
         model.save_weights(model_filename + '.h5')
@@ -168,22 +200,22 @@ for epoch in range(N_EPOCH):
             json_string = model.to_json()
             json.dump(json_string, outfile)
 
-    v_labels = np.array(v_labels).astype(np.uint8)
-
-    print "Val Examples: {}, loss: {:.5f}, accuracy: {:.5f}, f2: {:.5f}, l_rate: {:.5f}".format(
+    print "Val Examples: {}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}, l_rate: {:.5f}".format(
         len(val),
         float(v_loss),
         float(v_acc),
-        float(common_util.f2_score(v_labels, v_predict > .5)),
+        float(v_f2),
         float(model.optimizer.lr.get_value()))
 
 # create file name to save the state with useful information
 timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
 model_filename = structure + \
-                 'tr_l:' + str(round(np.min(t_loss_graph), 3)) + \
-                 '-tr_a:' + str(round(np.max(t_acc_graph), 3)) + \
-                 '-val_l:' + str(round(np.min(v_loss_graph), 3)) + \
-                 '-val_a:' + str(round(np.max(v_acc_graph), 3)) + \
+                 'tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
+                 '-tr_a:' + str(round(np.max(t_acc_graph), 4)) + \
+                 '-tr_f2:' + str(round(np.max(t_f2_graph), 4)) + \
+                 '-val_l:' + str(round(np.min(v_loss_graph), 4)) + \
+                 '-val_a:' + str(round(np.max(v_acc_graph), 4)) + \
+                 '-val_f2:' + str(round(np.max(v_f2_graph), 4)) + \
                  '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
 
 # saving the weights
@@ -195,10 +227,8 @@ with open(model_filename + '.json', 'w') as outfile:
 
 # --------------------------------------
 # --------- Plotting Curves -----------
-plots.plot_curve(values=t_loss_graph, title='Training Loss', file_name=model_filename + '_tr_loss.jpg')
-plots.plot_curve(values=t_acc_graph, title='Training Accuracy', file_name=model_filename + '_tr_acc.jpg', y_axis='Accuracy')
-plots.plot_curve(values=v_loss_graph, title='Val Loss', file_name=model_filename + '_val_loss.jpg')
-plots.plot_curve(values=v_acc_graph, title='Val Accuracy', file_name=model_filename + '_val_acc.jpg', y_axis='Accuracy')
+plots.plot_curve(values=[t_loss_graph, t_acc_graph, t_f2_graph], labels=['Train Loss', 'Train Acc', 'Train F2'], file_name=model_filename + '_train.jpg')
+plots.plot_curve(values=[v_loss_graph, v_acc_graph, v_f2_graph], labels=['Val Loss', 'Val Acc', 'Val F2'], file_name=model_filename + '_val.jpg')
 
 print 'Loss and Accuracy plots are done!'
 
