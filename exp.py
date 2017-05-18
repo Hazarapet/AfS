@@ -7,7 +7,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 
 def reg_binary_cross_entropy(y_true, y_pred):
-    return losses.binary_crossentropy(y_true, y_pred)
+    return K.mean(K.binary_crossentropy(y_pred, y_true), axis=-1)
 
 model = Sequential()
 model.add(Dense(4, activation='relu', input_dim=100))
