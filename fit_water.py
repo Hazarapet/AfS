@@ -13,7 +13,7 @@ from utils import common as common_util
 from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 10
+N_EPOCH = 5
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
