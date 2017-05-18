@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from utils import image as image_util
 from sklearn.preprocessing import MinMaxScaler
 
-tif_sample = 'resource/train-tif-sample/train_10080.tif'
-jpg_sample = 'resource/train-jpg-sample/train_10080.jpg'
+tif_sample = 'resource/train-tif-sample/train_10033.tif'
+jpg_sample = 'resource/train-jpg-sample/train_10033.jpg'
 
 def read_tif(path):
     data = gdal.Open(path)
