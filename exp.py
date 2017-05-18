@@ -6,13 +6,15 @@ from utils import components
 from keras.models import Sequential
 from keras.layers import Dense
 
+def reg_binary_cross_entropy(y_true, y_pred):
+    return losses.binary_crossentropy(y_true, y_pred)
 
 model = Sequential()
 model.add(Dense(4, activation='relu', input_dim=100))
 model.add(Dense(3, activation='sigmoid'))
 
 model.compile(optimizer='adam',
-              loss=components.reg_binary_cross_entropy,
+              loss=reg_binary_cross_entropy,
               metrics=['accuracy'])
 
 # Generate dummy data
