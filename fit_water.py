@@ -14,7 +14,7 @@ from models.water.model import model as water_model
 
 st_time = time.time()
 N_EPOCH = 10
-BATCH_SIZE = 80
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -48,7 +48,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = water_model()
 
-adam = Adam(lr=1e-4, decay=0.)
+adam = Adam(lr=3e-4, decay=0.)
 
 model.compile(loss='binary_crossentropy',
               optimizer=adam,
@@ -126,6 +126,8 @@ for epoch in range(N_EPOCH):
             t_i = np.stack(min_b[:, 0])  # inputs
             t_l = min_b[:, 1]  # labels
 
+            trained_batch += len(t_l)
+
             [t_loss, t_f2, t_acc] = model.train_on_batch(t_i, t_l)
             t_loss_graph = np.append(t_loss_graph, [t_loss])
             t_acc_graph = np.append(t_acc_graph, [t_acc])
@@ -172,9 +174,9 @@ for epoch in range(N_EPOCH):
     v_f2_graph = np.append(v_f2_graph, [v_f2])
     v_acc_graph = np.append(v_acc_graph, [v_acc])
 
-    if epoch == 7:
+    if epoch == 5:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
+        model.optimizer.lr.set_value(1e-4)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
