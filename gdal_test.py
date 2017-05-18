@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from utils import image as image_util
 from sklearn.preprocessing import MinMaxScaler
 
-tif_sample = 'resource/train-tif-sample/train_10066.tif'
-jpg_sample = 'resource/train-jpg-sample/train_10066.jpg'
+tif_sample = 'resource/train-tif-sample/train_10020.tif'
+jpg_sample = 'resource/train-jpg-sample/train_10020.jpg'
 
 def read_tif(path):
     data = gdal.Open(path)
@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     savi = (1 + 0.5) * (nir - red)/(nir + red + 0.5)
 
-    print np.max(red), np.min(red), np.finfo(np.float16).max, np.finfo(np.float32).max
+    print np.max(red), np.min(red)
 
     # img = Image.fromarray(np.uint8(rgb), "RGB")
 

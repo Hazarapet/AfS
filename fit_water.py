@@ -5,8 +5,8 @@ import json
 import plots
 import numpy as np
 import pandas as pd
-import tif_data_augmentation as tfa
 from utils import components
+import tif_data_augmentation as tfa
 from utils import image as UtilImage
 from keras.optimizers import SGD, Adam
 from utils import common as common_util
@@ -50,7 +50,7 @@ print 'model loading...'
 
 adam = Adam(lr=3e-4, decay=0.)
 
-model.compile(loss='binary_crossentropy',
+model.compile(loss=components.f2_binary_cross_entropy(0.6),
               optimizer=adam,
               metrics=[common_util.f2_score, 'accuracy'])
 

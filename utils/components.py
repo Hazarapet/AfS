@@ -1,8 +1,10 @@
 import keras
+import common
 import numpy as np
 import keras.backend as K
 
-DISTRIBUTION_TAILOR = np.array([0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]).astype(np.int8)
+def f2_binary_cross_entropy(l=0):
+    def func(y_true, y_pred):  # 2D tensor variable
+        return keras.losses.binary_crossentropy(y_true, y_pred) - l * K.log(common.f2_score(y_true, y_pred))
 
-def reg_binary_cross_entropy(y_true, y_pred):
-    return keras.losses.binary_crossentropy(y_true, y_pred)
+    return func
