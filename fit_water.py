@@ -121,7 +121,12 @@ for epoch in range(N_EPOCH):
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
-        for t_b, t_l in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
+        inputs = zip(t_batch_inputs, t_batch_labels)
+
+        for start_idx in range(0, len(inputs) - BATCH_SIZE + 1, BATCH_SIZE):
+            excerpt = slice(start_idx, start_idx + BATCH_SIZE)
+            t_b, t_l = np.array(inputs)[excerpt]
+
             # collecting for plotting
             [t_loss, t_f2, t_acc] = model.train_on_batch(t_b, t_l)
             t_loss_graph = np.append(t_loss_graph, [t_loss])
@@ -133,6 +138,20 @@ for epoch in range(N_EPOCH):
                    float(t_loss),
                    float(t_acc),
                    float(t_f2))
+
+        if len(inputs) % BATCH_SIZE != 0:
+            t_b, t_l = np.array(inputs)[- (len(inputs) % BATCH_SIZE):]
+            # collecting for plotting
+            [t_loss, t_f2, t_acc] = model.train_on_batch(t_b, t_l)
+            t_loss_graph = np.append(t_loss_graph, [t_loss])
+            t_acc_graph = np.append(t_acc_graph, [t_acc])
+            t_f2_graph = np.append(t_f2_graph, [t_f2])
+
+            print "examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}".format(trained_batch,
+                  len(train),
+                  float(t_loss),
+                  float(t_acc),
+                  float(t_f2))
 
     # ===== Validation =====
     np.random.shuffle(val)
