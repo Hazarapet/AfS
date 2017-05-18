@@ -96,7 +96,7 @@ for epoch in range(N_EPOCH):
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if False:
+                if targets == 1:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
@@ -121,17 +121,21 @@ for epoch in range(N_EPOCH):
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
-        # collecting for plotting
-        [t_loss, t_f2, t_acc] = model.train_on_batch(t_batch_inputs, t_batch_labels)
-        t_loss_graph = np.append(t_loss_graph, [t_loss])
-        t_acc_graph = np.append(t_acc_graph, [t_acc])
-        t_f2_graph = np.append(t_f2_graph, [t_f2])
+        for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
+            # collecting for plotting
+            t_i = np.stack(min_b[:, 0])  # inputs
+            t_l = min_b[:, 1]  # labels
 
-        print "examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}".format(trained_batch,
-               len(train),
-               float(t_loss),
-               float(t_acc),
-               float(t_f2))
+            [t_loss, t_f2, t_acc] = model.train_on_batch(t_i, t_l)
+            t_loss_graph = np.append(t_loss_graph, [t_loss])
+            t_acc_graph = np.append(t_acc_graph, [t_acc])
+            t_f2_graph = np.append(t_f2_graph, [t_f2])
+
+            print "examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}".format(trained_batch,
+                   len(train),
+                   float(t_loss),
+                   float(t_acc),
+                   float(t_f2))
 
     # ===== Validation =====
     np.random.shuffle(val)
@@ -151,10 +155,10 @@ for epoch in range(N_EPOCH):
                     targets = 1
 
             # resize
-            r = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
-            g = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
-            b = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
-            ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
+            r = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+            g = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+            b = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+            ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
             v_batch_inputs.append([r, g, b, ndwi])
             v_batch_labels.append(targets)
