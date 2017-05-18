@@ -71,7 +71,7 @@ for epoch in range(N_EPOCH):
         t_batch_labels = []
 
         # accumulate the examples' count
-        trained_batch += len(min_batch)
+        # trained_batch += len(min_batch)
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
@@ -163,6 +163,7 @@ for epoch in range(N_EPOCH):
             ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
             v_batch_inputs.append([r, g, b, ndwi])
+            v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
             v_batch_labels.append(targets)
 
     v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
