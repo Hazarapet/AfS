@@ -25,7 +25,7 @@ for i in range(labels.shape[0]):
 
 print 'training...'
 # Train the model, iterating on the data in batches of 32 samples
-loss = model.fit(data, labels, nb_epoch=2, batch_size=32, verbose=1)
+loss = model.fit(data, labels, epochs=2, batch_size=32, verbose=1)
 
 
 
