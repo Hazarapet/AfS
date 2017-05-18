@@ -96,7 +96,7 @@ for epoch in range(N_EPOCH):
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if targets == 1:
+                if False:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
