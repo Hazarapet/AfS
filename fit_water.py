@@ -13,7 +13,7 @@ from utils import common as common_util
 from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 5
+N_EPOCH = 15
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -48,9 +48,9 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = water_model()
 
-adam = Adam(lr=3e-4, decay=0.)
+adam = Adam(lr=1e-3, decay=0.)
 
-model.compile(loss=components.f2_binary_cross_entropy(0.6),
+model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
               metrics=[common_util.f2_score, 'accuracy'])
 
@@ -163,7 +163,6 @@ for epoch in range(N_EPOCH):
             ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
             v_batch_inputs.append([r, g, b, ndwi])
-            v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
             v_batch_labels.append(targets)
 
     v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
@@ -175,13 +174,13 @@ for epoch in range(N_EPOCH):
     v_f2_graph = np.append(v_f2_graph, [v_f2])
     v_acc_graph = np.append(v_acc_graph, [v_acc])
 
-    if epoch == 5:
+    if epoch == 10:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(3e-4)
+
+    if epoch == 15:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-4)
-
-    if epoch == 20:
-        lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
 
     # if model has reach to good results, we save that model
     if v_loss < 0.0002:
