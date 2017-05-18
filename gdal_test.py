@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from utils import image as image_util
 from sklearn.preprocessing import MinMaxScaler
 
-tif_sample = 'resource/train-tif-sample/train_10051.tif'
-jpg_sample = 'resource/train-jpg-sample/train_10051.jpg'
+tif_sample = 'resource/train-tif-sample/train_10080.tif'
+jpg_sample = 'resource/train-jpg-sample/train_10080.jpg'
 
 def read_tif(path):
     data = gdal.Open(path)
@@ -18,10 +18,10 @@ def read_tif(path):
     bband = data.GetRasterBand(1)
     nirband = data.GetRasterBand(4)
 
-    red = rband.ReadAsArray().astype(np.float32)
-    green = gband.ReadAsArray().astype(np.float32)
-    blue = bband.ReadAsArray().astype(np.float32)
-    nir = nirband.ReadAsArray().astype(np.float32)
+    red = rband.ReadAsArray().astype(np.float16)
+    green = gband.ReadAsArray().astype(np.float16)
+    blue = bband.ReadAsArray().astype(np.float16)
+    nir = nirband.ReadAsArray().astype(np.float16)
 
     return red, green, blue, nir
 
@@ -46,17 +46,8 @@ if __name__ == '__main__':
 
     savi = (1 + 0.5) * (nir - red)/(nir + red + 0.5)
 
-    print np.max(ndvi), np.min(ndvi), np.max(savi), np.min(savi)
+    print np.max(red), np.min(red)
 
-    # img = Image.fromarray(np.uint8(rgb), "RGB")
-
-    plt.figure('ndwi fl')
-    plt.imshow(np.fliplr(ndwi), cmap="gray")
-    plt.figure('ndwi')
-    plt.imshow(ndwi, cmap="gray")
-    plt.show()
-
-    sys.exit(0)
     plt.figure('jpg')
     plt.imshow(jpg)
     plt.figure('ndwi')
