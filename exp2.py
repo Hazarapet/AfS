@@ -2,16 +2,14 @@ import sys
 import cv2
 import json
 import numpy as np
-import utils.common as common_util
 from PIL import Image
 import matplotlib.pyplot as plt
-import theano.tensor as T
 
-A = np.arange(900).reshape((100, 3, 3))
-B = np.arange(100)
+A = np.arange(27).reshape((3, 3, 3))
+B = np.arange(9).reshape((3, 3))
 
-for z in common_util.iterate_minibatches(zip(A, B), batchsize=2):
-    print z[:, 1].shape
-    print np.stack(z[:, 0])
-    print z[:, 1]
-    sys.exit(0)
+A1 = np.rot90(A, axes=(1, 2))
+A2 = np.flip(A, 2)
+
+print A, 'end'
+print A2, 'end'
