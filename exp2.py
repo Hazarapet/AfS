@@ -4,9 +4,9 @@ import numpy as np
 import utils.common as common_util
 from PIL import Image
 import matplotlib.pyplot as plt
+import theano.tensor as T
 
-A = np.arange(360).reshape((10, 4, 3, 3))
-B = np.arange(10)
+a = T.scalar('a')
 
-for t_b, t_l in common_util.iterate_minibatches(zip(A, B), batchsize=40):
-    print len(t_b)
+print T.round(0.5).eval()
+print T.clip(0.2, 0, 1).eval()

@@ -13,7 +13,7 @@ from utils import common as common_util
 from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 1
+N_EPOCH = 10
 BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -168,7 +168,7 @@ for epoch in range(N_EPOCH):
     v_f2_graph = np.append(v_f2_graph, [v_f2])
     v_acc_graph = np.append(v_acc_graph, [v_acc])
 
-    if epoch == 15:
+    if epoch == 7:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-5)
 
