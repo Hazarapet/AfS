@@ -13,8 +13,8 @@ from utils import common as common_util
 from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 10
-BATCH_SIZE = 128
+N_EPOCH = 20
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -84,12 +84,12 @@ for epoch in range(N_EPOCH):
 
                 # resize
                 # float32 only just for resizing.We will cast back float16 again
-                evi = cv2.resize(evi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                # evi = cv2.resize(evi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 savi = cv2.resize(savi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                inputs = [evi, savi, ndvi, ndwi]
+                inputs = [savi, ndvi, ndwi]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -158,12 +158,12 @@ for epoch in range(N_EPOCH):
                         targets = 1
 
                 # resize
-                evi = cv2.resize(evi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                # evi = cv2.resize(evi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 savi = cv2.resize(savi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                v_batch_inputs.append([evi, savi, ndvi, ndwi])
+                v_batch_inputs.append([savi, ndvi, ndwi])
                 v_batch_labels.append(targets)
 
         v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
