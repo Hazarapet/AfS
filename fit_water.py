@@ -66,13 +66,10 @@ for epoch in range(N_EPOCH):
     # we should shuffle the train set
     np.random.shuffle(train)
 
-    for min_batch in common_util.iterate_minibatches(train[:1000], batchsize=BATCH_SIZE):
+    for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
 
         t_batch_inputs = []
         t_batch_labels = []
-
-        # accumulate the examples' count
-        # trained_batch += len(min_batch)
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
