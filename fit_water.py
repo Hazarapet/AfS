@@ -14,7 +14,7 @@ from models.water.model import model as water_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 100
+BATCH_SIZE = 110
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -186,6 +186,24 @@ for epoch in range(N_EPOCH):
             np.sum(v_batch_labels),
             len(v_batch_labels))
 
+        # if model has reach to good results, we save that model
+        if v_f2 > 0.95:
+            timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
+            model_filename = structure + 'good-epoch:' + str(epoch) + \
+                             '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
+                             '-tr_a:' + str(round(np.max(t_acc_graph), 4)) + \
+                             '-tr_f2:' + str(round(np.max(t_f2_graph), 4)) + \
+                             '-val_l:' + str(round(v_loss, 4)) + \
+                             '-val_a:' + str(round(np.max(v_acc_graph), 4)) + \
+                             '-val_f2:' + str(round(np.max(v_f2_graph), 4)) + \
+                             '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
+            # saving the weights
+            model.save_weights(model_filename + '.h5')
+
+            with open(model_filename + '.json', 'w') as outfile:
+                json_string = model.to_json()
+                json.dump(json_string, outfile)
+
     if epoch == 15:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-4)
@@ -194,23 +212,7 @@ for epoch in range(N_EPOCH):
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-4)
 
-    # if model has reach to good results, we save that model
-    if v_loss < 0.0002:
-        timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
-        model_filename = structure + 'good-epoch:' + str(epoch) + \
-                         '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
-                         '-tr_a:' + str(round(np.max(t_acc_graph), 4)) + \
-                         '-tr_f2:' + str(round(np.max(t_f2_graph), 4)) + \
-                         '-val_l:' + str(round(v_loss, 4)) + \
-                         '-val_a:' + str(round(np.max(v_acc_graph), 4)) + \
-                         '-val_f2:' + str(round(np.max(v_f2_graph), 4)) + \
-                         '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
-        # saving the weights
-        model.save_weights(model_filename + '.h5')
 
-        with open(model_filename + '.json', 'w') as outfile:
-            json_string = model.to_json()
-            json.dump(json_string, outfile)
 
 # create file name to save the state with useful information
 timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
