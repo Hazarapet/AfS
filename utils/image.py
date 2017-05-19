@@ -5,6 +5,7 @@ from PIL import Image
 from gdalconst import *
 import matplotlib.pyplot as plt
 
+
 def sobel(img):
     # Calculate gradient
     gx = cv2.Sobel(img, cv2.CV_32F, 1, 0, ksize=1)
@@ -14,8 +15,10 @@ def sobel(img):
 
     return mag, angle
 
+
 def cv2_std_dev(img):
     return cv2.meanStdDev(img)
+
 
 def process_tif(path):
     data = gdal.Open(path)
@@ -33,15 +36,18 @@ def process_tif(path):
 
     return tif, ndwi(tif), ndvi(tif), evi(tif), savi(tif)
 
+
 def ndvi(tif):
     red = tif[0]
     nir = tif[3]
     return (nir - red)/(nir + red)
 
+
 def ndwi(tif):
     nir = tif[3]
     green = tif[1]
     return (green - nir) / (green + nir)
+
 
 def evi(tif):
     nir = tif[3]
@@ -54,6 +60,7 @@ def evi(tif):
     L = 1
 
     return G * (nir - red)/(nir + C1 * red - C2 * blue + L)
+
 
 def savi(tif):
     nir = tif[3]

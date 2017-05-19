@@ -5,11 +5,10 @@ import numpy as np
 from PIL import Image
 from gdalconst import *
 import matplotlib.pyplot as plt
-from utils import image as image_util
 from sklearn.preprocessing import MinMaxScaler
 
-tif_sample = 'resource/train-tif-sample/train_10080.tif'
-jpg_sample = 'resource/train-jpg-sample/train_10080.jpg'
+tif_sample = 'resource/train-tif-v2/train_9991.tif'
+jpg_sample = 'resource/train-jpg/train_9991.jpg'
 
 def read_tif(path):
     data = gdal.Open(path)
@@ -46,27 +45,28 @@ if __name__ == '__main__':
 
     savi = (1 + 0.5) * (nir - red)/(nir + red + 0.5)
 
-    M = [[np.cos(30), -np.sin(30)], [np.sin(30), np.cos(30)]]
-    dst = np.dot(ndvi, M)
-
-    print np.max(red), np.min(red)
-
-    plt.figure('jpg')
-    plt.imshow(dst, cmap='gray')
-    plt.figure('ndvi')
-    plt.imshow(ndvi, cmap='gray')
-    plt.show()
-    sys.exit(0)
-
     plt.figure('jpg')
     plt.imshow(jpg)
-    plt.figure('ndwi')
+    plt.figure()
+
+    plt.subplot(221, title='ndwi')
     plt.imshow(ndwi, cmap="gray")
-    plt.figure('ndvi')
+    plt.axis('off')
+    plt.tight_layout(w_pad=0.2, h_pad=0.2)
+
+    plt.subplot(222, title='ndvi')
+    plt.axis('off')
     plt.imshow(ndvi, cmap='gray')
-    plt.figure('evi')
+
+    plt.tight_layout(w_pad=0.2, h_pad=0.2)
+
+    plt.subplot(223, title='evi')
+    plt.axis('off')
     plt.imshow(evi, cmap='gray')
-    plt.figure('savi')
+
+    plt.subplot(224, title='savi')
+    plt.axis('off')
     plt.imshow(savi, cmap='gray')
+
     plt.show()
 
