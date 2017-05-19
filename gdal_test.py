@@ -5,11 +5,11 @@ import numpy as np
 from PIL import Image
 from gdalconst import *
 import matplotlib.pyplot as plt
-from utils import image as image_util
+import matplotlib.gridspec as gridspec
 from sklearn.preprocessing import MinMaxScaler
 
-tif_sample = 'resource/train-tif-sample/train_10080.tif'
-jpg_sample = 'resource/train-jpg-sample/train_10080.jpg'
+tif_sample = 'resource/train-tif-v2/train_9991.tif'
+jpg_sample = 'resource/train-jpg/train_9991.jpg'
 
 def read_tif(path):
     data = gdal.Open(path)
@@ -46,27 +46,31 @@ if __name__ == '__main__':
 
     savi = (1 + 0.5) * (nir - red)/(nir + red + 0.5)
 
-    M = [[np.cos(30), -np.sin(30)], [np.sin(30), np.cos(30)]]
-    dst = np.dot(ndvi, M)
-
-    print np.max(red), np.min(red)
-
-    plt.figure('jpg')
-    plt.imshow(dst, cmap='gray')
-    plt.figure('ndvi')
-    plt.imshow(ndvi, cmap='gray')
-    plt.show()
-    sys.exit(0)
+    gs = gridspec.GridSpec(2, 2, right=0.9, left=0.1, hspace=0.1, wspace=0.1)
 
     plt.figure('jpg')
     plt.imshow(jpg)
-    plt.figure('ndwi')
-    plt.imshow(ndwi, cmap="gray")
-    plt.figure('ndvi')
-    plt.imshow(ndvi, cmap='gray')
-    plt.figure('evi')
-    plt.imshow(evi, cmap='gray')
-    plt.figure('savi')
-    plt.imshow(savi, cmap='gray')
+    plt.figure()
+
+    ax = plt.subplot(gs[0], title='ndwi')
+    ax.axis('off')
+    ax.imshow(ndwi, cmap="gray")
+    ax.set_aspect('auto')
+
+    ax = plt.subplot(gs[1], title='ndvi')
+    ax.axis('off')
+    ax.imshow(ndvi, cmap='gray')
+    ax.set_aspect('auto')
+
+    ax = plt.subplot(gs[2], title='evi')
+    ax.axis('off')
+    ax.imshow(evi, cmap='gray')
+    ax.set_aspect('auto')
+
+    ax = plt.subplot(gs[3], title='savi')
+    ax.axis('off')
+    ax.imshow(savi, cmap='gray')
+    ax.set_aspect('auto')
+
     plt.show()
 
