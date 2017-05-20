@@ -33,28 +33,16 @@ def model(weights_path=None):
 
     _model.add(MaxPooling2D(pool_size=(2, 2)))
 
-    _model.add(ZeroPadding2D((1, 1)))
-    _model.add(Conv2D(128, (3, 3)))
-    _model.add(BatchNormalization())
-    _model.add(Activation('relu'))
-
-    _model.add(ZeroPadding2D((1, 1)))
-    _model.add(Conv2D(128, (3, 3)))
-    _model.add(BatchNormalization())
-    _model.add(Activation('relu'))
-
-    _model.add(MaxPooling2D(pool_size=(2, 2)))
-
     # Dense layers
     _model.add(Flatten())
 
     _model.add(Dense(64, kernel_regularizer=l2(2e-5)))
     _model.add(Activation('relu'))
-    _model.add(Dropout(0.2))
+    _model.add(Dropout(0.1))
 
     _model.add(Dense(32, kernel_regularizer=l2(2e-5)))
     _model.add(Activation('relu'))
-    _model.add(Dropout(0.2))
+    _model.add(Dropout(0.1))
 
     _model.add(Dense(1, activation='sigmoid'))
 
