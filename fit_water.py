@@ -48,7 +48,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = water_model()
 
-adam = Adam(lr=3e-3, decay=0.)
+adam = Adam(lr=1e-3, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -237,11 +237,11 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 5:
+    if epoch == 7:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(3e-4)
 
-    if epoch == 8:
+    if epoch == 18:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-4)
 
