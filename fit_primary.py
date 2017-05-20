@@ -75,7 +75,7 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            rgbn, _, _, _, _ = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+            rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
             assert rgbn is not None
 
             if rgbn is not None:
@@ -146,7 +146,7 @@ for epoch in range(N_EPOCH):
 
     # load val's images
     for f, tags in val:
-        rgbn, _, _, _, _ = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+        rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
         assert rgbn is not None
 
         if rgbn is not None:

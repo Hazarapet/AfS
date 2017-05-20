@@ -73,7 +73,7 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            rgbn, ndwi, ndvi, evi, savi = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+            rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
             assert rgbn is not None
 
             if rgbn is not None:
@@ -81,6 +81,10 @@ for epoch in range(N_EPOCH):
                 for t in tags.split(' '):
                     if t == 'water':
                         targets = 1
+
+                savi = UtilImage.savi(rgbn)
+                ndvi = UtilImage.ndvi(rgbn)
+                ndwi = UtilImage.ndwi(rgbn)
 
                 # resize
                 # float32 only just for resizing.We will cast back float16 again
@@ -148,7 +152,7 @@ for epoch in range(N_EPOCH):
 
         # load val's images
         for f, tags in min_batch:
-            rgbn, ndwi, ndvi, evi, savi = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+            rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
             assert rgbn is not None
 
             if rgbn is not None:
@@ -156,6 +160,10 @@ for epoch in range(N_EPOCH):
                 for t in tags.split(' '):
                     if t == 'water':
                         targets = 1
+
+                savi = UtilImage.savi(rgbn)
+                ndvi = UtilImage.ndvi(rgbn)
+                ndwi = UtilImage.ndwi(rgbn)
 
                 # resize
                 # evi = cv2.resize(evi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
