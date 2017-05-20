@@ -48,11 +48,11 @@ def model(weights_path=None):
     # Dense layers
     _model.add(Flatten())
 
-    _model.add(Dense(128, kernel_regularizer=l2(2e-5)))
+    _model.add(Dense(64, kernel_regularizer=l2(2e-5)))
     _model.add(Activation('relu'))
     _model.add(Dropout(0.2))
 
-    _model.add(Dense(64, kernel_regularizer=l2(2e-5)))
+    _model.add(Dense(32, kernel_regularizer=l2(2e-5)))
     _model.add(Activation('relu'))
     _model.add(Dropout(0.2))
 
