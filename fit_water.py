@@ -13,8 +13,8 @@ from utils import common as common_util
 from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 20
-BATCH_SIZE = 110
+N_EPOCH = 10
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -48,7 +48,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = water_model()
 
-adam = Adam(lr=1e-3, decay=0.)
+adam = Adam(lr=3e-3, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -82,18 +82,18 @@ for epoch in range(N_EPOCH):
                     if t == 'water':
                         targets = 1
 
-                savi = UtilImage.savi(rgbn)
+                ior = UtilImage.ior(rgbn)
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)
 
                 # resize
                 # float32 only just for resizing.We will cast back float16 again
                 # evi = cv2.resize(evi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                savi = cv2.resize(savi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                ior = cv2.resize(ior.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                inputs = [savi, ndvi, ndwi]
+                inputs = [ior, ndvi, ndwi]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -144,9 +144,10 @@ for epoch in range(N_EPOCH):
                    len(t_l))
 
     # ===== Validation =====
+    print '----- Validation of epoch: {} -----'.format(epoch)
     np.random.shuffle(val)
     val_batch = 0
-    for min_batch in common_util.iterate_minibatches(val, batchsize=4048):
+    for min_batch in common_util.iterate_minibatches(val, batchsize=2048):
         v_batch_inputs = []
         v_batch_labels = []
 
@@ -161,18 +162,42 @@ for epoch in range(N_EPOCH):
                     if t == 'water':
                         targets = 1
 
-                savi = UtilImage.savi(rgbn)
+                ior = UtilImage.ior(rgbn)
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)
 
                 # resize
                 # evi = cv2.resize(evi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                savi = cv2.resize(savi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                ior = cv2.resize(ior.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                v_batch_inputs.append([savi, ndvi, ndwi])
+                v_inputs = [ior, ndvi, ndwi]
+
+                v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
+
+                if targets == 1:
+                    # --- augmentation ---
+                    # rotate 90
+                    rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))
+                    v_batch_inputs.append(rt90_inputs)
+                    v_batch_labels.append(targets)
+
+                    # rotate 180
+                    rt180_inputs = np.rot90(v_inputs, 2, axes=(1, 2))
+                    v_batch_inputs.append(rt180_inputs)
+                    v_batch_labels.append(targets)
+
+                    # flip h
+                    flip_h_inputs = np.flip(v_inputs, 2)
+                    v_batch_inputs.append(flip_h_inputs)
+                    v_batch_labels.append(targets)
+
+                    # flip v
+                    flip_v_inputs = np.flip(v_inputs, 1)
+                    v_batch_inputs.append(flip_v_inputs)
+                    v_batch_labels.append(targets)
 
         v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
         v_batch_labels = np.array(v_batch_labels).astype(np.int8)
@@ -212,14 +237,13 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 15:
+    if epoch == 5:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(1e-3)
+
+    if epoch == 8:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-4)
-
-    if epoch == 20:
-        lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
-
 
 
 # create file name to save the state with useful information
