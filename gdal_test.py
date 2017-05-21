@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from sklearn.preprocessing import MinMaxScaler
 
-tif_sample = 'resource/train-tif-sample/train_10001.tif'
-jpg_sample = 'resource/train-jpg/train_10001.jpg'
+tif_sample = 'resource/train-tif-sample/train_10054.tif'
+jpg_sample = 'resource/train-jpg/train_10054.jpg'
 
 def read_tif(path):
     data = gdal.Open(path)
