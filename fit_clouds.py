@@ -6,17 +6,17 @@ import plots
 import numpy as np
 import pandas as pd
 from utils import components
-import tif_data_augmentation as tfa
 from utils import image as UtilImage
-from keras.optimizers import SGD, Adam
+from keras.optimizers import Adam
 from utils import common as common_util
-from models.cloudy.model import model as cloudy_model
+from models.clouds.model import model as clouds_model
 
 st_time = time.time()
 N_EPOCH = 10
 BATCH_SIZE = 200
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
+GROUP = ['cloudy', 'partly_cloudy']
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -32,8 +32,7 @@ print 'data loading...'
 # loading the data
 df_train = pd.read_csv('train_v2.csv')
 
-flatten = lambda l: [item for sublist in l for item in sublist]
-labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
+labels = GROUP
 
 label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
@@ -46,7 +45,7 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = cloudy_model()
+[model, structure] = clouds_model()
 
 adam = Adam(lr=3e-4, decay=0.)
 
@@ -77,10 +76,9 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = 0
+                targets = np.zeros(2)
                 for t in tags.split(' '):
-                    if t == 'cloudy':
-                        targets = 1
+                    targets[label_map[t]] = 1
 
                 # resize
                 # float32 only just for resizing.We will cast back float16 again
@@ -93,7 +91,7 @@ for epoch in range(N_EPOCH):
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if targets == 1:
+                if True:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
@@ -152,10 +150,9 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = 0
+                targets = np.zeros(2)
                 for t in tags.split(' '):
-                    if t == 'cloudy':
-                        targets = 1
+                    targets[label_map[t]] = 1
 
                 # resize
                 red = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
@@ -167,7 +164,7 @@ for epoch in range(N_EPOCH):
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
 
-                if targets == 1:
+                if True:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))
@@ -210,7 +207,7 @@ for epoch in range(N_EPOCH):
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.95:
+        if v_f2 > 0.94:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
