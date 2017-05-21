@@ -19,10 +19,10 @@ def read_tif(path):
     bband = data.GetRasterBand(1)
     nirband = data.GetRasterBand(4)
 
-    red = rband.ReadAsArray().astype(np.float16)
-    green = gband.ReadAsArray().astype(np.float16)
-    blue = bband.ReadAsArray().astype(np.float16)
-    nir = nirband.ReadAsArray().astype(np.float16)
+    red = rband.ReadAsArray().astype(np.float32)
+    green = gband.ReadAsArray().astype(np.float32)
+    blue = bband.ReadAsArray().astype(np.float32)
+    nir = nirband.ReadAsArray().astype(np.float32)
 
     return red, green, blue, nir
 
