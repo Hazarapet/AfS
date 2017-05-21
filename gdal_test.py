@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from sklearn.preprocessing import MinMaxScaler
 
-tif_sample = 'resource/train-tif-sample/train_10081.tif'
-jpg_sample = 'resource/train-jpg/train_10081.jpg'
+tif_sample = 'resource/train-tif-sample/train_10001.tif'
+jpg_sample = 'resource/train-jpg/train_10001.jpg'
 
 def read_tif(path):
     data = gdal.Open(path)
@@ -40,6 +40,9 @@ if __name__ == '__main__':
     # img2_scaled = (np.reshape(rescaleIMG, rgb.shape)).astype(np.uint8)
     # img2_scaled = img2_scaled.transpose((1, 2, 0))
 
+    sobel, angel = image.sobel(rgb.astype(np.float32))
+    sobel = sobel.transpose((1, 2, 0))
+    sobel = sobel.astype(np.float16)
     # normalized difference vegetation index (NDVI)
     ndvi = image.ndvi(rgbn)
 
@@ -153,6 +156,11 @@ if __name__ == '__main__':
     ax = plt.subplot(gs[14], title='sr')
     ax.axis('off')
     ax.imshow(sr, cmap='gray')
+    ax.set_aspect('auto')
+
+    ax = plt.subplot(gs[15], title='sobel')
+    ax.axis('off')
+    ax.imshow(sobel[:, :, 2], cmap='gray')
     ax.set_aspect('auto')
 
     plt.show()

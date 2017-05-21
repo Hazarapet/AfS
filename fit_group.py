@@ -9,13 +9,20 @@ from utils import components
 from utils import image as UtilImage
 from keras.optimizers import Adam
 from utils import common as common_util
-from models.burn.model import model as burn_model
+from models.group.model import model as group_model
 
 st_time = time.time()
-N_EPOCH = 10
-BATCH_SIZE = 200
+N_EPOCH = 30
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
+GROUP = ['artisinal_mine'
+         'bare_ground',
+         'blow_down',
+         'conventional_mine',
+         'cultivation',
+         'haze',
+         'selective_logging']
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -31,8 +38,7 @@ print 'data loading...'
 # loading the data
 df_train = pd.read_csv('train_v2.csv')
 
-flatten = lambda l: [item for sublist in l for item in sublist]
-labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
+labels = GROUP
 
 label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
@@ -45,9 +51,9 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = burn_model()
+[model, structure] = group_model()
 
-adam = Adam(lr=1e-3, decay=0.)
+adam = Adam(lr=6e-4, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -76,17 +82,21 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = 0
+                targets = np.zeros(7)
                 for t in tags.split(' '):
-                    if t == 'slash_burn':
-                        targets = 1
+                    targets[label_map[t]] = 1
 
                 ndvi = UtilImage.ndvi(rgbn)
+                ndwi = UtilImage.ndwi(rgbn)
                 ior = UtilImage.ior(rgbn)
                 bai = UtilImage.bai(rgbn)
                 gemi = UtilImage.gemi(rgbn)
                 grvi = UtilImage.grvi(rgbn)
                 vari = UtilImage.vari(rgbn)
+                lai = UtilImage.lai(rgbn)
+                gndvi = UtilImage.gndvi(rgbn)
+                sr = UtilImage.sr(rgbn)
+                savi = UtilImage.savi(rgbn)
 
                 # resize
                 # float32 only just for resizing.We will cast back float16 again
@@ -94,19 +104,24 @@ for epoch in range(N_EPOCH):
                 green = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 blue = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ior = cv2.resize(ior.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 bai = cv2.resize(bai.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 gemi = cv2.resize(gemi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 grvi = cv2.resize(grvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 vari = cv2.resize(vari.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                lai = cv2.resize(lai.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                gndvi = cv2.resize(gndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                sr = cv2.resize(sr.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                savi = cv2.resize(savi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                # red, green, blue, ndvi, ior, bai, gemi, grvi, vari
-                inputs = [red, green, blue, ndvi, ior, bai, gemi, grvi, vari]
+                # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, lai, gndvi, sr, savi
+                inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, lai, gndvi, sr, savi]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if targets == 1:
+                if True:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
@@ -165,17 +180,21 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = 0
+                targets = np.zeros(7)
                 for t in tags.split(' '):
-                    if t == 'slash_burn':
-                        targets = 1
+                    targets[label_map[t]] = 1
 
                 ndvi = UtilImage.ndvi(rgbn)
+                ndwi = UtilImage.ndwi(rgbn)
                 ior = UtilImage.ior(rgbn)
                 bai = UtilImage.bai(rgbn)
                 gemi = UtilImage.gemi(rgbn)
                 grvi = UtilImage.grvi(rgbn)
                 vari = UtilImage.vari(rgbn)
+                lai = UtilImage.lai(rgbn)
+                gndvi = UtilImage.gndvi(rgbn)
+                sr = UtilImage.sr(rgbn)
+                savi = UtilImage.savi(rgbn)
 
                 # resize
                 # float32 only just for resizing.We will cast back float16 again
@@ -183,19 +202,24 @@ for epoch in range(N_EPOCH):
                 green = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 blue = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 ior = cv2.resize(ior.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 bai = cv2.resize(bai.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 gemi = cv2.resize(gemi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 grvi = cv2.resize(grvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 vari = cv2.resize(vari.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                lai = cv2.resize(lai.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                gndvi = cv2.resize(gndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                sr = cv2.resize(sr.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                savi = cv2.resize(savi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                # red, green, blue, ndvi, ior, bai, gemi, grvi, vari
-                v_inputs = [red, green, blue, ndvi, ior, bai, gemi, grvi, vari]
+                # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, lai, gndvi, sr, savi
+                v_inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, lai, gndvi, sr, savi]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
 
-                if targets == 1:
+                if True:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))
@@ -238,7 +262,7 @@ for epoch in range(N_EPOCH):
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.92:
+        if v_f2 > 0.93:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -259,7 +283,7 @@ for epoch in range(N_EPOCH):
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-4)
 
-    if epoch == 18:
+    if epoch == 15:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-4)
 
