@@ -84,12 +84,11 @@ for epoch in range(N_EPOCH):
 
                 # resize
                 # float32 only just for resizing.We will cast back float16 again
-                # evi = cv2.resize(evi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 red = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 green = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
                 blue = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                inputs = [ior, ndvi, ndwi]
+                inputs = [red, green, blue]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -101,19 +100,9 @@ for epoch in range(N_EPOCH):
                     t_batch_inputs.append(rt90_inputs)
                     t_batch_labels.append(targets)
 
-                    # rotate 180
-                    rt180_inputs = np.rot90(inputs, 2, axes=(1, 2))
-                    t_batch_inputs.append(rt180_inputs)
-                    t_batch_labels.append(targets)
-
                     # flip h
                     flip_h_inputs = np.flip(inputs, 2)
                     t_batch_inputs.append(flip_h_inputs)
-                    t_batch_labels.append(targets)
-
-                    # flip v
-                    flip_v_inputs = np.flip(inputs, 1)
-                    t_batch_inputs.append(flip_v_inputs)
                     t_batch_labels.append(targets)
 
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
