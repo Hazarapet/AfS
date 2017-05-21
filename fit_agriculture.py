@@ -81,14 +81,13 @@ for epoch in range(N_EPOCH):
                 gemi = UtilImage.gemi(rgbn)
 
                 # resize
-                # float32 only just for resizing.We will cast back float16 again
-                red = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                green = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                blue = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ior = cv2.resize(ior.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                gemi = cv2.resize(gemi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
+                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
+                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
+                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, ndwi, ndvi, ior, gemi
                 inputs = [red, green, blue, ndvi, ndwi, ior, gemi]

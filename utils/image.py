@@ -62,7 +62,7 @@ def evi(tif):
     C2 = 7.5
     L = 1.
 
-    return (G * (nir.astype(np.float32) - red.astype(np.float32))/(nir.astype(np.float32) + C1 * red.astype(np.float32) - C2 * blue.astype(np.float32) + L)).astype(np.float16)
+    return (G * (nir.astype(np.float32) - red.astype(np.float32))/(nir.astype(np.float32) + C1 * red.astype(np.float32) - C2 * blue.astype(np.float32) + L)).astype(np.float32)
 
 
 # soil-adjusted vegetation index (SAVI)
