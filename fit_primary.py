@@ -81,10 +81,6 @@ for epoch in range(N_EPOCH):
                     if t == 'primary':
                         targets = 1
 
-                ior = UtilImage.ior(rgbn)
-                ndvi = UtilImage.ndvi(rgbn)
-                ndwi = UtilImage.ndwi(rgbn)
-
                 # resize
                 # float32 only just for resizing.We will cast back float16 again
                 red = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
