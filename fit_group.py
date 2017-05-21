@@ -84,7 +84,8 @@ for epoch in range(N_EPOCH):
             if rgbn is not None:
                 targets = np.zeros(7)
                 for t in tags.split(' '):
-                    targets[label_map[t]] = 1
+                    if t in GROUP:
+                        targets[label_map[t]] = 1
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)
@@ -182,7 +183,8 @@ for epoch in range(N_EPOCH):
             if rgbn is not None:
                 targets = np.zeros(7)
                 for t in tags.split(' '):
-                    targets[label_map[t]] = 1
+                    if t in GROUP:
+                        targets[label_map[t]] = 1
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)

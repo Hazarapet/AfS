@@ -78,7 +78,8 @@ for epoch in range(N_EPOCH):
             if rgbn is not None:
                 targets = np.zeros(2)
                 for t in tags.split(' '):
-                    targets[label_map[t]] = 1
+                    if t in GROUP:
+                        targets[label_map[t]] = 1
 
                 # resize
                 # float32 only just for resizing.We will cast back float16 again
@@ -152,7 +153,8 @@ for epoch in range(N_EPOCH):
             if rgbn is not None:
                 targets = np.zeros(2)
                 for t in tags.split(' '):
-                    targets[label_map[t]] = 1
+                    if t in GROUP:
+                        targets[label_map[t]] = 1
 
                 # resize
                 red = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
