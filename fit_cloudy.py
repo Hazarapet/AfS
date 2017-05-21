@@ -14,7 +14,7 @@ from models.cloudy.model import model as cloudy_model
 
 st_time = time.time()
 N_EPOCH = 10
-BATCH_SIZE = 110
+BATCH_SIZE = 200
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -48,7 +48,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = cloudy_model()
 
-adam = Adam(lr=1e-3, decay=0.)
+adam = Adam(lr=3e-4, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -100,9 +100,19 @@ for epoch in range(N_EPOCH):
                     t_batch_inputs.append(rt90_inputs)
                     t_batch_labels.append(targets)
 
+                    # rotate 180
+                    rt180_inputs = np.rot90(inputs, 2, axes=(1, 2))
+                    t_batch_inputs.append(rt180_inputs)
+                    t_batch_labels.append(targets)
+
                     # flip h
                     flip_h_inputs = np.flip(inputs, 2)
                     t_batch_inputs.append(flip_h_inputs)
+                    t_batch_labels.append(targets)
+
+                    # flip v
+                    flip_v_inputs = np.flip(inputs, 1)
+                    t_batch_inputs.append(flip_v_inputs)
                     t_batch_labels.append(targets)
 
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
@@ -144,20 +154,15 @@ for epoch in range(N_EPOCH):
             if rgbn is not None:
                 targets = 0
                 for t in tags.split(' '):
-                    if t == 'water':
+                    if t == 'cloudy':
                         targets = 1
 
-                ior = UtilImage.ior(rgbn)
-                ndvi = UtilImage.ndvi(rgbn)
-                ndwi = UtilImage.ndwi(rgbn)
-
                 # resize
-                # evi = cv2.resize(evi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ior = cv2.resize(ior.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                red = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                green = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                blue = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                v_inputs = [ior, ndvi, ndwi]
+                v_inputs = [red, green, blue]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
@@ -224,7 +229,7 @@ for epoch in range(N_EPOCH):
 
     if epoch == 7:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-4)
+        model.optimizer.lr.set_value(1e-4)
 
     if epoch == 18:
         lr = model.optimizer.lr.get_value()
