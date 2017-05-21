@@ -1,10 +1,16 @@
 import sys
 import numpy as np
+import keras.backend as K
 from utils import common as common_util
 
-A = np.arange(27).reshape((3, 3, 3))
-B = np.arange(12).reshape((3, 4))
+A = np.random.random((3, 3))
+p = np.random.random((3, 3))
+A = (A > 0.5) * 1.
+p = (p > 0.5) * 1.
+print A
+print p
 
-for min_b in common_util.iterate_minibatches(zip(A, B), batchsize=2):
-    print np.stack(min_b[:, 1])
+print '------------------------'
+print '------------------------'
+print common_util.f2_score(A, p).eval()
 
