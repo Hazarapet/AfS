@@ -150,7 +150,7 @@ for epoch in range(N_EPOCH):
         for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
             # collecting for plotting
             t_i = np.stack(min_b[:, 0])  # inputs
-            t_l = np.stack(min_b[:, 1])  # labels
+            t_l = min_b[:, 1]  # labels
 
             trained_batch += len(t_l)
 
