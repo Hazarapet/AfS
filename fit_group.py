@@ -94,7 +94,6 @@ for epoch in range(N_EPOCH):
                 gemi = UtilImage.gemi(rgbn)
                 grvi = UtilImage.grvi(rgbn)
                 vari = UtilImage.vari(rgbn)
-                lai = UtilImage.lai(rgbn)
                 gndvi = UtilImage.gndvi(rgbn)
                 sr = UtilImage.sr(rgbn)
                 savi = UtilImage.savi(rgbn)
@@ -110,13 +109,12 @@ for epoch in range(N_EPOCH):
                 gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 grvi = cv2.resize(grvi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 vari = cv2.resize(vari, (IMAGE_WIDTH, IMAGE_HEIGH))
-                lai = cv2.resize(lai, (IMAGE_WIDTH, IMAGE_HEIGH))
                 gndvi = cv2.resize(gndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 sr = cv2.resize(sr, (IMAGE_WIDTH, IMAGE_HEIGH))
                 savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, lai, gndvi, sr, savi
-                inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, lai, gndvi, sr, savi]
+                # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi
+                inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -192,13 +190,11 @@ for epoch in range(N_EPOCH):
                 gemi = UtilImage.gemi(rgbn)
                 grvi = UtilImage.grvi(rgbn)
                 vari = UtilImage.vari(rgbn)
-                lai = UtilImage.lai(rgbn)
                 gndvi = UtilImage.gndvi(rgbn)
                 sr = UtilImage.sr(rgbn)
                 savi = UtilImage.savi(rgbn)
 
                 # resize
-                # float32 only just for resizing.We will cast back float16 again
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
                 green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
                 blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
@@ -209,13 +205,12 @@ for epoch in range(N_EPOCH):
                 gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 grvi = cv2.resize(grvi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 vari = cv2.resize(vari, (IMAGE_WIDTH, IMAGE_HEIGH))
-                lai = cv2.resize(lai, (IMAGE_WIDTH, IMAGE_HEIGH))
                 gndvi = cv2.resize(gndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 sr = cv2.resize(sr, (IMAGE_WIDTH, IMAGE_HEIGH))
                 savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, lai, gndvi, sr, savi
-                v_inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, lai, gndvi, sr, savi]
+                # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi
+                v_inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
