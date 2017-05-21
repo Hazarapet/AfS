@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.group.model import model as group_model
 
 st_time = time.time()
-N_EPOCH = 30
+N_EPOCH = 20
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
