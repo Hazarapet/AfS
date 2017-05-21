@@ -5,7 +5,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 
-def model(weights_path=None):
+def model(weights_path=None, freeze=False):
 
     _model = Sequential()
     _model.add(ZeroPadding2D((1, 1), input_shape=(3, 128, 128)))
@@ -58,5 +58,9 @@ def model(weights_path=None):
 
     if weights_path:
         _model.load_weights(weights_path)
+
+    if freeze:
+        for layer in _model.layers:
+            layer.trainable = False
 
     return [_model, 'models/primary/structures/']
