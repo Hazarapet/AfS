@@ -13,7 +13,7 @@ from utils import common as common_util
 from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 10
+N_EPOCH = 3
 BATCH_SIZE = 110
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -46,9 +46,9 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = water_model()
+[model, structure] = water_model('models/water/structures/tr_l:0.0065-tr_a:1.0-tr_f2:1.0-val_l:0.4128-val_a:0.8263-val_f2:0.8236-time:21-05-2017-06:31:34-dur:799.61.h5')
 
-adam = Adam(lr=1e-3, decay=0.)
+adam = Adam(lr=3e-4, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
