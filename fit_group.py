@@ -117,12 +117,12 @@ for epoch in range(N_EPOCH):
                 savi = cv2.resize(savi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, lai, gndvi, sr, savi
-                inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, lai, gndvi, sr, savi]
+                inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if False:
+                if True:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
@@ -147,25 +147,25 @@ for epoch in range(N_EPOCH):
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
         t_batch_labels = np.array(t_batch_labels).astype(np.int8)
 
-        # for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
-        #     # collecting for plotting
-        #     t_i = np.stack(min_b[:, 0])  # inputs
-        #     t_l = np.stack(min_b[:, 1])  # labels
+        for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
+            # collecting for plotting
+            t_i = np.stack(min_b[:, 0])  # inputs
+            t_l = np.stack(min_b[:, 1])  # labels
 
-        trained_batch += len(t_batch_labels)
+            trained_batch += len(t_l)
 
-        [t_loss, t_f2, t_acc] = model.train_on_batch(t_batch_inputs, t_batch_labels)
-        t_loss_graph = np.append(t_loss_graph, [t_loss])
-        t_acc_graph = np.append(t_acc_graph, [t_acc])
-        t_f2_graph = np.append(t_f2_graph, [t_f2])
+            [t_loss, t_f2, t_acc] = model.train_on_batch(t_i, t_l)
+            t_loss_graph = np.append(t_loss_graph, [t_loss])
+            t_acc_graph = np.append(t_acc_graph, [t_acc])
+            t_f2_graph = np.append(t_f2_graph, [t_f2])
 
-        print "examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f} | {}/{}".format(trained_batch,
-               len(train),
-               float(t_loss),
-               float(t_acc),
-               float(t_f2),
-               np.sum(t_batch_labels),
-               len(t_batch_labels))
+            print "examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f} | {}/{}".format(trained_batch,
+                   len(train),
+                   float(t_loss),
+                   float(t_acc),
+                   float(t_f2),
+                   np.sum(t_l),
+                   len(t_l))
 
     # ===== Validation =====
     print '----- Validation of epoch: {} -----'.format(epoch)
