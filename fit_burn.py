@@ -82,16 +82,15 @@ for epoch in range(N_EPOCH):
                 vari = UtilImage.vari(rgbn)
 
                 # resize
-                # float32 only just for resizing.We will cast back float16 again
-                red = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                green = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                blue = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ior = cv2.resize(ior.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                bai = cv2.resize(bai.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                gemi = cv2.resize(gemi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                grvi = cv2.resize(grvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                vari = cv2.resize(vari.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
+                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
+                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
+                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGH))
+                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                grvi = cv2.resize(grvi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                vari = cv2.resize(vari, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, ndvi, ior, bai, gemi, grvi, vari
                 inputs = [red, green, blue, ndvi, ior, bai, gemi, grvi, vari]
@@ -121,8 +120,8 @@ for epoch in range(N_EPOCH):
                     t_batch_inputs.append(flip_v_inputs)
                     t_batch_labels.append(targets)
 
-        t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
-        t_batch_labels = np.array(t_batch_labels).astype(np.int8)
+        t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
+        t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
 
         for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
             # collecting for plotting
@@ -171,16 +170,15 @@ for epoch in range(N_EPOCH):
                 vari = UtilImage.vari(rgbn)
 
                 # resize
-                # float32 only just for resizing.We will cast back float16 again
-                red = cv2.resize(rgbn[0].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                green = cv2.resize(rgbn[1].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                blue = cv2.resize(rgbn[2].astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ior = cv2.resize(ior.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                bai = cv2.resize(bai.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                gemi = cv2.resize(gemi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                grvi = cv2.resize(grvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                vari = cv2.resize(vari.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
+                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
+                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
+                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGH))
+                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                grvi = cv2.resize(grvi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                vari = cv2.resize(vari, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, ndvi, ior, bai, gemi, grvi, vari
                 v_inputs = [red, green, blue, ndvi, ior, bai, gemi, grvi, vari]
@@ -210,8 +208,8 @@ for epoch in range(N_EPOCH):
                     v_batch_inputs.append(flip_v_inputs)
                     v_batch_labels.append(targets)
 
-        v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
-        v_batch_labels = np.array(v_batch_labels).astype(np.int8)
+        v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
+        v_batch_labels = np.array(v_batch_labels).astype(np.uint8)
 
         [v_loss, v_f2, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
 

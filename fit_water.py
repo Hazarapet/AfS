@@ -80,11 +80,9 @@ for epoch in range(N_EPOCH):
                 ndwi = UtilImage.ndwi(rgbn)
 
                 # resize
-                # float32 only just for resizing.We will cast back float16 again
-                # evi = cv2.resize(evi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ior = cv2.resize(ior.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 inputs = [ior, ndvi, ndwi]
 
@@ -113,8 +111,8 @@ for epoch in range(N_EPOCH):
                     t_batch_inputs.append(flip_v_inputs)
                     t_batch_labels.append(targets)
 
-        t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
-        t_batch_labels = np.array(t_batch_labels).astype(np.int8)
+        t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
+        t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
 
         for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
             # collecting for plotting
@@ -160,10 +158,9 @@ for epoch in range(N_EPOCH):
                 ndwi = UtilImage.ndwi(rgbn)
 
                 # resize
-                # evi = cv2.resize(evi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ior = cv2.resize(ior.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndvi = cv2.resize(ndvi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndwi = cv2.resize(ndwi.astype(np.float32), (IMAGE_WIDTH, IMAGE_HEIGH))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 v_inputs = [ior, ndvi, ndwi]
 
@@ -192,8 +189,8 @@ for epoch in range(N_EPOCH):
                     v_batch_inputs.append(flip_v_inputs)
                     v_batch_labels.append(targets)
 
-        v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
-        v_batch_labels = np.array(v_batch_labels).astype(np.int8)
+        v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
+        v_batch_labels = np.array(v_batch_labels).astype(np.uint8)
 
         [v_loss, v_f2, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
 
