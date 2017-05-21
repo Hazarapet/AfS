@@ -7,7 +7,7 @@ from keras.regularizers import l2
 
 def model(weights_path=None):
     _model = Sequential()
-    _model.add(ZeroPadding2D((1, 1), input_shape=(1, 128, 128)))
+    _model.add(ZeroPadding2D((1, 1), input_shape=(3, 128, 128)))
     _model.add(Conv2D(32, (3, 3)))
     _model.add(BatchNormalization())
     _model.add(Activation('relu'))
