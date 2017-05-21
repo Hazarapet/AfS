@@ -32,12 +32,6 @@ print 'data loading...'
 # loading the data
 df_train = pd.read_csv('train_v2.csv')
 
-flatten = lambda l: [item for sublist in l for item in sublist]
-labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
-
-label_map = {l: i for i, l in enumerate(labels)}
-inv_label_map = {i: l for l, i in label_map.items()}
-
 # we should shuffle all examples
 np.random.shuffle(df_train.values)
 
@@ -53,7 +47,6 @@ adam = Adam(lr=3e-4, decay=0.)
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
               metrics=[common_util.f2_score, 'accuracy'])
-
 
 print model.inputs
 print "training..."
