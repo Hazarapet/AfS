@@ -6,9 +6,9 @@ from keras.regularizers import l2
 
 
 def model(weights_path=None):
-
+    # red, green, blue, ndvi, ior, bai, gemi, grvi, vari
     _model = Sequential()
-    _model.add(ZeroPadding2D((1, 1), input_shape=(3, 128, 128)))
+    _model.add(ZeroPadding2D((1, 1), input_shape=(9, 128, 128)))
     _model.add(Conv2D(32, (3, 3)))
     _model.add(BatchNormalization())
     _model.add(Activation('relu'))
@@ -43,20 +43,21 @@ def model(weights_path=None):
     _model.add(Activation('relu'))
 
     _model.add(MaxPooling2D(pool_size=(2, 2)))
+
     # Dense layers
     _model.add(Flatten())
 
-    _model.add(Dense(64, kernel_regularizer=l2(2e-5)))
+    _model.add(Dense(128, kernel_regularizer=l2(2e-5)))
     _model.add(Activation('relu'))
-    # _model.add(Dropout(0.5))
+    # _model.add(Dropout(0.1))
 
     _model.add(Dense(32, kernel_regularizer=l2(2e-5)))
     _model.add(Activation('relu'))
-    # _model.add(Dropout(0.5))
+    # _model.add(Dropout(0.1))
 
     _model.add(Dense(1, activation='sigmoid'))
 
     if weights_path:
         _model.load_weights(weights_path)
 
-    return [_model, 'models/primary/structures/']
+    return [_model, 'models/water/structures/']
