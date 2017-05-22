@@ -117,7 +117,7 @@ for epoch in range(N_EPOCH):
                 savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi
-                inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi]
+                inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -216,7 +216,7 @@ for epoch in range(N_EPOCH):
                 savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi
-                v_inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi]
+                v_inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
@@ -264,7 +264,7 @@ for epoch in range(N_EPOCH):
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.5:
+        if v_f2 > 0.7:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
