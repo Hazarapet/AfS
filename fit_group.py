@@ -13,7 +13,7 @@ from models.group.model import model as group_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 100
+BATCH_SIZE = 120
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 GROUP = ['artisinal_mine'
@@ -53,7 +53,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = group_model()
 
-adam = Adam(lr=6e-4, decay=0.)
+adam = Adam(lr=1e-3, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -163,7 +163,7 @@ for epoch in range(N_EPOCH):
                    float(t_loss),
                    float(t_acc),
                    float(t_f2),
-                   np.sum(t_l),
+                   np.sum((t_l[:, 7] != 1) * 1),
                    len(t_l))
 
     # ===== Validation =====
@@ -258,11 +258,11 @@ for epoch in range(N_EPOCH):
             float(v_acc),
             float(v_f2),
             float(model.optimizer.lr.get_value()),
-            np.sum(v_batch_labels),
+            np.sum((v_batch_labels[:, 7] != 1) * 1),
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.92:
+        if v_f2 > 0.95:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -279,7 +279,11 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 2:
+    if epoch == 5:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(6e-4)
+
+    if epoch == 10:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-4)
 
