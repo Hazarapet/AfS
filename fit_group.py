@@ -86,8 +86,9 @@ for epoch in range(N_EPOCH):
                 for t in tags.split(' '):
                     if t in GROUP:
                         targets[label_map[t]] = 1
-                    else:
-                        targets[7] = 1  # other tag
+
+                if np.sum(targets) == 0:
+                    targets[7] = 1  # other tag
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)
@@ -184,8 +185,9 @@ for epoch in range(N_EPOCH):
                 for t in tags.split(' '):
                     if t in GROUP:
                         targets[label_map[t]] = 1
-                    else:
-                        targets[7] = 1  # other tag
+
+                if np.sum(targets) == 0:
+                    targets[7] = 1  # other tag
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)
