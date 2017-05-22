@@ -3,14 +3,15 @@ import numpy as np
 import keras.backend as K
 from utils import common as common_util
 
-A = np.random.random((3, 3))
-p = np.random.random((3, 3))
-A = (A > 0.5) * 1.
-p = (p > 0.5) * 1.
-print A
-print p
+GROUP = ['artisinal_mine'
+         'bare_ground',
+         'blow_down',
+         'conventional_mine',
+         'cultivation',
+         'haze',
+         'selective_logging']
 
-print '------------------------'
-print '------------------------'
-print common_util.f2_score(A, p).eval()
+k = 'haze'
+
+print k in GROUP
 

@@ -82,10 +82,12 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = np.zeros(7)
+                targets = np.zeros(8)
                 for t in tags.split(' '):
                     if t in GROUP:
                         targets[label_map[t]] = 1
+                    else:
+                        targets[7] = 1  # other tag
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)
@@ -178,10 +180,12 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = np.zeros(7)
+                targets = np.zeros(8)
                 for t in tags.split(' '):
                     if t in GROUP:
                         targets[label_map[t]] = 1
+                    else:
+                        targets[7] = 1  # other tag
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)

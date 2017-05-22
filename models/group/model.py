@@ -89,7 +89,8 @@ def model(weights_path=None):
     _model.add(Activation('relu'))
     _model.add(Dropout(0.5))
 
-    _model.add(Dense(7, activation='sigmoid'))
+    # 8th is other
+    _model.add(Dense(8, activation='sigmoid'))
 
     if weights_path:
         _model.load_weights(weights_path)
