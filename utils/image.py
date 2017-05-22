@@ -84,7 +84,8 @@ def ior(tif):
 def bai(tif):
     nir = tif[3]
     red = tif[0]
-    return 1. / ((((0.1 - red) / 256.) ** 2) * 256.**2 + (((0.06 - nir) / 256.) ** 2) * 256.**2)
+    L = 0.001
+    return 1. / (((0.1 - red) ** 2) + ((0.06 - nir) ** 2) + L)
 
 # Leaf Area Index (LAI)
 def lai(tif):
@@ -95,13 +96,14 @@ def vari(tif):
     red = tif[0]
     blue = tif[1]
     green = tif[2]
-    return (green - red) / (green + red - blue)
+    L = 0.001
+    return (green - red) / (green + red - blue + L)
 
 # Global Environmental Monitoring Index (GEMI)
 def gemi(tif):
     nir = tif[3]
     red = tif[0]
-    eta = 2 * ((((nir / 256.) ** 2) * (256. ** 2) - ((red / 256.) ** 2) * (256. ** 2)) + 1.5 * nir + 0.5 * red)/(nir + red + 0.5)
+    eta = 2 * (((nir ** 2) - (red ** 2)) + 1.5 * nir + 0.5 * red)/(nir + red + 0.5)
     return eta * (1 - 0.25 * eta) - (red - 0.125)/(1 - red)
 
 # Green Difference Vegetation Index (GDVI)
