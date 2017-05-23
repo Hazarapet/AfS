@@ -117,7 +117,7 @@ for epoch in range(N_EPOCH):
                 savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi
-                inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi]
+                inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, sr]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -216,7 +216,7 @@ for epoch in range(N_EPOCH):
                 savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi
-                v_inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi]
+                v_inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, sr]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
