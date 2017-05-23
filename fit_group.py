@@ -13,7 +13,7 @@ from models.group.model import model as group_model
 
 st_time = time.time()
 N_EPOCH = 10
-BATCH_SIZE = 100
+BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 GROUP = ['artisinal_mine'
@@ -92,6 +92,9 @@ for epoch in range(N_EPOCH):
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)
+                ior = UtilImage.ior(rgbn)
+                bai = UtilImage.bai(rgbn)
+                gemi = UtilImage.gemi(rgbn)
 
                 # resize
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
@@ -100,9 +103,12 @@ for epoch in range(N_EPOCH):
                 nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
+                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGH))
+                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi
-                inputs = [red, green, blue, nir, ndvi, ndwi]
+                inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai, gemi]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -176,6 +182,9 @@ for epoch in range(N_EPOCH):
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)
+                ior = UtilImage.ior(rgbn)
+                bai = UtilImage.bai(rgbn)
+                gemi = UtilImage.gemi(rgbn)
 
                 # resize
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
@@ -184,9 +193,12 @@ for epoch in range(N_EPOCH):
                 nir = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
+                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGH))
+                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi
-                v_inputs = [red, green, blue, nir, ndvi, ndwi]
+                v_inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai, gemi]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
