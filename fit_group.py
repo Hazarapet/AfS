@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.group.model import model as group_model
 
 st_time = time.time()
-N_EPOCH = 20
-BATCH_SIZE = 120
+N_EPOCH = 10
+BATCH_SIZE = 110
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 GROUP = ['artisinal_mine'
@@ -117,7 +117,7 @@ for epoch in range(N_EPOCH):
                 savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi
-                inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, sr, savi]
+                inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -216,7 +216,7 @@ for epoch in range(N_EPOCH):
                 savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi
-                v_inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi, grvi, sr, savi]
+                v_inputs = [red, green, blue, ndvi, ndwi, ior, bai, gemi]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
@@ -285,7 +285,7 @@ for epoch in range(N_EPOCH):
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(6e-4)
 
-    if epoch == 10:
+    if epoch == 7:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-4)
 
