@@ -14,7 +14,7 @@ df_train = pd.read_csv('train_v2.csv')
 
 total_red = total_green = total_blue = total_nir = total_ndvi = total_ndwi = total_ior = total_bai = total_gemi = 0.
 
-for f, tags in df_train.values[:10]:
+for f, tags in df_train.values:
     rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
     assert rgbn is not None
 
