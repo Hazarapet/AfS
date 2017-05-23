@@ -13,6 +13,7 @@ IMAGE_HEIGH = 128
 df_train = pd.read_csv('train_v2.csv')
 
 total_red = total_green = total_blue = total_nir = total_ndvi = total_ndwi = total_ior = total_bai = total_gemi = 0.
+total = 0
 
 for f, tags in df_train.values:
     rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
@@ -44,6 +45,9 @@ for f, tags in df_train.values:
     total_ior += np.sum(ior)
     total_bai += np.sum(bai)
     total_gemi += np.sum(gemi)
+
+    print "{}/{}".format(total, len(df_train.values))
+    total += 1
 
 total_count = len(df_train.values)
 
