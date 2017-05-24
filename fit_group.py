@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.group.model import model as group_model
 
 st_time = time.time()
-N_EPOCH = 15
+N_EPOCH = 20
 BATCH_SIZE = 180
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -83,13 +83,13 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = np.zeros(8)
+                targets = np.zeros(9)
                 for t in tags.split(' '):
                     if t in GROUP:
                         targets[label_map[t]] = 1
 
                 if np.sum(targets) == 0:
-                    targets[7] = 1  # other tag
+                    targets[8] = 1  # other tag
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)
@@ -126,7 +126,7 @@ for epoch in range(N_EPOCH):
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if targets[7] != 1:
+                if targets[8] != 1:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
@@ -168,7 +168,7 @@ for epoch in range(N_EPOCH):
                    float(t_loss),
                    float(t_acc),
                    float(t_f2),
-                   np.sum((t_l[:, 7] != 1) * 1),
+                   np.sum((t_l[:, 8] != 1) * 1),
                    len(t_l))
 
     # ===== Validation =====
@@ -185,13 +185,13 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = np.zeros(8)
+                targets = np.zeros(9)
                 for t in tags.split(' '):
                     if t in GROUP:
                         targets[label_map[t]] = 1
 
                 if np.sum(targets) == 0:
-                    targets[7] = 1  # other tag
+                    targets[8] = 1  # other tag
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ndwi = UtilImage.ndwi(rgbn)
@@ -228,7 +228,7 @@ for epoch in range(N_EPOCH):
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
 
-                if targets[7] != 1:
+                if targets[8] != 1:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))
@@ -267,7 +267,7 @@ for epoch in range(N_EPOCH):
             float(v_acc),
             float(v_f2),
             float(model.optimizer.lr.get_value()),
-            np.sum((v_batch_labels[:, 7] != 1) * 1),
+            np.sum((v_batch_labels[:, 8] != 1) * 1),
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model

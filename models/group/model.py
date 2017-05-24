@@ -88,7 +88,7 @@ def model(weights_path=None):
     _model.add(Activation('relu'))
 
     # 8th is other
-    _model.add(Dense(8, activation='sigmoid'))
+    _model.add(Dense(9, activation='sigmoid'))
 
     if weights_path:
         _model.load_weights(weights_path)
