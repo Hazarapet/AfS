@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.primary.model import model as primary_model
 
 st_time = time.time()
-N_EPOCH = 3
+N_EPOCH = 15
 BATCH_SIZE = 180
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -47,7 +47,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = primary_model()
 
-adam = Adam(lr=3e-4, decay=0.)
+adam = Adam(lr=1e-3, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -208,7 +208,7 @@ for epoch in range(N_EPOCH):
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.95:
+        if v_f2 > 0.97:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -225,11 +225,11 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 7:
-        lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
-
     if epoch == 10:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(3e-4)
+
+    if epoch == 15:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-4)
 
