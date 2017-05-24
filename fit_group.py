@@ -199,6 +199,7 @@ for epoch in range(N_EPOCH):
                 ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
                 bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGH))
+                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
