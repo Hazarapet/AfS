@@ -13,7 +13,7 @@ from models.group.model import model as group_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 180
+BATCH_SIZE = 150
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 GROUP = ['artisinal_mine'
