@@ -9,42 +9,54 @@ def model(weights_path=None):
     # red, green, blue, ndvi, ior, bai, gemi, grvi, vari
     _model = Sequential()
     _model.add(ZeroPadding2D((1, 1), input_shape=(9, 128, 128)))
-    _model.add(Conv2D(32, (3, 3)))
-    _model.add(BatchNormalization())
-    _model.add(Activation('relu'))
-
-    _model.add(ZeroPadding2D((1, 1)))
-    _model.add(Conv2D(32, (3, 3)))
-    _model.add(BatchNormalization())
-    _model.add(Activation('relu'))
-
-    _model.add(MaxPooling2D(pool_size=(2, 2)))
-
-    _model.add(ZeroPadding2D((1, 1)))
     _model.add(Conv2D(64, (3, 3)))
-    # _model.add(BatchNormalization())
+    _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))
 
     _model.add(ZeroPadding2D((1, 1)))
     _model.add(Conv2D(64, (3, 3)))
-    # _model.add(BatchNormalization())
+    _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))
 
     _model.add(MaxPooling2D(pool_size=(2, 2)))
 
     _model.add(ZeroPadding2D((1, 1)))
     _model.add(Conv2D(128, (3, 3)))
-    # _model.add(BatchNormalization())
+    _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))
 
     _model.add(ZeroPadding2D((1, 1)))
     _model.add(Conv2D(128, (3, 3)))
-    # _model.add(BatchNormalization())
+    _model.add(BatchNormalization(axis=1))
+    _model.add(Activation('relu'))
+
+    _model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    _model.add(ZeroPadding2D((1, 1)))
+    _model.add(Conv2D(128, (3, 3)))
+    _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))
 
     _model.add(ZeroPadding2D((1, 1)))
     _model.add(Conv2D(128, (3, 3)))
-    # _model.add(BatchNormalization())
+    _model.add(BatchNormalization(axis=1))
+    _model.add(Activation('relu'))
+
+    _model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    _model.add(ZeroPadding2D((1, 1)))
+    _model.add(Conv2D(256, (3, 3)))
+    _model.add(BatchNormalization(axis=1))
+    _model.add(Activation('relu'))
+
+    _model.add(ZeroPadding2D((1, 1)))
+    _model.add(Conv2D(256, (3, 3)))
+    _model.add(BatchNormalization(axis=1))
+    _model.add(Activation('relu'))
+
+    _model.add(ZeroPadding2D((1, 1)))
+    _model.add(Conv2D(256, (3, 3)))
+    _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))
 
     _model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -52,13 +64,11 @@ def model(weights_path=None):
     # Dense layers
     _model.add(Flatten())
 
-    _model.add(Dense(128, kernel_regularizer=l2(1e-4)))
+    _model.add(Dense(128, kernel_regularizer=l2(1e-5)))
     _model.add(Activation('relu'))
-    _model.add(Dropout(0.5))
 
-    _model.add(Dense(32, kernel_regularizer=l2(1e-4)))
+    _model.add(Dense(32, kernel_regularizer=l2(1e-5)))
     _model.add(Activation('relu'))
-    _model.add(Dropout(0.5))
 
     _model.add(Dense(1, activation='sigmoid'))
 

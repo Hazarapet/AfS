@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.clouds.model import model as clouds_model
 
 st_time = time.time()
-N_EPOCH = 10
-BATCH_SIZE = 200
+N_EPOCH = 15
+BATCH_SIZE = 220
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 GROUP = ['cloudy', 'partly_cloudy']
@@ -47,7 +47,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = clouds_model()
 
-adam = Adam(lr=3e-4, decay=0.)
+adam = Adam(lr=1e-3, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -208,7 +208,7 @@ for epoch in range(N_EPOCH):
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.94:
+        if v_f2 > 0.95:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -225,11 +225,11 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 7:
+    if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(3e-4)
 
-    if epoch == 18:
+    if epoch == 15:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-4)
 
