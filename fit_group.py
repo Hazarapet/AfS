@@ -96,6 +96,7 @@ for epoch in range(N_EPOCH):
                 ior = UtilImage.ior(rgbn)
                 bai = UtilImage.bai(rgbn)
                 gemi = UtilImage.gemi(rgbn)
+                savi = UtilImage.savi(rgbn)
 
                 # resize
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
@@ -107,9 +108,10 @@ for epoch in range(N_EPOCH):
                 ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
                 bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGH))
                 gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
-                inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai, gemi]
+                inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, savi]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -186,6 +188,7 @@ for epoch in range(N_EPOCH):
                 ior = UtilImage.ior(rgbn)
                 bai = UtilImage.bai(rgbn)
                 gemi = UtilImage.gemi(rgbn)
+                savi = UtilImage.savi(rgbn)
 
                 # resize
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
@@ -196,10 +199,10 @@ for epoch in range(N_EPOCH):
                 ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
                 bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGH))
-                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
-                v_inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai, gemi]
+                v_inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, savi]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
