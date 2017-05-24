@@ -95,4 +95,4 @@ def model(weights_path=None):
     if weights_path:
         _model.load_weights(weights_path)
 
-    return [_model, 'models/water/structures/']
+    return [_model, 'models/group/structures/']
