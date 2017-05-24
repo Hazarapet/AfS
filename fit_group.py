@@ -210,7 +210,7 @@ for epoch in range(N_EPOCH):
                 if targets[8] != 1:
                     # --- augmentation ---
                     # rotate 90
-                    print "shape: ", v_inputs.shape
+                    print "shape: ", np.array(v_inputs).shape
                     rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))
                     v_batch_inputs.append(rt90_inputs)
                     v_batch_labels.append(targets)
