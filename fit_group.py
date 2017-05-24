@@ -119,7 +119,6 @@ for epoch in range(N_EPOCH):
                 if targets[8] != 1:
                     # --- augmentation ---
                     # rotate 90
-                    print "train: ", np.array(inputs).shape
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
                     t_batch_inputs.append(rt90_inputs)
                     t_batch_labels.append(targets)
