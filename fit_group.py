@@ -72,7 +72,7 @@ for epoch in range(N_EPOCH):
     # we should shuffle the train set
     np.random.shuffle(train)
 
-    for min_batch in common_util.iterate_minibatches(train[:100], batchsize=BATCH_SIZE):
+    for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
 
         t_batch_inputs = []
         t_batch_labels = []
@@ -119,6 +119,7 @@ for epoch in range(N_EPOCH):
                 if targets[8] != 1:
                     # --- augmentation ---
                     # rotate 90
+                    print "train: ", np.array(inputs).shape
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
                     t_batch_inputs.append(rt90_inputs)
                     t_batch_labels.append(targets)
@@ -210,7 +211,6 @@ for epoch in range(N_EPOCH):
                 if targets[8] != 1:
                     # --- augmentation ---
                     # rotate 90
-                    print "shape: ", np.array(v_inputs).shape
                     rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))
                     v_batch_inputs.append(rt90_inputs)
                     v_batch_labels.append(targets)
