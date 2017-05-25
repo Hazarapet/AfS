@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.group.model import model as group_model
 
 st_time = time.time()
-N_EPOCH = 20
+N_EPOCH = 15
 BATCH_SIZE = 110
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
@@ -54,7 +54,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = group_model()
 
-adam = Adam(lr=1e-3, decay=0.)
+adam = Adam(lr=3e-3, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -95,8 +95,6 @@ for epoch in range(N_EPOCH):
                 ndwi = UtilImage.ndwi(rgbn)
                 ior = UtilImage.ior(rgbn)
                 bai = UtilImage.bai(rgbn)
-                gemi = UtilImage.gemi(rgbn)
-                savi = UtilImage.savi(rgbn)
 
                 # resize
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
@@ -107,11 +105,9 @@ for epoch in range(N_EPOCH):
                 ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
                 bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGH))
-                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
-                savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
-                inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, savi]
+                inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -187,8 +183,6 @@ for epoch in range(N_EPOCH):
                 ndwi = UtilImage.ndwi(rgbn)
                 ior = UtilImage.ior(rgbn)
                 bai = UtilImage.bai(rgbn)
-                gemi = UtilImage.gemi(rgbn)
-                savi = UtilImage.savi(rgbn)
 
                 # resize
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
@@ -199,11 +193,9 @@ for epoch in range(N_EPOCH):
                 ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
                 ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
                 bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGH))
-                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
-                savi = cv2.resize(savi, (IMAGE_WIDTH, IMAGE_HEIGH))
 
                 # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
-                v_inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, savi]
+                v_inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
@@ -251,7 +243,7 @@ for epoch in range(N_EPOCH):
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.75:
+        if v_f2 > 0.7:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -268,13 +260,13 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
+    if epoch == 5:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(1e-3)
+
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-4)
-
-    if epoch == 15:
-        lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
 
 
 # create file name to save the state with useful information
