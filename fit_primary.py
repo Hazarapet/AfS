@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.primary.model import model as primary_model
 
 st_time = time.time()
-N_EPOCH = 15
-BATCH_SIZE = 140
+N_EPOCH = 10
+BATCH_SIZE = 200
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
