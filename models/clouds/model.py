@@ -7,7 +7,7 @@ from keras.regularizers import l2
 
 def model(weights_path=None):
     _model = Sequential()
-    _model.add(ZeroPadding2D((1, 1), input_shape=(3, 128, 128)))
+    _model.add(ZeroPadding2D((1, 1), input_shape=(2, 128, 128)))
     _model.add(Conv2D(64, (3, 3)))
     _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))
@@ -69,7 +69,7 @@ def model(weights_path=None):
     _model.add(Dense(32, kernel_regularizer=l2(1e-5)))
     _model.add(Activation('relu'))
 
-    _model.add(Dense(2, activation='sigmoid'))
+    _model.add(Dense(3, activation='sigmoid'))
 
     if weights_path:
         _model.load_weights(weights_path)

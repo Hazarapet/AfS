@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.clouds.model import model as clouds_model
 
 st_time = time.time()
-N_EPOCH = 15
-BATCH_SIZE = 220
+N_EPOCH = 10
+BATCH_SIZE = 120
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 GROUP = ['cloudy', 'partly_cloudy']
@@ -76,22 +76,24 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = np.zeros(2)
+                targets = np.zeros(3)
                 for t in tags.split(' '):
                     if t in GROUP:
                         targets[label_map[t]] = 1
 
+                if np.sum(targets) == 0:
+                    targets[2] = 1  # other tag
+
                 # resize
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
                 green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
-                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                inputs = [red, green, blue]
+                inputs = [red, green]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if True:
+                if targets[2] != 1:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
@@ -119,7 +121,7 @@ for epoch in range(N_EPOCH):
         for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
             # collecting for plotting
             t_i = np.stack(min_b[:, 0])  # inputs
-            t_l = min_b[:, 1]  # labels
+            t_l = np.stack(min_b[:, 1])  # labels
 
             trained_batch += len(t_l)
 
@@ -133,14 +135,14 @@ for epoch in range(N_EPOCH):
                    float(t_loss),
                    float(t_acc),
                    float(t_f2),
-                   np.sum(t_l),
+                   np.sum((t_l[:, 2] != 1) * 1),
                    len(t_l))
 
     # ===== Validation =====
     print '----- Validation of epoch: {} -----'.format(epoch)
     np.random.shuffle(val)
     val_batch = 0
-    for min_batch in common_util.iterate_minibatches(val, batchsize=2048):
+    for min_batch in common_util.iterate_minibatches(val, batchsize=1024):
         v_batch_inputs = []
         v_batch_labels = []
 
@@ -150,22 +152,24 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = np.zeros(2)
+                targets = np.zeros(3)
                 for t in tags.split(' '):
                     if t in GROUP:
                         targets[label_map[t]] = 1
 
+                if np.sum(targets) == 0:
+                    targets[2] = 1  # other tag
+
                 # resize
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
                 green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
-                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
 
-                v_inputs = [red, green, blue]
+                v_inputs = [red, green]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
 
-                if True:
+                if targets[2] != 1:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))
@@ -204,11 +208,11 @@ for epoch in range(N_EPOCH):
             float(v_acc),
             float(v_f2),
             float(model.optimizer.lr.get_value()),
-            np.sum(v_batch_labels),
+            np.sum((v_batch_labels[:, 2] != 1) * 1),
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.95:
+        if v_f2 > 0.8:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -225,7 +229,7 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 10:
+    if epoch == 5:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-4)
 
