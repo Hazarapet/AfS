@@ -13,7 +13,7 @@ from models.clouds.model import model as clouds_model
 
 st_time = time.time()
 N_EPOCH = 10
-BATCH_SIZE = 120
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 GROUP = ['cloudy', 'partly_cloudy']
