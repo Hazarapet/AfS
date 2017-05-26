@@ -13,7 +13,7 @@ from models.primary.model import model as primary_model
 
 st_time = time.time()
 N_EPOCH = 15
-BATCH_SIZE = 180
+BATCH_SIZE = 140
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
@@ -140,7 +140,7 @@ for epoch in range(N_EPOCH):
     print '----- Validation of epoch: {} -----'.format(epoch)
     np.random.shuffle(val)
     val_batch = 0
-    for min_batch in common_util.iterate_minibatches(val, batchsize=2048):
+    for min_batch in common_util.iterate_minibatches(val, batchsize=1024):
         v_batch_inputs = []
         v_batch_labels = []
 

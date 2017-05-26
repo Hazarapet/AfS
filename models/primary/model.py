@@ -30,8 +30,15 @@ def model(weights_path=None, freeze=False):
     _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))
 
+    _model.add(MaxPooling2D(pool_size=(2, 2)))
+
     _model.add(ZeroPadding2D((1, 1)))
-    _model.add(Conv2D(64, (3, 3)))
+    _model.add(Conv2D(128, (3, 3)))
+    _model.add(BatchNormalization(axis=1))
+    _model.add(Activation('relu'))
+
+    _model.add(ZeroPadding2D((1, 1)))
+    _model.add(Conv2D(128, (3, 3)))
     _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))
 
@@ -42,11 +49,9 @@ def model(weights_path=None, freeze=False):
 
     _model.add(Dense(64, kernel_regularizer=l2(2e-5)))
     _model.add(Activation('relu'))
-    # _model.add(Dropout(0.5))
 
     _model.add(Dense(32, kernel_regularizer=l2(2e-5)))
     _model.add(Activation('relu'))
-    # _model.add(Dropout(0.5))
 
     _model.add(Dense(1, activation='sigmoid'))
 
