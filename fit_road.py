@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.burn.model import model as burn_model
 
 st_time = time.time()
-N_EPOCH = 15
-BATCH_SIZE = 220
+N_EPOCH = 10
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
@@ -85,6 +85,7 @@ for epoch in range(N_EPOCH):
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
                 ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
                 bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
@@ -92,8 +93,8 @@ for epoch in range(N_EPOCH):
                 grvi = cv2.resize(grvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
                 vari = cv2.resize(vari, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
-                # red, green, blue, ndvi, ior, bai, gemi, grvi, vari
-                inputs = [red, green, blue, ndvi, ior, bai, gemi, grvi, vari]
+                # red, green, blue, nir, ndvi, ior, bai, gemi, grvi, vari
+                inputs = [red, green, blue, nir, ndvi, ior, bai, gemi, grvi, vari]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -173,6 +174,7 @@ for epoch in range(N_EPOCH):
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
                 ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
                 bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
@@ -180,8 +182,8 @@ for epoch in range(N_EPOCH):
                 grvi = cv2.resize(grvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
                 vari = cv2.resize(vari, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
-                # red, green, blue, ndvi, ior, bai, gemi, grvi, vari
-                v_inputs = [red, green, blue, ndvi, ior, bai, gemi, grvi, vari]
+                # red, green, blue, nir, ndvi, ior, bai, gemi, grvi, vari
+                v_inputs = [red, green, blue, nir, ndvi, ior, bai, gemi, grvi, vari]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
@@ -229,7 +231,7 @@ for epoch in range(N_EPOCH):
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.95:
+        if v_f2 > 0.8:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
