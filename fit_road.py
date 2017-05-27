@@ -9,7 +9,7 @@ from utils import components
 from utils import image as UtilImage
 from keras.optimizers import Adam
 from utils import common as common_util
-from models.burn.model import model as burn_model
+from models.road.model import model as road_model
 
 st_time = time.time()
 N_EPOCH = 10
@@ -39,7 +39,7 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = burn_model()
+[model, structure] = road_model()
 
 adam = Adam(lr=1e-3, decay=0.)
 
@@ -248,7 +248,7 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 10:
+    if epoch == 7:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-4)
 
