@@ -13,7 +13,7 @@ from models.burn.model import model as burn_model
 
 st_time = time.time()
 N_EPOCH = 10
-BATCH_SIZE = 140
+BATCH_SIZE = 120
 IMAGE_WIDTH = 128
 IMAGE_HEIGH = 128
 
