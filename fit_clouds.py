@@ -15,7 +15,7 @@ st_time = time.time()
 N_EPOCH = 10
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
-IMAGE_HEIGH = 128
+IMAGE_HEIGHT = 128
 GROUP = ['cloudy', 'partly_cloudy']
 
 t_loss_graph = np.array([])
@@ -85,8 +85,8 @@ for epoch in range(N_EPOCH):
                     targets[2] = 1  # other tag
 
                 # resize
-                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
-                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
 
                 inputs = [red, green]
 
@@ -161,8 +161,8 @@ for epoch in range(N_EPOCH):
                     targets[2] = 1  # other tag
 
                 # resize
-                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
-                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
 
                 v_inputs = [red, green]
 

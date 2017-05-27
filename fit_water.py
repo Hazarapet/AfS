@@ -16,7 +16,7 @@ st_time = time.time()
 N_EPOCH = 15
 BATCH_SIZE = 200
 IMAGE_WIDTH = 128
-IMAGE_HEIGH = 128
+IMAGE_HEIGHT = 128
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -80,9 +80,9 @@ for epoch in range(N_EPOCH):
                 ndwi = UtilImage.ndwi(rgbn)
 
                 # resize
-                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
                 inputs = [ior, ndvi, ndwi]
 
@@ -158,9 +158,9 @@ for epoch in range(N_EPOCH):
                 ndwi = UtilImage.ndwi(rgbn)
 
                 # resize
-                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGH))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
                 v_inputs = [ior, ndvi, ndwi]
 

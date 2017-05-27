@@ -15,7 +15,7 @@ st_time = time.time()
 N_EPOCH = 15
 BATCH_SIZE = 220
 IMAGE_WIDTH = 128
-IMAGE_HEIGH = 128
+IMAGE_HEIGHT = 128
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -82,15 +82,15 @@ for epoch in range(N_EPOCH):
                 vari = UtilImage.vari(rgbn)
 
                 # resize
-                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
-                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
-                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
-                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
-                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGH))
-                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
-                grvi = cv2.resize(grvi, (IMAGE_WIDTH, IMAGE_HEIGH))
-                vari = cv2.resize(vari, (IMAGE_WIDTH, IMAGE_HEIGH))
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                grvi = cv2.resize(grvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                vari = cv2.resize(vari, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
                 # red, green, blue, ndvi, ior, bai, gemi, grvi, vari
                 inputs = [red, green, blue, ndvi, ior, bai, gemi, grvi, vari]
@@ -170,15 +170,15 @@ for epoch in range(N_EPOCH):
                 vari = UtilImage.vari(rgbn)
 
                 # resize
-                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
-                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
-                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
-                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGH))
-                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGH))
-                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGH))
-                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGH))
-                grvi = cv2.resize(grvi, (IMAGE_WIDTH, IMAGE_HEIGH))
-                vari = cv2.resize(vari, (IMAGE_WIDTH, IMAGE_HEIGH))
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                grvi = cv2.resize(grvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                vari = cv2.resize(vari, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
                 # red, green, blue, ndvi, ior, bai, gemi, grvi, vari
                 v_inputs = [red, green, blue, ndvi, ior, bai, gemi, grvi, vari]

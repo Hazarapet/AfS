@@ -15,7 +15,7 @@ st_time = time.time()
 N_EPOCH = 10
 BATCH_SIZE = 200
 IMAGE_WIDTH = 128
-IMAGE_HEIGH = 128
+IMAGE_HEIGHT = 128
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -82,9 +82,9 @@ for epoch in range(N_EPOCH):
                         targets = 1
 
                 # resize
-                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
-                blue = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
-                green = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                blue = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                green = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
 
                 inputs = [red, green, blue]
 
@@ -156,9 +156,9 @@ for epoch in range(N_EPOCH):
                         targets = 1
 
                 # resize
-                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGH))
-                blue = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGH))
-                green = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGH))
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                blue = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                green = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
 
                 v_inputs = [red, green, blue]
 
