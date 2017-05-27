@@ -8,7 +8,7 @@ from keras.regularizers import l2
 def model(weights_path=None):
     # red, green, blue, nir, ndvi, ior, bai, gemi
     _model = Sequential()
-    _model.add(ZeroPadding2D((1, 1), input_shape=(8, 128, 128)))
+    _model.add(ZeroPadding2D((1, 1), input_shape=(7, 128, 128)))
     _model.add(Conv2D(64, (3, 3)))
     _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))

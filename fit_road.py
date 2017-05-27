@@ -87,10 +87,9 @@ for epoch in range(N_EPOCH):
                 ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
                 ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
                 bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
                 # red, green, blue, nir, ndvi, ior, bai, gemi, grvi, vari
-                inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
+                inputs = [red, green, blue, nir, ndvi, ior, bai]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -172,10 +171,9 @@ for epoch in range(N_EPOCH):
                 ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
                 ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
                 bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
                 # red, green, blue, nir, ndvi, ior, bai, gemi, grvi, vari
-                v_inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
+                v_inputs = [red, green, blue, nir, ndvi, ior, bai]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
