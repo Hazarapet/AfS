@@ -16,6 +16,7 @@ N_EPOCH = 8
 BATCH_SIZE = 110
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
+IGNORE_PERCENT = 0.5
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -26,6 +27,7 @@ v_f2_graph = np.array([])
 
 X = []
 y = []
+
 
 print 'data loading...'
 # loading the data
@@ -50,10 +52,24 @@ model.compile(loss=components.f2_binary_cross_entropy(),
 print model.inputs
 print "training..."
 
+# index = 0
+# indices = []
+#
+# # ignore the part of train
+# for f, tags in enumerate(train):
+#     for t in tags.split(' '):
+#         if t != 'slash_burn':
+#             indices.append(index)
+#
+#     index += 1
+#
+# np.random.shuffle(indices)
+
+
 for epoch in range(N_EPOCH):
 
     print "Epoch: {}".format(epoch)
-    trained_batch = 0
+    trained_batch = 0.
 
     # we should shuffle the train set
     np.random.shuffle(train)
@@ -65,57 +81,55 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
+            targets = 0
+            for t in tags.split(' '):
+                if t == 'slash_burn':
+                    targets = 1
+
             rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
-            assert rgbn is not None
 
-            if rgbn is not None:
-                targets = 0
-                for t in tags.split(' '):
-                    if t == 'slash_burn':
-                        targets = 1
+            ndvi = UtilImage.ndvi(rgbn)
+            ior = UtilImage.ior(rgbn)
+            bai = UtilImage.bai(rgbn)
+            gemi = UtilImage.gemi(rgbn)
 
-                ndvi = UtilImage.ndvi(rgbn)
-                ior = UtilImage.ior(rgbn)
-                bai = UtilImage.bai(rgbn)
-                gemi = UtilImage.gemi(rgbn)
+            # resize
+            red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
-                # resize
-                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            # red, green, blue, nir, ndvi, ior, bai, gemi
+            inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
 
-                # red, green, blue, nir, ndvi, ior, bai, gemi
-                inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
+            t_batch_inputs.append(inputs)
+            t_batch_labels.append(targets)
 
-                t_batch_inputs.append(inputs)
+            if targets == 1:
+                # --- augmentation ---
+                # rotate 90
+                rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
+                t_batch_inputs.append(rt90_inputs)
                 t_batch_labels.append(targets)
 
-                if targets == 1:
-                    # --- augmentation ---
-                    # rotate 90
-                    rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
-                    t_batch_inputs.append(rt90_inputs)
-                    t_batch_labels.append(targets)
+                # rotate 180
+                rt180_inputs = np.rot90(inputs, 2, axes=(1, 2))
+                t_batch_inputs.append(rt180_inputs)
+                t_batch_labels.append(targets)
 
-                    # rotate 180
-                    rt180_inputs = np.rot90(inputs, 2, axes=(1, 2))
-                    t_batch_inputs.append(rt180_inputs)
-                    t_batch_labels.append(targets)
+                # flip h
+                flip_h_inputs = np.flip(inputs, 2)
+                t_batch_inputs.append(flip_h_inputs)
+                t_batch_labels.append(targets)
 
-                    # flip h
-                    flip_h_inputs = np.flip(inputs, 2)
-                    t_batch_inputs.append(flip_h_inputs)
-                    t_batch_labels.append(targets)
-
-                    # flip v
-                    flip_v_inputs = np.flip(inputs, 1)
-                    t_batch_inputs.append(flip_v_inputs)
-                    t_batch_labels.append(targets)
+                # flip v
+                flip_v_inputs = np.flip(inputs, 1)
+                t_batch_inputs.append(flip_v_inputs)
+                t_batch_labels.append(targets)
 
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
         t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
