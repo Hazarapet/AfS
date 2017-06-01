@@ -70,7 +70,7 @@ def model(weights_path=None):
     _model.add(Dense(64, kernel_regularizer=l2(1e-5)))
     _model.add(Activation('relu'))
 
-    _model.add(Dense(4, activation='sigmoid'))
+    _model.add(Dense(3, activation='sigmoid'))
 
     if weights_path:
         _model.load_weights(weights_path)
