@@ -9,13 +9,15 @@ from utils import components
 from utils import image as UtilImage
 from keras.optimizers import Adam
 from utils import common as common_util
-from models.habitation.model import model as habitation_model
+from models.hablog.model import model as hablog_model
 
 st_time = time.time()
-N_EPOCH = 10
-BATCH_SIZE = 120
+N_EPOCH = 8
+BATCH_SIZE = 110
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
+
+GROUP = ['habitation', 'selective_logging']
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -34,12 +36,17 @@ df_train = pd.read_csv('train_v2.csv')
 # we should shuffle all examples
 np.random.shuffle(df_train.values)
 
+labels = GROUP
+
+label_map = {l: i for i, l in enumerate(labels)}
+inv_label_map = {i: l for l, i in label_map.items()}
+
 # splitting to train and validation set
 index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = habitation_model()
+[model, structure] = hablog_model()
 
 adam = Adam(lr=1e-3, decay=0.)
 
@@ -69,24 +76,36 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = 0
+                targets = np.zeros(3)
                 for t in tags.split(' '):
-                    if t == 'habitation':
-                        targets = 1
+                    if t in GROUP:
+                        targets[label_map[t]] = 1
+
+                if np.sum(targets) == 0:
+                    targets[2] = 1  # other tag
+
+                ndvi = UtilImage.ndvi(rgbn)
+                ior = UtilImage.ior(rgbn)
+                bai = UtilImage.bai(rgbn)
+                gemi = UtilImage.gemi(rgbn)
 
                 # resize
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
-                # red, green, blue, nir
-                inputs = [red, green, blue, nir]
+                # red, green, blue, nir, ndvi, ior, bai, gemi, grvi, vari
+                inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if targets == 1:
+                if targets[2] != 1:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
@@ -114,7 +133,7 @@ for epoch in range(N_EPOCH):
         for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
             # collecting for plotting
             t_i = np.stack(min_b[:, 0])  # inputs
-            t_l = min_b[:, 1]  # labels
+            t_l = np.stack(min_b[:, 1])  # labels
 
             trained_batch += len(t_l)
 
@@ -128,7 +147,7 @@ for epoch in range(N_EPOCH):
                    float(t_loss),
                    float(t_acc),
                    float(t_f2),
-                   np.sum(t_l),
+                   np.sum((t_l[:, 2] != 1)*1),
                    len(t_l))
 
     # ===== Validation =====
@@ -145,24 +164,36 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = 0
+                targets = np.zeros(3)
                 for t in tags.split(' '):
-                    if t == 'habitation':
-                        targets = 1
+                    if t in GROUP:
+                        targets[label_map[t]] = 1
+
+                if np.sum(targets) == 0:
+                    targets[2] = 1  # other tag
+
+                ndvi = UtilImage.ndvi(rgbn)
+                ior = UtilImage.ior(rgbn)
+                bai = UtilImage.bai(rgbn)
+                gemi = UtilImage.gemi(rgbn)
 
                 # resize
                 red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
                 nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
-                # red, green, blue, nir
-                v_inputs = [red, green, blue, nir]
+                # red, green, blue, nir, ndvi, ior, bai, gemi, grvi, vari
+                v_inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
 
-                if targets == 1:
+                if targets[2] != 1:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))
@@ -201,7 +232,7 @@ for epoch in range(N_EPOCH):
             float(v_acc),
             float(v_f2),
             float(model.optimizer.lr.get_value()),
-            np.sum(v_batch_labels),
+            np.sum((v_batch_labels[:, 2] !=1)*1),
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
