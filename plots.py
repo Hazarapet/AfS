@@ -2,13 +2,20 @@ import pandas as pd
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
 
-def plot_curve(values, labels, file_name, x_axis='Step', y_axis='Loss'):
-    plt.figure()
-    plt.xlabel(x_axis, fontsize=12)
-    plt.ylabel(y_axis, fontsize=12)
-    for y_arr, label in zip(values, labels):
-        plt.plot(y_arr, label=label)
+def plot_curve(values, labels, file_name):
+    fig, ax1 = plt.subplots()
+    ax1.set_xlabel('Steps')
+    ax1.plot(values[0], 'r-', label=labels[0])
+    ax1.set_ylabel('Loss', color='r')
+    ax1.tick_params('y', colors='r')
+    ax1.legend(loc=4)
 
+    ax2 = ax1.twinx()
+
+    for y_arr, label in zip(values[1:], labels[1:]):
+        ax2.plot(y_arr, label=label)
+
+    plt.grid(color='gray', linestyle='-', linewidth=0.5)
     plt.legend(bbox_to_anchor=(1, 1), loc=5)
     plt.savefig(file_name, bbox_inches='tight')
 
