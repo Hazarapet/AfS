@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.agriculture.model import model as agriculture_model
 
 st_time = time.time()
-N_EPOCH = 15
+N_EPOCH = 10
 BATCH_SIZE = 220
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128

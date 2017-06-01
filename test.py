@@ -5,19 +5,43 @@ import numpy as np
 import pandas as pd
 from utils import common as common_util
 from utils import image as UtilImage
-from sklearn.metrics import fbeta_score
 from keras.models import model_from_json
 
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
-IMAGE_HEIGH = 128
+IMAGE_HEIGHT = 128
+
+def aug(array, input):
+    rt90 = np.rot90(input, 1, axes=(1, 2))
+    array.append(rt90)
+
+    # rotate 180
+    rt180 = np.rot90(input, 2, axes=(1, 2))
+    array.append(rt180)
+
+    # flip h
+    flip_h = np.flip(input, 2)
+    array.append(flip_h)
+
+    # flip v
+    flip_v = np.flip(input, 1)
+    array.append(flip_v)
+
+    return array
 
 weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
 model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
 
 with open(model_structure, 'r') as model_json:
-    model = model_from_json(json.loads(model_json.read()))
-    model.load_weights(weights_path)
+    group_model = model_from_json(json.loads(model_json.read()))
+    group_model.load_weights(weights_path)
+
+weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
+model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+
+with open(model_structure, 'r') as model_json:
+    agriculture_model = model_from_json(json.loads(model_json.read()))
+    agriculture_model.load_weights(weights_path)
 
 
 print 'train.csv loading...'
@@ -34,36 +58,61 @@ count = 0
 result = []
 files = []
 print 'images loading...'
-X_test = os.listdir('resource/test-jpg')
+X_test = os.listdir('resource/test-v2-tif')
 
-for min_batch in common_util.iterate_minibatches(X_test, batchsize=BATCH_SIZE):
+for f in common_util.iterate_minibatches(X_test, batchsize=1):
     test_batch_inputs = []
-    # test_batch_sobel_inputs = []
 
-    # load val's images
-    for f in min_batch:
-        img = cv2.imread('resource/test-jpg/{}'.format(f))
-        assert img is not None
+    rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+    ndvi = UtilImage.ndvi(rgbn)
+    ndwi = UtilImage.ndwi(rgbn)
+    ior = UtilImage.ior(rgbn)
+    bai = UtilImage.bai(rgbn)
+    gemi = UtilImage.gemi(rgbn)
 
-        if img is not None:
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGH)).astype(np.float32)
-            img[:, :, 0] -= 103.939
-            img[:, :, 1] -= 116.779
-            img[:, :, 2] -= 123.68
-            img = img.transpose((2, 0, 1))
+    # resize
+    red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+    green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
+    blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
+    nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
+    ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+    ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+    ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+    bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+    gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
-            # mag, angle = UtilImage.img_sobel(img)
+    # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
+    inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
 
-            test_batch_inputs.append(img)
-            # test_batch_sobel_inputs.append(mag)
+    test_batch_inputs.append(inputs)
+
+    test_batch_inputs = aug(test_batch_inputs, inputs)
 
     count += len(test_batch_inputs)
-    test_batch_inputs = np.array(test_batch_inputs).astype(np.float16)
-    # test_batch_sobel_inputs = np.array(test_batch_sobel_inputs).astype(np.float16)
+    test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
-    p_test = model.predict_on_batch(test_batch_inputs)
-    result.extend(p_test)
-    files.extend(min_batch)
+    p_group_test = group_model.predict_on_batch(test_batch_inputs)
+    p_group_test = np.sum(p_group_test, axis=0) / 5
+
+    result.extend(p_group_test)
+
+    # -------------------------------------------- #
+    test_batch_inputs = []
+
+    # red, green, blue, ndwi, ndvi, ior, gemi
+    inputs = [red, green, blue, ndvi, ndwi, ior, gemi]
+
+    test_batch_inputs.append(inputs)
+
+    test_batch_inputs = aug(test_batch_inputs, inputs)
+
+    count += len(test_batch_inputs)
+    test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
+
+    p_agr_test = agriculture_model.predict_on_batch(test_batch_inputs)
+    p_agr_test = np.sum(p_agr_test, axis=0) / 5
+
+    result.extend(p_agr_test)
 
     print '{}/{} predicted'.format(count, len(X_test))
 
