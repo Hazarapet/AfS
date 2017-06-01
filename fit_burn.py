@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.burn.model import model as burn_model
 
 st_time = time.time()
-N_EPOCH = 10
+N_EPOCH = 8
 BATCH_SIZE = 110
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
@@ -240,7 +240,7 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 7:
+    if epoch == 5:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-4)
 
