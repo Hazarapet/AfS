@@ -42,6 +42,11 @@ def model(weights_path=None):
     _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))
 
+    _model.add(ZeroPadding2D((1, 1)))
+    _model.add(Conv2D(128, (3, 3)))
+    _model.add(BatchNormalization(axis=1))
+    _model.add(Activation('relu'))
+
     _model.add(MaxPooling2D(pool_size=(2, 2)))
 
     _model.add(ZeroPadding2D((1, 1)))
