@@ -3,7 +3,9 @@ import numpy as np
 import pandas as pd
 import plots
 
-array = np.ones(12).reshape((4, 3))
+array1 = np.arange(2)
+array2 = np.arange(3)
 
-print np.sum(array, axis=0) / 4
+print array1, array2
+print zip(array1, array2)
 

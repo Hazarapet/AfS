@@ -11,6 +11,18 @@ BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
+GROUP = ['artisinal_mine'
+         'bare_ground',
+         'blooming',
+         'blow_down',
+         'conventional_mine',
+         'cultivation',
+         'haze',
+         'selective_logging']
+
+CLOUDS = ['cloudy', 'partly_cloudy']
+HABLOG = ['habitation', 'selective_logging']
+
 def aug(array, input):
     rt90 = np.rot90(input, 1, axes=(1, 2))
     array.append(rt90)
@@ -43,6 +55,48 @@ with open(model_structure, 'r') as model_json:
     agriculture_model = model_from_json(json.loads(model_json.read()))
     agriculture_model.load_weights(weights_path)
 
+weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
+model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+
+with open(model_structure, 'r') as model_json:
+    burn_model = model_from_json(json.loads(model_json.read()))
+    burn_model.load_weights(weights_path)
+
+weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
+model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+
+with open(model_structure, 'r') as model_json:
+    clouds_model = model_from_json(json.loads(model_json.read()))
+    clouds_model.load_weights(weights_path)
+
+weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
+model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+
+with open(model_structure, 'r') as model_json:
+    hablog_model = model_from_json(json.loads(model_json.read()))
+    hablog_model.load_weights(weights_path)
+
+weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
+model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+
+with open(model_structure, 'r') as model_json:
+    primary_model = model_from_json(json.loads(model_json.read()))
+    primary_model.load_weights(weights_path)
+
+weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
+model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+
+with open(model_structure, 'r') as model_json:
+    road_model = model_from_json(json.loads(model_json.read()))
+    road_model.load_weights(weights_path)
+
+weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
+model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+
+with open(model_structure, 'r') as model_json:
+    water_model = model_from_json(json.loads(model_json.read()))
+    water_model.load_weights(weights_path)
+
 
 print 'train.csv loading...'
 # loading the data
@@ -60,10 +114,13 @@ files = []
 print 'images loading...'
 X_test = os.listdir('resource/test-v2-tif')
 
-for f in common_util.iterate_minibatches(X_test, batchsize=1):
+for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
+    prediction_vector = np.zeros(17)
+
     test_batch_inputs = []
 
-    rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+    rgbn = UtilImage.process_tif('resource/test-v2-tif/{}.tif'.format(f))
+
     ndvi = UtilImage.ndvi(rgbn)
     ndwi = UtilImage.ndwi(rgbn)
     ior = UtilImage.ior(rgbn)
@@ -94,9 +151,11 @@ for f in common_util.iterate_minibatches(X_test, batchsize=1):
     p_group_test = group_model.predict_on_batch(test_batch_inputs)
     p_group_test = np.sum(p_group_test, axis=0) / 5
 
-    result.extend(p_group_test)
+    for l, p in zip(GROUP, p_group_test):
+        prediction_vector[label_map[l]] = p
 
     # -------------------------------------------- #
+    # --------------- Agriculture ---------------- #
     test_batch_inputs = []
 
     # red, green, blue, ndwi, ndvi, ior, gemi
@@ -110,9 +169,129 @@ for f in common_util.iterate_minibatches(X_test, batchsize=1):
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_agr_test = agriculture_model.predict_on_batch(test_batch_inputs)
-    p_agr_test = np.sum(p_agr_test, axis=0) / 5
+    p_agr_test = np.sum(p_agr_test, axis=0) / 5 # avg of prediction
 
-    result.extend(p_agr_test)
+    prediction_vector[label_map['agriculture']] = p_agr_test
+
+    # -------------------------------------------- #
+    # ----------------- Burn --------------------- #
+    test_batch_inputs = []
+
+    # red, green, blue, ndwi, ndvi, ior, gemi
+    inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
+
+    test_batch_inputs.append(inputs)
+
+    test_batch_inputs = aug(test_batch_inputs, inputs)
+
+    count += len(test_batch_inputs)
+    test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
+
+    p_burn_test = burn_model.predict_on_batch(test_batch_inputs)
+    p_burn_test = np.sum(p_burn_test, axis=0) / 5  # avg of prediction
+
+    prediction_vector[label_map['slash_burn']] = p_burn_test
+
+    # -------------------------------------------- #
+    # ------------------ Clouds ------------------ #
+    test_batch_inputs = []
+
+    # red, green, blue, ndwi, ndvi, ior, gemi
+    inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
+
+    test_batch_inputs.append(inputs)
+
+    test_batch_inputs = aug(test_batch_inputs, inputs)
+
+    count += len(test_batch_inputs)
+    test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
+
+    p_clouds_test = clouds_model.predict_on_batch(test_batch_inputs)
+    p_clouds_test = np.sum(p_clouds_test, axis=0) / 5  # avg of prediction
+
+    for l, p in zip(CLOUDS, p_clouds_test):
+        prediction_vector[label_map[l]] = p
+
+    # -------------------------------------------- #
+    # ----------------- Hablog ------------------- #
+    test_batch_inputs = []
+
+    # red, green, blue, ndwi, ndvi, ior, gemi
+    inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
+
+    test_batch_inputs.append(inputs)
+
+    test_batch_inputs = aug(test_batch_inputs, inputs)
+
+    count += len(test_batch_inputs)
+    test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
+
+    p_hablog_test = hablog_model.predict_on_batch(test_batch_inputs)
+    p_hablog_test = np.sum(p_hablog_test, axis=0) / 5  # avg of prediction
+
+    for l, p in zip(HABLOG, p_hablog_test):
+        prediction_vector[label_map[l]] = p
+
+    # -------------------------------------------- #
+    # ----------------- Primary ------------------ #
+    test_batch_inputs = []
+
+    # red, green, blue
+    inputs = [red, green, blue]
+
+    test_batch_inputs.append(inputs)
+
+    test_batch_inputs = aug(test_batch_inputs, inputs)
+
+    count += len(test_batch_inputs)
+    test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
+
+    p_primary_test = primary_model.predict_on_batch(test_batch_inputs)
+    p_primary_test = np.sum(p_primary_test, axis=0) / 5  # avg of prediction
+
+    prediction_vector[label_map['primary']] = p_primary_test
+
+    # -------------------------------------------- #
+    # ------------------- Road ------------------- #
+    test_batch_inputs = []
+
+    # red, green, blue, nir, ndvi, ior, bai, gemi
+    inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
+
+    test_batch_inputs.append(inputs)
+
+    test_batch_inputs = aug(test_batch_inputs, inputs)
+
+    # TODO fix count
+    count += len(test_batch_inputs)
+    test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
+
+    p_road_test = road_model.predict_on_batch(test_batch_inputs)
+    p_road_test = np.sum(p_road_test, axis=0) / 5  # avg of prediction
+
+    prediction_vector[label_map['road']] = p_road_test
+
+    # -------------------------------------------- #
+    # ------------------ Water ------------------- #
+    test_batch_inputs = []
+
+    # ior, ndvi, ndwi
+    inputs = [ior, ndvi, ndwi]
+
+    test_batch_inputs.append(inputs)
+
+    test_batch_inputs = aug(test_batch_inputs, inputs)
+
+    # TODO fix count
+    count += len(test_batch_inputs)
+    test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
+
+    p_road_test = water_model.predict_on_batch(test_batch_inputs)
+    p_road_test = np.sum(p_road_test, axis=0) / 5  # avg of prediction
+
+    prediction_vector[label_map['water']] = p_road_test
+
+    print prediction_vector
 
     print '{}/{} predicted'.format(count, len(X_test))
 
