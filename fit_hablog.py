@@ -13,7 +13,7 @@ from models.hablog.model import model as hablog_model
 
 st_time = time.time()
 N_EPOCH = 8
-BATCH_SIZE = 110
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
