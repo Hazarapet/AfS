@@ -8,7 +8,7 @@ from utils import common as common_util
 from utils import image as UtilImage
 from keras.models import model_from_json
 
-BATCH_SIZE = 100
+BATCH_SIZE = 1
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
@@ -41,6 +41,9 @@ def aug(array, input):
     array.append(flip_v)
 
     return array
+
+def agg(array):
+    return np.mean(array, axis=0)
 
 weights_path = 'models/group/structures/tr_l:0.0308-tr_a:1.0-tr_f2:1.0-val_l:0.4826-val_a:0.6725-val_f2:0.6306-time:26-05-2017-02:47:42-dur:344.883.h5'
 model_structure = 'models/group/structures/tr_l:0.0308-tr_a:1.0-tr_f2:1.0-val_l:0.4826-val_a:0.6725-val_f2:0.6306-time:26-05-2017-02:47:42-dur:344.883.json'
@@ -123,7 +126,7 @@ files = []
 print 'images loading...'
 X_test = os.listdir('resource/test-tif-v2')
 
-for f in common_util.iterate_minibatches(X_test, batchsize=1):
+for f in common_util.iterate_minibatches(X_test, batchsize=BATCH_SIZE):
     prediction_vector = np.zeros(17)
 
     test_batch_inputs = []
@@ -158,7 +161,7 @@ for f in common_util.iterate_minibatches(X_test, batchsize=1):
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_group_test = group_model.predict_on_batch(test_batch_inputs)
-    p_group_test = np.sum(p_group_test, axis=0) / 5
+    p_group_test = agg(p_group_test)
 
     for l, p in zip(GROUP, p_group_test):
         prediction_vector[label_map[l]] = p
@@ -175,7 +178,7 @@ for f in common_util.iterate_minibatches(X_test, batchsize=1):
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_agr_test = agriculture_model.predict_on_batch(test_batch_inputs)
-    p_agr_test = np.sum(p_agr_test, axis=0) / 5 # avg of prediction
+    p_agr_test = agg(p_agr_test) # avg of prediction
 
     prediction_vector[label_map['agriculture']] = p_agr_test
 
@@ -191,7 +194,7 @@ for f in common_util.iterate_minibatches(X_test, batchsize=1):
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_burn_test = burn_model.predict_on_batch(test_batch_inputs)
-    p_burn_test = np.sum(p_burn_test, axis=0) / 5  # avg of prediction
+    p_burn_test = agg(p_burn_test) # avg of prediction
 
     prediction_vector[label_map['slash_burn']] = p_burn_test
 
@@ -207,7 +210,7 @@ for f in common_util.iterate_minibatches(X_test, batchsize=1):
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_clouds_test = clouds_model.predict_on_batch(test_batch_inputs)
-    p_clouds_test = np.sum(p_clouds_test, axis=0) / 5  # avg of prediction
+    p_clouds_test = agg(p_clouds_test)  # avg of prediction
 
     for l, p in zip(CLOUDS, p_clouds_test):
         prediction_vector[label_map[l]] = p
@@ -224,7 +227,7 @@ for f in common_util.iterate_minibatches(X_test, batchsize=1):
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_hablog_test = hablog_model.predict_on_batch(test_batch_inputs)
-    p_hablog_test = np.sum(p_hablog_test, axis=0) / 5  # avg of prediction
+    p_hablog_test = agg(p_hablog_test)  # avg of prediction
 
     for l, p in zip(HABLOG, p_hablog_test):
         prediction_vector[label_map[l]] = p
@@ -241,7 +244,7 @@ for f in common_util.iterate_minibatches(X_test, batchsize=1):
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_primary_test = primary_model.predict_on_batch(test_batch_inputs)
-    p_primary_test = np.sum(p_primary_test, axis=0) / 5  # avg of prediction
+    p_primary_test = agg(p_primary_test) # avg of prediction
 
     prediction_vector[label_map['primary']] = p_primary_test
 
@@ -251,14 +254,14 @@ for f in common_util.iterate_minibatches(X_test, batchsize=1):
 
     # TODO fix input
     # red, green, blue, nir, ndvi, ior, bai, gemi
-    inputs = [red, green, blue, ndvi, ior, bai, gemi]
+    inputs = [red, green, blue, nir, ndvi, ior, bai]
 
     test_batch_inputs.append(inputs)
     test_batch_inputs = aug(test_batch_inputs, inputs)
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_road_test = road_model.predict_on_batch(test_batch_inputs)
-    p_road_test = np.sum(p_road_test, axis=0) / 5  # avg of prediction
+    p_road_test = agg(p_road_test)  # avg of prediction
 
     prediction_vector[label_map['road']] = p_road_test
 
@@ -276,11 +279,11 @@ for f in common_util.iterate_minibatches(X_test, batchsize=1):
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_road_test = water_model.predict_on_batch(test_batch_inputs)
-    p_road_test = np.sum(p_road_test, axis=0) / 5  # avg of prediction
+    p_road_test = agg(p_road_test)  # avg of prediction
 
     prediction_vector[label_map['water']] = p_road_test
 
-    count += 1
+    count += BATCH_SIZE
 
     print '{}/{} predicted'.format(count, len(X_test))
 
