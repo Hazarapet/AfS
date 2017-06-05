@@ -9,7 +9,8 @@ def optimise_f2_thresholds(y, p, verbose=True, resolution=100):
     score = common.f2_score(y, p2)
     return score
 
-  x = [0.2]*17
+  x = [0.2] * 17
+
   for i in range(17):
     best_i2 = 0
     best_score = 0
