@@ -123,7 +123,7 @@ files = []
 print 'images loading...'
 X_test = os.listdir('resource/test-tif-v2')
 
-for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
+for f in common_util.iterate_minibatches(X_test, batchsize=1):
     prediction_vector = np.zeros(17)
 
     test_batch_inputs = []
