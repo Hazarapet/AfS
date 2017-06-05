@@ -1,4 +1,5 @@
 import os
+import sys
 import cv2
 import json
 import numpy as np
@@ -153,10 +154,7 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
     inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
 
     test_batch_inputs.append(inputs)
-
     test_batch_inputs = aug(test_batch_inputs, inputs)
-
-    count += len(test_batch_inputs)
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_group_test = group_model.predict_on_batch(test_batch_inputs)
@@ -173,10 +171,7 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
     inputs = [red, green, blue, ndvi, ndwi, ior, gemi]
 
     test_batch_inputs.append(inputs)
-
     test_batch_inputs = aug(test_batch_inputs, inputs)
-
-    count += len(test_batch_inputs)
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_agr_test = agriculture_model.predict_on_batch(test_batch_inputs)
@@ -192,10 +187,7 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
     inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
 
     test_batch_inputs.append(inputs)
-
     test_batch_inputs = aug(test_batch_inputs, inputs)
-
-    count += len(test_batch_inputs)
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_burn_test = burn_model.predict_on_batch(test_batch_inputs)
@@ -211,10 +203,7 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
     inputs = [red, green]
 
     test_batch_inputs.append(inputs)
-
     test_batch_inputs = aug(test_batch_inputs, inputs)
-
-    count += len(test_batch_inputs)
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_clouds_test = clouds_model.predict_on_batch(test_batch_inputs)
@@ -231,10 +220,7 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
     inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
 
     test_batch_inputs.append(inputs)
-
     test_batch_inputs = aug(test_batch_inputs, inputs)
-
-    count += len(test_batch_inputs)
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_hablog_test = hablog_model.predict_on_batch(test_batch_inputs)
@@ -251,10 +237,7 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
     inputs = [red, green, blue]
 
     test_batch_inputs.append(inputs)
-
     test_batch_inputs = aug(test_batch_inputs, inputs)
-
-    count += len(test_batch_inputs)
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_primary_test = primary_model.predict_on_batch(test_batch_inputs)
@@ -271,11 +254,7 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
     inputs = [red, green, blue, ndvi, ior, bai, gemi]
 
     test_batch_inputs.append(inputs)
-
     test_batch_inputs = aug(test_batch_inputs, inputs)
-
-    # TODO fix count
-    count += len(test_batch_inputs)
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_road_test = road_model.predict_on_batch(test_batch_inputs)
@@ -294,8 +273,6 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
 
     test_batch_inputs = aug(test_batch_inputs, inputs)
 
-    # TODO fix count
-    count += len(test_batch_inputs)
     test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
     p_road_test = water_model.predict_on_batch(test_batch_inputs)
@@ -303,7 +280,7 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
 
     prediction_vector[label_map['water']] = p_road_test
 
-    print prediction_vector
+    count += 1
 
     print '{}/{} predicted'.format(count, len(X_test))
 
