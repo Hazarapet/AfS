@@ -11,7 +11,7 @@ BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
-GROUP = ['artisinal_mine'
+GROUP = ['artisinal_mine',
          'bare_ground',
          'blooming',
          'blow_down',
@@ -41,61 +41,69 @@ def aug(array, input):
 
     return array
 
-weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
-model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+weights_path = 'models/group/structures/tr_l:0.0308-tr_a:1.0-tr_f2:1.0-val_l:0.4826-val_a:0.6725-val_f2:0.6306-time:26-05-2017-02:47:42-dur:344.883.h5'
+model_structure = 'models/group/structures/tr_l:0.0308-tr_a:1.0-tr_f2:1.0-val_l:0.4826-val_a:0.6725-val_f2:0.6306-time:26-05-2017-02:47:42-dur:344.883.json'
 
 with open(model_structure, 'r') as model_json:
     group_model = model_from_json(json.loads(model_json.read()))
     group_model.load_weights(weights_path)
+    print 'group_model is loaded!'
 
-weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
-model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+weights_path = 'models/agriculture/structures/tr_l:0.0045-tr_a:1.0-tr_f2:1.0-val_l:0.6428-val_a:0.7749-val_f2:0.9054-time:04-06-2017-01:43:27-dur:220.152.h5'
+model_structure = 'models/agriculture/structures/tr_l:0.0045-tr_a:1.0-tr_f2:1.0-val_l:0.6428-val_a:0.7749-val_f2:0.9054-time:04-06-2017-01:43:27-dur:220.152.json'
 
 with open(model_structure, 'r') as model_json:
     agriculture_model = model_from_json(json.loads(model_json.read()))
     agriculture_model.load_weights(weights_path)
+    print 'agriculture_model is loaded!'
 
-weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
-model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+weights_path = 'models/burn/structures/tr_l:0.0009-tr_a:1.0-tr_f2:1.0-val_l:3.9634-val_a:0.9831-val_f2:0.6827-time:01-06-2017-22:19:02-dur:152.477.h5'
+model_structure = 'models/burn/structures/tr_l:0.0009-tr_a:1.0-tr_f2:1.0-val_l:3.9634-val_a:0.9831-val_f2:0.6827-time:01-06-2017-22:19:02-dur:152.477.json'
 
 with open(model_structure, 'r') as model_json:
     burn_model = model_from_json(json.loads(model_json.read()))
     burn_model.load_weights(weights_path)
+    print 'burn_model is loaded!'
 
-weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
-model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+weights_path = 'models/clouds/structures/tr_l:0.0047-tr_a:1.0-tr_f2:1.0-val_l:0.2807-val_a:0.902-val_f2:0.8967-time:26-05-2017-19:47:57-dur:217.969.h5'
+model_structure = 'models/clouds/structures/tr_l:0.0047-tr_a:1.0-tr_f2:1.0-val_l:0.2807-val_a:0.902-val_f2:0.8967-time:26-05-2017-19:47:57-dur:217.969.json'
 
 with open(model_structure, 'r') as model_json:
     clouds_model = model_from_json(json.loads(model_json.read()))
     clouds_model.load_weights(weights_path)
+    print 'clouds_model is loaded!'
 
-weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
-model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+weights_path = 'models/hablog/structures/tr_l:0.0694-tr_a:1.0-tr_f2:1.0-val_l:0.4415-val_a:0.8219-val_f2:0.8167-time:03-06-2017-21:53:30-dur:177.196.h5'
+model_structure = 'models/hablog/structures/tr_l:0.0694-tr_a:1.0-tr_f2:1.0-val_l:0.4415-val_a:0.8219-val_f2:0.8167-time:03-06-2017-21:53:30-dur:177.196.json'
 
 with open(model_structure, 'r') as model_json:
     hablog_model = model_from_json(json.loads(model_json.read()))
     hablog_model.load_weights(weights_path)
+    print 'hablog_model is loaded!'
 
-weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
-model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+weights_path = 'models/primary/structures/tr_l:0.0035-tr_a:1.0-tr_f2:1.0-val_l:0.4134-val_a:0.862-val_f2:0.946-time:24-05-2017-18:30:15-dur:53.228.h5'
+model_structure = 'models/primary/structures/tr_l:0.0035-tr_a:1.0-tr_f2:1.0-val_l:0.4134-val_a:0.862-val_f2:0.946-time:24-05-2017-18:30:15-dur:53.228.json'
 
 with open(model_structure, 'r') as model_json:
     primary_model = model_from_json(json.loads(model_json.read()))
     primary_model.load_weights(weights_path)
+    print 'primary_model is loaded!'
 
-weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
-model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+weights_path = 'models/road/structures/tr_l:0.0004-tr_a:1.0-tr_f2:1.0-val_l:0.6021-val_a:0.8187-val_f2:0.8717-time:27-05-2017-05:10:54-dur:231.052.h5'
+model_structure = 'models/road/structures/tr_l:0.0004-tr_a:1.0-tr_f2:1.0-val_l:0.6021-val_a:0.8187-val_f2:0.8717-time:27-05-2017-05:10:54-dur:231.052.json'
 
 with open(model_structure, 'r') as model_json:
     road_model = model_from_json(json.loads(model_json.read()))
     road_model.load_weights(weights_path)
+    print 'road_model is loaded!'
 
-weights_path = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.h5'
-model_structure = 'models/UNET/structures/tr_l:0.04-tr_a:0.99-val_l:0.076-val_a:0.975-time:11-05-2017-19:25:31-dur:227.379.json'
+weights_path = 'models/water/structures/tr_l:0.0119-tr_a:1.0-tr_f2:1.0-val_l:0.4473-val_a:0.8639-val_f2:0.8652-time:27-05-2017-19:20:46-dur:170.095.h5'
+model_structure = 'models/water/structures/tr_l:0.0119-tr_a:1.0-tr_f2:1.0-val_l:0.4473-val_a:0.8639-val_f2:0.8652-time:27-05-2017-19:20:46-dur:170.095.json'
 
 with open(model_structure, 'r') as model_json:
     water_model = model_from_json(json.loads(model_json.read()))
     water_model.load_weights(weights_path)
+    print 'water_model is loaded!'
 
 
 print 'train.csv loading...'
@@ -112,14 +120,14 @@ count = 0
 result = []
 files = []
 print 'images loading...'
-X_test = os.listdir('resource/test-v2-tif')
+X_test = os.listdir('resource/test-tif-v2')
 
 for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
     prediction_vector = np.zeros(17)
 
     test_batch_inputs = []
 
-    rgbn = UtilImage.process_tif('resource/test-v2-tif/{}.tif'.format(f))
+    rgbn = UtilImage.process_tif('resource/test-tif-v2/{}'.format(f[0]))
 
     ndvi = UtilImage.ndvi(rgbn)
     ndwi = UtilImage.ndwi(rgbn)
@@ -138,6 +146,9 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
     bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
     gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
+    # ----------------------------------------------------------------------------
+    # ---------------------------------- Models ----------------------------------
+    # ----------------------------------------------------------------------------
     # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
     inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
 
@@ -197,7 +208,7 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
     test_batch_inputs = []
 
     # red, green, blue, ndwi, ndvi, ior, gemi
-    inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
+    inputs = [red, green]
 
     test_batch_inputs.append(inputs)
 
@@ -255,8 +266,9 @@ for f in common_util.iterate_minibatches(X_test[:1], batchsize=1):
     # ------------------- Road ------------------- #
     test_batch_inputs = []
 
+    # TODO fix input
     # red, green, blue, nir, ndvi, ior, bai, gemi
-    inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
+    inputs = [red, green, blue, ndvi, ior, bai, gemi]
 
     test_batch_inputs.append(inputs)
 
