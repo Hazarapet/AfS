@@ -42,8 +42,10 @@ def aug(array, input):
 
     return array
 
+
 def agg(array):
     return np.mean(array, axis=0)
+
 
 def result(X, path):
     weights_path = 'models/group/structures/tr_l:0.0308-tr_a:1.0-tr_f2:1.0-val_l:0.4826-val_a:0.6725-val_f2:0.6306-time:26-05-2017-02:47:42-dur:344.883.h5'
@@ -129,7 +131,7 @@ def result(X, path):
 
         test_batch_inputs = []
 
-        rgbn = UtilImage.process_tif(path + '{}'.format(f[0]))
+        rgbn = UtilImage.process_tif(path.format(f[0]))
 
         ndvi = UtilImage.ndvi(rgbn)
         ndwi = UtilImage.ndwi(rgbn)

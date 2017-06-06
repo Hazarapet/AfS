@@ -1,10 +1,9 @@
 import os
 import sys
-import cv2
-import json
+import predict
 import numpy as np
 import pandas as pd
-import predict
+import utils.common as common
 
 # loading the data
 df_train = pd.read_csv('train_v2.csv')
@@ -17,20 +16,23 @@ inv_label_map = {i: l for l, i in label_map.items()}
 
 count = 0
 print 'images loading...'
-X_test = os.listdir('resource/test-tif-v2')
+X_train = os.listdir('resource/train-tif-v2')
 
-result = predict.result(X_test, 'resource/test-tif-v2/{}')
+result = predict.result(df_train['image_name'].values[:10], 'resource/train-tif-v2/{}.tif')
 thres = [0.085, 0.2375, 0.19, 0.5, 0.16, 0.0875, 0.5, 0.1925, 0.265, 0.1625, 0.1375, 0.2175, 0.2225, 0.0475, 0.5, 0.5, 0.14]  # Heng CherKeng's example
 
-df_test = pd.DataFrame([[p.replace('.tif', ''), p] for p in X_test])
-df_test.columns = ['image_name', 'tags']
+y = []
+for tags in df_train['tags'].values[:10]:
+    targets = np.zeros(17)
+    for t in tags.split(' '):
+        targets[label_map[t]] = 1
 
-tags = []
-for r in result:
-    r = list(r > thres)
-    t = [inv_label_map[i] for i, j in enumerate(r) if j]
-    tags.append(' '.join(t))
+    y.append(targets)
 
-df_test['tags'] = tags
-df_test.to_csv('submission_0.csv', index=False)
+y = np.array(y).astype(np.float32)
+result = np.array(result).astype(np.float32)
 
+# print result
+print 'F2: ', common.f2_score(y, result).eval()
+
+print '==== End ===='
