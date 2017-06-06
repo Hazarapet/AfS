@@ -1,10 +1,11 @@
 import os
 import sys
-import cv2
-import json
+import time
 import numpy as np
 import pandas as pd
 import predict
+
+st_time = time.time()
 
 # loading the data
 df_train = pd.read_csv('train_v2.csv')
@@ -33,4 +34,7 @@ for r in result:
 
 df_test['tags'] = tags
 df_test.to_csv('submission_0.csv', index=False)
+
+print('\n{:.2f}m Runtime'.format((time.time() - st_time) / 60))
+print '====== End ======'
 
