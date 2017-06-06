@@ -42,11 +42,6 @@ def model(weights_path=None):
     _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))
 
-    _model.add(ZeroPadding2D((1, 1)))
-    _model.add(Conv2D(128, (3, 3)))
-    _model.add(BatchNormalization(axis=1))
-    _model.add(Activation('relu'))
-
     _model.add(MaxPooling2D(pool_size=(2, 2)))
 
     _model.add(ZeroPadding2D((1, 1)))
@@ -78,6 +73,23 @@ def model(weights_path=None):
 
     _model.add(ZeroPadding2D((1, 1)))
     _model.add(Conv2D(256, (3, 3)))
+    _model.add(BatchNormalization(axis=1))
+    _model.add(Activation('relu'))
+
+    _model.add(MaxPooling2D(pool_size=(2, 2)))
+
+    _model.add(ZeroPadding2D((1, 1)))
+    _model.add(Conv2D(512, (3, 3)))
+    _model.add(BatchNormalization(axis=1))
+    _model.add(Activation('relu'))
+
+    _model.add(ZeroPadding2D((1, 1)))
+    _model.add(Conv2D(512, (3, 3)))
+    _model.add(BatchNormalization(axis=1))
+    _model.add(Activation('relu'))
+
+    _model.add(ZeroPadding2D((1, 1)))
+    _model.add(Conv2D(512, (3, 3)))
     _model.add(BatchNormalization(axis=1))
     _model.add(Activation('relu'))
 
@@ -89,12 +101,12 @@ def model(weights_path=None):
     _model.add(Dense(128, kernel_regularizer=l2(1e-5)))
     _model.add(Activation('relu'))
 
-    _model.add(Dense(64, kernel_regularizer=l2(1e-5)))
+    _model.add(Dense(128, kernel_regularizer=l2(1e-5)))
     _model.add(Activation('relu'))
 
-    _model.add(Dense(3, activation='sigmoid'))
+    _model.add(Dense(4, activation='sigmoid'))
 
     if weights_path:
         _model.load_weights(weights_path)
 
-    return [_model, 'models/hablog/structures/']
+    return [_model, 'models/small_group/structures/']

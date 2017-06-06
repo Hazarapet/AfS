@@ -9,15 +9,15 @@ from utils import components
 from utils import image as UtilImage
 from keras.optimizers import Adam
 from utils import common as common_util
-from models.hablog.model import model as hablog_model
+from models.small_group.model import model as small_group_model
 
 st_time = time.time()
-N_EPOCH = 8
+N_EPOCH = 10
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
-GROUP = ['habitation', 'selective_logging']
+GROUP = ['habitation', 'selective_logging', 'slash_burn']
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -46,7 +46,7 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = hablog_model()
+[model, structure] = small_group_model()
 
 adam = Adam(lr=1e-3, decay=0.)
 
@@ -76,13 +76,13 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = np.zeros(3)
+                targets = np.zeros(4)
                 for t in tags.split(' '):
                     if t in GROUP:
                         targets[label_map[t]] = 1
 
                 if np.sum(targets) == 0:
-                    targets[2] = 1  # other tag
+                    targets[3] = 1  # other tag
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ior = UtilImage.ior(rgbn)
@@ -105,7 +105,7 @@ for epoch in range(N_EPOCH):
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if targets[2] != 1:
+                if targets[3] != 1:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
@@ -147,7 +147,7 @@ for epoch in range(N_EPOCH):
                    float(t_loss),
                    float(t_acc),
                    float(t_f2),
-                   np.sum((t_l[:, 2] != 1)*1),
+                   np.sum((t_l[:, 3] != 1)*1),
                    len(t_l))
 
     # ===== Validation =====
@@ -164,13 +164,13 @@ for epoch in range(N_EPOCH):
             assert rgbn is not None
 
             if rgbn is not None:
-                targets = np.zeros(3)
+                targets = np.zeros(4)
                 for t in tags.split(' '):
                     if t in GROUP:
                         targets[label_map[t]] = 1
 
                 if np.sum(targets) == 0:
-                    targets[2] = 1  # other tag
+                    targets[3] = 1  # other tag
 
                 ndvi = UtilImage.ndvi(rgbn)
                 ior = UtilImage.ior(rgbn)
@@ -193,7 +193,7 @@ for epoch in range(N_EPOCH):
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
 
-                if targets[2] != 1:
+                if targets[3] != 1:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))
@@ -232,11 +232,11 @@ for epoch in range(N_EPOCH):
             float(v_acc),
             float(v_f2),
             float(model.optimizer.lr.get_value()),
-            np.sum((v_batch_labels[:, 2] !=1)*1),
+            np.sum((v_batch_labels[:, 3] !=1)*1),
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.8:
+        if v_f2 > 0.85:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
