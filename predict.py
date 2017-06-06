@@ -22,7 +22,8 @@ GROUP = ['artisinal_mine',
          'selective_logging']
 
 CLOUDS = ['cloudy', 'partly_cloudy']
-HABLOG = ['habitation', 'selective_logging']
+SMALL_GROUP = ['habitation', 'selective_logging', 'slush_burn']
+
 
 def aug(array, input):
     rt90 = np.rot90(input, 1, axes=(1, 2))
@@ -64,14 +65,6 @@ def result(X, path):
         agriculture_model.load_weights(weights_path)
         print 'agriculture_model is loaded!'
 
-    weights_path = 'models/burn/structures/tr_l:0.0009-tr_a:1.0-tr_f2:1.0-val_l:3.9634-val_a:0.9831-val_f2:0.6827-time:01-06-2017-22:19:02-dur:152.477.h5'
-    model_structure = 'models/burn/structures/tr_l:0.0009-tr_a:1.0-tr_f2:1.0-val_l:3.9634-val_a:0.9831-val_f2:0.6827-time:01-06-2017-22:19:02-dur:152.477.json'
-
-    with open(model_structure, 'r') as model_json:
-        burn_model = model_from_json(json.loads(model_json.read()))
-        burn_model.load_weights(weights_path)
-        print 'burn_model is loaded!'
-
     weights_path = 'models/clouds/structures/tr_l:0.0047-tr_a:1.0-tr_f2:1.0-val_l:0.2807-val_a:0.902-val_f2:0.8967-time:26-05-2017-19:47:57-dur:217.969.h5'
     model_structure = 'models/clouds/structures/tr_l:0.0047-tr_a:1.0-tr_f2:1.0-val_l:0.2807-val_a:0.902-val_f2:0.8967-time:26-05-2017-19:47:57-dur:217.969.json'
 
@@ -80,13 +73,13 @@ def result(X, path):
         clouds_model.load_weights(weights_path)
         print 'clouds_model is loaded!'
 
-    weights_path = 'models/hablog/structures/tr_l:0.0694-tr_a:1.0-tr_f2:1.0-val_l:0.4415-val_a:0.8219-val_f2:0.8167-time:03-06-2017-21:53:30-dur:177.196.h5'
-    model_structure = 'models/hablog/structures/tr_l:0.0694-tr_a:1.0-tr_f2:1.0-val_l:0.4415-val_a:0.8219-val_f2:0.8167-time:03-06-2017-21:53:30-dur:177.196.json'
+    weights_path = 'models/small_group_model/structures/?'
+    model_structure = 'models/small_group_model/structures/?'
 
     with open(model_structure, 'r') as model_json:
-        hablog_model = model_from_json(json.loads(model_json.read()))
-        hablog_model.load_weights(weights_path)
-        print 'hablog_model is loaded!'
+        small_group_model = model_from_json(json.loads(model_json.read()))
+        small_group_model.load_weights(weights_path)
+        print 'small_group_model is loaded!'
 
     weights_path = 'models/primary/structures/tr_l:0.0035-tr_a:1.0-tr_f2:1.0-val_l:0.4134-val_a:0.862-val_f2:0.946-time:24-05-2017-18:30:15-dur:53.228.h5'
     model_structure = 'models/primary/structures/tr_l:0.0035-tr_a:1.0-tr_f2:1.0-val_l:0.4134-val_a:0.862-val_f2:0.946-time:24-05-2017-18:30:15-dur:53.228.json'
@@ -183,22 +176,6 @@ def result(X, path):
         prediction_vector[label_map['agriculture']] = p_agr_test
 
         # -------------------------------------------- #
-        # ----------------- Burn --------------------- #
-        test_batch_inputs = []
-
-        # red, green, blue, ndwi, ndvi, ior, gemi
-        inputs = [red, green, blue, nir, ndvi, ior, bai, gemi]
-
-        test_batch_inputs.append(inputs)
-        test_batch_inputs = aug(test_batch_inputs, inputs)
-        test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
-
-        p_burn_test = burn_model.predict_on_batch(test_batch_inputs)
-        p_burn_test = agg(p_burn_test) # avg of prediction
-
-        prediction_vector[label_map['slash_burn']] = p_burn_test
-
-        # -------------------------------------------- #
         # ------------------ Clouds ------------------ #
         test_batch_inputs = []
 
@@ -216,7 +193,7 @@ def result(X, path):
             prediction_vector[label_map[l]] = p
 
         # -------------------------------------------- #
-        # ----------------- Hablog ------------------- #
+        # ----------------- Small Group ------------------- #
         test_batch_inputs = []
 
         # red, green, blue, ndwi, ndvi, ior, gemi
@@ -226,10 +203,10 @@ def result(X, path):
         test_batch_inputs = aug(test_batch_inputs, inputs)
         test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
-        p_hablog_test = hablog_model.predict_on_batch(test_batch_inputs)
-        p_hablog_test = agg(p_hablog_test)  # avg of prediction
+        p_small_group_test = small_group_model.predict_on_batch(test_batch_inputs)
+        p_small_group_test = agg(p_small_group_test)  # avg of prediction
 
-        for l, p in zip(HABLOG, p_hablog_test):
+        for l, p in zip(SMALL_GROUP, p_small_group_test):
             prediction_vector[label_map[l]] = p
 
         # -------------------------------------------- #

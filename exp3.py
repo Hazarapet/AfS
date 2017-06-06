@@ -1,11 +1,13 @@
 import sys
 import numpy as np
-import pandas as pd
-import plots
 
-array1 = np.arange(2)
-array2 = np.arange(3)
+GROUP = ['habitation', 'selective_logging', 'slash_burn']
 
-print array1, array2
-print zip(array1, array2)
+labels = GROUP
+
+label_map = {l: i for i, l in enumerate(labels)}
+inv_label_map = {i: l for l, i in label_map.items()}
+
+print label_map
+print inv_label_map
 

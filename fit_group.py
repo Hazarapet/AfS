@@ -16,7 +16,7 @@ N_EPOCH = 15
 BATCH_SIZE = 90
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
-GROUP = ['artisinal_mine'
+GROUP = ['artisinal_mine',
          'bare_ground',
          'blooming',
          'blow_down',
