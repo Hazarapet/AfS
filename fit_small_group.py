@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.small_group.model import model as small_group_model
 
 st_time = time.time()
-N_EPOCH = 10
-BATCH_SIZE = 100
+N_EPOCH = 8
+BATCH_SIZE = 90
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
