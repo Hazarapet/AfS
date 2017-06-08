@@ -13,7 +13,7 @@ from models.small_group.model import model as small_group_model
 
 st_time = time.time()
 N_EPOCH = 7
-BATCH_SIZE = 90
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
