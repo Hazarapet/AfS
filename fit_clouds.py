@@ -11,7 +11,7 @@ from keras.optimizers import Adam
 from utils import common as common_util
 from models.clouds.model import model as clouds_model
 
-st_time = time.time('models/clouds/structures/tr_l:0.0047-tr_a:1.0-tr_f2:1.0-val_l:0.2807-val_a:0.902-val_f2:0.8967-time:26-05-2017-19:47:57-dur:217.969.h5')
+st_time = time.time()
 N_EPOCH = 5
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
@@ -45,7 +45,7 @@ index = int(len(df_train.values) * 0.85)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = clouds_model()
+[model, structure] = clouds_model('models/clouds/structures/tr_l:0.0047-tr_a:1.0-tr_f2:1.0-val_l:0.2807-val_a:0.902-val_f2:0.8967-time:26-05-2017-19:47:57-dur:217.969.h5')
 
 adam = Adam(lr=1e-3, decay=0.)
 
