@@ -19,11 +19,11 @@ count = 0
 print 'images loading...'
 X_train = os.listdir('resource/train-tif-v2')
 
-result = predict.result(df_train['image_name'].values[:1000], 'resource/train-tif-v2/{}.tif')
+result = predict.result(df_train['image_name'].values[:100], 'resource/train-tif-v2/{}.tif')
 thres = [0.085, 0, 0.19, 0.5, 0.16, 0.0875, 0.5, 0.1925, 0.265, 0.1625, 0.1375, 0.2175, 0.2225, 0.0475, 0.5, 0.5, 0.14]  # Heng CherKeng's example
 
 y = []
-for tags in df_train['tags'].values[:1000]:
+for tags in df_train['tags'].values[:100]:
     targets = np.zeros(17)
     for t in tags.split(' '):
         targets[label_map[t]] = 1
@@ -34,7 +34,7 @@ print result[0]
 
 p = []
 for r in result:
-    p.append(r > .2)
+    p.append(r > thres)
 
 y = np.array(y).astype(np.float32)
 p = np.array(p).astype(np.float32)
@@ -42,6 +42,7 @@ p = np.array(p).astype(np.float32)
 # print result
 print 'F2: ', common.f2_score(y, p).eval()
 
-best_f2 = optimize_f2.optimise_f2_thresholds(y, p)
+best_f2_threshold = optimize_f2.optimise_f2_thresholds(y, p)
 
+print 'best threshold: ', best_f2_threshold
 print '==== End ===='
