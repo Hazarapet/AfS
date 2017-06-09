@@ -22,7 +22,7 @@ GROUP = ['artisinal_mine',
          'selective_logging']
 
 CLOUDS = ['cloudy', 'partly_cloudy']
-SMALL_GROUP = ['habitation', 'selective_logging', 'slush_burn']
+SMALL_GROUP = ['habitation', 'selective_logging', 'slash_burn']
 
 
 def aug(array, input):
@@ -49,8 +49,8 @@ def agg(array):
 
 
 def result(X, path):
-    weights_path = 'models/group/structures/tr_l:0.0308-tr_a:1.0-tr_f2:1.0-val_l:0.4826-val_a:0.6725-val_f2:0.6306-time:26-05-2017-02:47:42-dur:344.883.h5'
-    model_structure = 'models/group/structures/tr_l:0.0308-tr_a:1.0-tr_f2:1.0-val_l:0.4826-val_a:0.6725-val_f2:0.6306-time:26-05-2017-02:47:42-dur:344.883.json'
+    weights_path = 'models/group/structures/tr_l:0.0173-tr_a:1.0-tr_f2:1.0-val_l:0.6767-val_a:0.648-val_f2:0.5519-time:08-06-2017-22:03:40-dur:386.923.h5'
+    model_structure = 'models/group/structures/tr_l:0.0173-tr_a:1.0-tr_f2:1.0-val_l:0.6767-val_a:0.648-val_f2:0.5519-time:08-06-2017-22:03:40-dur:386.923.json'
 
     with open(model_structure, 'r') as model_json:
         group_model = model_from_json(json.loads(model_json.read()))
@@ -73,8 +73,8 @@ def result(X, path):
         clouds_model.load_weights(weights_path)
         print 'clouds_model is loaded!'
 
-    weights_path = 'models/small_group_model/structures/?'
-    model_structure = 'models/small_group_model/structures/?'
+    weights_path = 'models/small_group/structures/tr_l:0.0973-tr_a:1.0-tr_f2:1.0-val_l:0.4381-val_a:0.8022-val_f2:0.781-time:09-06-2017-01:32:11-dur:170.361.h5'
+    model_structure = 'models/small_group/structures/tr_l:0.0973-tr_a:1.0-tr_f2:1.0-val_l:0.4381-val_a:0.8022-val_f2:0.781-time:09-06-2017-01:32:11-dur:170.361.json'
 
     with open(model_structure, 'r') as model_json:
         small_group_model = model_from_json(json.loads(model_json.read()))

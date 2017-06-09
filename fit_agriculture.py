@@ -39,7 +39,7 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = agriculture_model()
+[model, structure] = agriculture_model('models/structures/tr_l:0.0045-tr_a:1.0-tr_f2:1.0-val_l:0.6428-val_a:0.7749-val_f2:0.9054-time:04-06-2017-01:43:27-dur:220.152.h5')
 
 adam = Adam(lr=1e-3, decay=0.)
 
@@ -239,7 +239,7 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 10:
+    if epoch == 5:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-4)
 
