@@ -48,7 +48,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 np.random.shuffle(df_train.values)
 
 # splitting to train and validation set
-index = int(len(df_train.values) * 0.8)
+index = int(len(df_train.values) * 0.85)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'

@@ -35,7 +35,7 @@ df_train = pd.read_csv('train_v2.csv')
 np.random.shuffle(df_train.values)
 
 # splitting to train and validation set
-index = int(len(df_train.values) * 0.8)
+index = int(len(df_train.values) * 0.85)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'

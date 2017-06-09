@@ -12,12 +12,12 @@ from utils import common as common_util
 from models.small_group.model import model as small_group_model
 
 st_time = time.time()
-N_EPOCH = 7
+N_EPOCH = 10
 BATCH_SIZE = 90
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
-GROUP = ['habitation', 'selective_logging', 'slash_burn']
+GROUP = ['habitation', 'clear', 'slash_burn']
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -42,7 +42,7 @@ label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
 
 # splitting to train and validation set
-index = int(len(df_train.values) * 0.8)
+index = int(len(df_train.values) * 0.85)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
@@ -105,7 +105,7 @@ for epoch in range(N_EPOCH):
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if targets[3] != 1:
+                if targets[0] == 1 or targets[2] == 1:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
@@ -193,7 +193,7 @@ for epoch in range(N_EPOCH):
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
 
-                if targets[3] != 1:
+                if targets[0] == 1 or targets[2] == 1:
                     # --- augmentation ---
                     # rotate 90
                     rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))

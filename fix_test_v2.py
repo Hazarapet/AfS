@@ -3,11 +3,10 @@ import sys
 import shutil
 import pandas as pd
 
-
 BASEPATH = 'resource/'
 WORKING = 'working/'
 
-CSVPATH = os.path.join(BASEPATH, 'test_v2_file_mapping.csv')
+CSVPATH = 'test_v2_file_mapping.csv'
 TIFPATH = os.path.join(BASEPATH, 'test-tif-v2')
 
 FIXEDPATH = os.path.join(WORKING, 'fixed')
@@ -38,3 +37,5 @@ def copy_and_rename():
 
         # remove old
         os.remove(old)
+
+        print '{} copied'.format(index)
