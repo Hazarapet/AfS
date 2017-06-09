@@ -21,14 +21,14 @@ print 'images loading...'
 X_test = os.listdir('resource/test-tif-v2')
 
 result = predict.result(X_test, 'resource/test-tif-v2/{}')
-thres = [0.085, 0.2375, 0.19, 0.5, 0.16, 0.0875, 0.5, 0.1925, 0.265, 0.1625, 0.1375, 0.2175, 0.2225, 0.0475, 0.5, 0.5, 0.14]  # Heng CherKeng's example
+thres = [0.1, 0.2375, 0.19, 0.5, 0.4, 0.0875, 0.5, 0.1925, 0.265, 0.4, 0.1375, 0.2175, 0.2225, 0.1475, 0.5, 0.5, 0.14]  # Heng CherKeng's example
 
 df_test = pd.DataFrame([[p.replace('.tif', ''), p] for p in X_test])
 df_test.columns = ['image_name', 'tags']
 
 tags = []
 for r in result:
-    r = list(r > .2)
+    r = list(r > thres)
     t = [inv_label_map[i] for i, j in enumerate(r) if j]
     tags.append(' '.join(t))
 
