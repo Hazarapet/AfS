@@ -73,8 +73,8 @@ def result(X, path):
         clouds_model.load_weights(weights_path)
         print 'clouds_model is loaded!'
 
-    weights_path = 'models/small_group/structures/?'
-    model_structure = 'models/small_group/structures/?'
+    weights_path = 'models/small_group/structures/tr_l:0.0749-tr_a:1.0-tr_f2:1.0-val_l:0.3815-val_a:0.6151-val_f2:0.8419-time:09-06-2017-19:51:05-dur:247.011.h5'
+    model_structure = 'models/small_group/structures/tr_l:0.0749-tr_a:1.0-tr_f2:1.0-val_l:0.3815-val_a:0.6151-val_f2:0.8419-time:09-06-2017-19:51:05-dur:247.011.json'
 
     with open(model_structure, 'r') as model_json:
         small_group_model = model_from_json(json.loads(model_json.read()))

@@ -154,7 +154,7 @@ for epoch in range(N_EPOCH):
     print '----- Validation of epoch: {} -----'.format(epoch)
     np.random.shuffle(val)
     val_batch = 0
-    for min_batch in common_util.iterate_minibatches(val, batchsize=2048):
+    for min_batch in common_util.iterate_minibatches(val, batchsize=1024):
         v_batch_inputs = []
         v_batch_labels = []
 

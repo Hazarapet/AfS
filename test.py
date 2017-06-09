@@ -28,7 +28,7 @@ df_test.columns = ['image_name', 'tags']
 
 tags = []
 for r in result:
-    r = list(r > thres)
+    r = list(r > .2)
     t = [inv_label_map[i] for i, j in enumerate(r) if j]
     tags.append(' '.join(t))
 
