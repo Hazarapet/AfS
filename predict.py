@@ -57,8 +57,8 @@ def result(X, path):
         group_model.load_weights(weights_path)
         print 'group_model is loaded!'
 
-    weights_path = 'models/agriculture/structures/tr_l:0.0045-tr_a:1.0-tr_f2:1.0-val_l:0.6428-val_a:0.7749-val_f2:0.9054-time:04-06-2017-01:43:27-dur:220.152.h5'
-    model_structure = 'models/agriculture/structures/tr_l:0.0045-tr_a:1.0-tr_f2:1.0-val_l:0.6428-val_a:0.7749-val_f2:0.9054-time:04-06-2017-01:43:27-dur:220.152.json'
+    weights_path = 'models/agriculture/structures/tr_l:0.0494-tr_a:1.0-tr_f2:1.0-val_l:0.5505-val_a:0.8312-val_f2:0.8868-time:09-06-2017-15:38:26-dur:186.136.h5'
+    model_structure = 'models/agriculture/structures/tr_l:0.0494-tr_a:1.0-tr_f2:1.0-val_l:0.5505-val_a:0.8312-val_f2:0.8868-time:09-06-2017-15:38:26-dur:186.136.json'
 
     with open(model_structure, 'r') as model_json:
         agriculture_model = model_from_json(json.loads(model_json.read()))
