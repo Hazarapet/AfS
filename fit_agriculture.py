@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.agriculture.model import model as agriculture_model
 
 st_time = time.time()
-N_EPOCH = 8
+N_EPOCH = 5
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
@@ -39,7 +39,7 @@ index = int(len(df_train.values) * 0.8)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = agriculture_model('models/structures/tr_l:0.0045-tr_a:1.0-tr_f2:1.0-val_l:0.6428-val_a:0.7749-val_f2:0.9054-time:04-06-2017-01:43:27-dur:220.152.h5')
+[model, structure] = agriculture_model('models/agriculture/structures/tr_l:0.0045-tr_a:1.0-tr_f2:1.0-val_l:0.6428-val_a:0.7749-val_f2:0.9054-time:04-06-2017-01:43:27-dur:220.152.h5')
 
 adam = Adam(lr=1e-3, decay=0.)
 
@@ -144,7 +144,7 @@ for epoch in range(N_EPOCH):
     print '----- Validation of epoch: {} -----'.format(epoch)
     np.random.shuffle(val)
     val_batch = 0
-    for min_batch in common_util.iterate_minibatches(val, batchsize=2048):
+    for min_batch in common_util.iterate_minibatches(val, batchsize=1024):
         v_batch_inputs = []
         v_batch_labels = []
 
@@ -222,7 +222,7 @@ for epoch in range(N_EPOCH):
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.95:
+        if v_f2 > 0.92:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -238,6 +238,10 @@ for epoch in range(N_EPOCH):
             with open(model_filename + '.json', 'w') as outfile:
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
+
+        # to save the memory
+        v_batch_inputs = []
+        v_batch_labels = []
 
     if epoch == 5:
         lr = model.optimizer.lr.get_value()

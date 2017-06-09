@@ -4,5 +4,6 @@
 */*.pyc
 *.log
 resource/
+working/
 models/*/structures/
 train-augmented.csv
