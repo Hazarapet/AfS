@@ -6,7 +6,7 @@ def optimise_f2_thresholds(y, p, verbose=True, resolution=100):
     p2 = np.zeros_like(p)
     for i in range(17):
       p2[:, i] = (p[:, i] > x[i]).astype(np.int)
-    score = common.f2_score(y, p2)
+    score = common.f2_score(y, p2).eval()
     return score
 
   x = [0.2] * 17
