@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import predict
 import numpy as np
 import pandas as pd
@@ -19,11 +20,11 @@ count = 0
 print 'images loading...'
 X_train = os.listdir('resource/train-tif-v2')
 
-result = predict.result(df_train['image_name'].values[:100], 'resource/train-tif-v2/{}.tif')
+result = predict.result(df_train['image_name'].values[:1000], 'resource/train-tif-v2/{}.tif')
 thres = [0.085, 0, 0.19, 0.5, 0.16, 0.0875, 0.5, 0.1925, 0.265, 0.1625, 0.1375, 0.2175, 0.2225, 0.0475, 0.5, 0.5, 0.14]  # Heng CherKeng's example
 
 y = []
-for tags in df_train['tags'].values[:100]:
+for tags in df_train['tags'].values[:1000]:
     targets = np.zeros(17)
     for t in tags.split(' '):
         targets[label_map[t]] = 1
@@ -41,7 +42,11 @@ result = np.array(result).astype(np.float32)
 # print result
 print 'F2: ', common.f2_score(y, p).eval()
 
-best_f2_threshold = optimize_f2.optimise_f2_thresholds(y, result)
+with open('results.json', 'w') as outfile:
+    rs = {'p': p, 'y': y}
+    json.dump(rs, outfile)
 
-print 'best threshold: ', best_f2_threshold
+# best_f2_threshold = optimize_f2.optimise_f2_thresholds(y, result)
+
+# print 'best threshold: ', best_f2_threshold
 print '==== End ===='
