@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from utils import components
 from keras.optimizers import Adam
+from utils import image as UtilImage
 from utils import common as common_util
 from models.main.model import model as main_model
 
@@ -70,21 +71,31 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            img = cv2.imread('resource/train-augmented-jpg/{}.jpg'.format(f))
-            assert img is not None
+            rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+            assert rgbn is not None
 
-            if img is not None:
+            if rgbn is not None:
                 targets = np.zeros(17)
                 for t in tags.split(' '):
                     targets[label_map[t]] = 1
 
-                img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
-                img[:, :, 0] -= 103.939
-                img[:, :, 1] -= 116.779
-                img[:, :, 2] -= 123.68
-                img = img.transpose((2, 0, 1))
+                ndvi = UtilImage.ndvi(rgbn)
+                ndwi = UtilImage.ndwi(rgbn)
+                ior = UtilImage.ior(rgbn)
+                bai = UtilImage.bai(rgbn)
 
-                inputs = img
+                # resize
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+
+                # red, green, blue, nir, ndvi, ndwi, ior, bai
+                inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -140,23 +151,33 @@ for epoch in range(N_EPOCH):
         v_batch_inputs = []
         v_batch_labels = []
 
-        # load val's images
+        # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            img = cv2.imread('resource/train-augmented-jpg/{}.jpg'.format(f))
-            assert img is not None
+            rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+            assert rgbn is not None
 
-            if img is not None:
+            if rgbn is not None:
                 targets = np.zeros(17)
                 for t in tags.split(' '):
                     targets[label_map[t]] = 1
 
-                img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
-                img[:, :, 0] -= 103.939
-                img[:, :, 1] -= 116.779
-                img[:, :, 2] -= 123.68
-                img = img.transpose((2, 0, 1))
+                ndvi = UtilImage.ndvi(rgbn)
+                ndwi = UtilImage.ndwi(rgbn)
+                ior = UtilImage.ior(rgbn)
+                bai = UtilImage.bai(rgbn)
 
-                v_inputs = img
+                # resize
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+
+                # red, green, blue, nir, ndvi, ndwi, ior, bai
+                v_inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
