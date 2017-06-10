@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import utils.common as common
 
@@ -15,7 +16,7 @@ def optimise_f2_thresholds(y, p, verbose=True, resolution=100):
     best_i2 = 0
     best_score = 0
     for i2 in range(resolution):
-      i2 /= resolution
+      i2 /= float(resolution)
       x[i] = i2
       score = mf(x)
       if score > best_score:
@@ -26,3 +27,10 @@ def optimise_f2_thresholds(y, p, verbose=True, resolution=100):
       print(i, best_i2, best_score)
 
   return x
+
+# with open('results.json', 'r') as outfile:
+#     data = json.loads(outfile.read())
+#     y = np.array(data['y']).astype(np.uint8)
+#     p = np.array(data['p']).astype(np.float32)
+#
+#     x = optimise_f2_thresholds(y, p)
