@@ -13,7 +13,7 @@ from models.nm.model import model as nm_model
 
 st_time = time.time()
 N_EPOCH = 10
-BATCH_SIZE = 100
+BATCH_SIZE = 200
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
@@ -46,9 +46,6 @@ train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
 [model, structure] = nm_model()
-
-print model.summary()
-sys.exit(0)
 
 adam = Adam(lr=6e-3, decay=0.)
 
