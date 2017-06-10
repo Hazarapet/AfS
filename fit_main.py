@@ -47,7 +47,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = main_model()
 
-adam = Adam(lr=3e-3, decay=0.)
+adam = Adam(lr=6e-3, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -223,7 +223,7 @@ for epoch in range(N_EPOCH):
             float(model.optimizer.lr.get_value()))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.7:
+        if v_f2 > 0.8:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -242,11 +242,11 @@ for epoch in range(N_EPOCH):
 
     if epoch == 5:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(3e-3)
 
-    if epoch == 10:
+    if epoch == 8:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-4)
+        model.optimizer.lr.set_value(1e-3)
 
 
 # create file name to save the state with useful information
