@@ -94,11 +94,11 @@ def model(weights_path=None):
     bn43 = BatchNormalization(axis=1)(conv43)
     act43 = Activation('relu')(bn43)
 
-    conv44 = Conv2D(256, (3, 3))(act43)
-    bn44 = BatchNormalization(axis=1)(conv44)
-    act44 = Activation('relu')(bn44)
+    # conv44 = Conv2D(256, (3, 3))(act43)
+    # bn44 = BatchNormalization(axis=1)(conv44)
+    # act44 = Activation('relu')(bn44)
 
-    pool44 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act44)
+    pool44 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act43)
 
     # Dense layers
     _model = Sequential()
