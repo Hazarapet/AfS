@@ -54,7 +54,7 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     # ------------------ Conv Block 3 ----------------------
-    prev2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(conv21)
+    prev2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(pool14)
     prev_conv2 = Conv2D(8, (5, 5))(prev2)
     concat2 = concatenate([prev_conv2, pool24], axis=1)
 
@@ -78,7 +78,7 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     # ------------------ Conv Block 4 ----------------------
-    prev3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(conv31)
+    prev3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(pool24)
     prev_conv3 = Conv2D(8, (5, 5))(prev3)
     concat3 = concatenate([prev_conv3, pool34], axis=1)
 
