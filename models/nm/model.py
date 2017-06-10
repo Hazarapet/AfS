@@ -1,7 +1,7 @@
-from keras.models import Sequential
+from keras.models import Sequential, Model
 from keras.layers import Input, concatenate
 from keras.layers.core import Flatten, Dense, Dropout, Activation
-from keras.layers.convolutional import Conv2D, MaxPooling2D, ZeroPadding2D
+from keras.layers.convolutional import Conv2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
@@ -100,10 +100,9 @@ def model(weights_path=None):
 
     pool44 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act44)
 
-
     # Dense layers
     _model = Sequential()
-    _model.add(pool44)
+    _model.add(Model(pool44))
 
     _model.add(Flatten())
 
