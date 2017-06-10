@@ -102,7 +102,7 @@ def model(weights_path=None):
 
     # Dense layers
     _model = Sequential()
-    _model.add(Model(pool44))
+    _model.add(Model(input=input, outputs=pool14))
 
     _model.add(Flatten())
 
