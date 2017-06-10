@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.group.model import model as group_model
 
 st_time = time.time()
-N_EPOCH = 5
+N_EPOCH = 10
 BATCH_SIZE = 90
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
@@ -54,7 +54,7 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = group_model('models/group/structures/tr_l:0.0173-tr_a:1.0-tr_f2:1.0-val_l:0.6767-val_a:0.648-val_f2:0.5519-time:08-06-2017-22:03:40-dur:386.923.h5')
 
-adam = Adam(lr=1e-3, decay=0.)
+adam = Adam(lr=3e-4, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
