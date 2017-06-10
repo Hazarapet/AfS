@@ -13,7 +13,7 @@ from utils import common as common_util
 from models.water.model import model as water_model
 
 st_time = time.time()
-N_EPOCH = 8
+N_EPOCH = 7
 BATCH_SIZE = 110
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
@@ -40,9 +40,9 @@ index = int(len(df_train.values) * 0.85)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = water_model()
+[model, structure] = water_model('models/water/structures/tr_l:0.0119-tr_a:1.0-tr_f2:1.0-val_l:0.4473-val_a:0.8639-val_f2:0.8652-time:27-05-2017-19:20:46-dur:170.095.h5')
 
-adam = Adam(lr=1e-3, decay=0.)
+adam = Adam(lr=3e-4, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -210,7 +210,7 @@ for epoch in range(N_EPOCH):
             len(v_batch_labels))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.90:
+        if v_f2 > 0.92:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
