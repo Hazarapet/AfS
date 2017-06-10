@@ -30,19 +30,18 @@ for tags in df_train['tags'].values[:100]:
 
     y.append(targets)
 
-print result[0]
-
 p = []
 for r in result:
     p.append(r > thres)
 
 y = np.array(y).astype(np.float32)
 p = np.array(p).astype(np.float32)
+result = np.array(result).astype(np.float32)
 
 # print result
 print 'F2: ', common.f2_score(y, p).eval()
 
-best_f2_threshold = optimize_f2.optimise_f2_thresholds(y, p)
+best_f2_threshold = optimize_f2.optimise_f2_thresholds(y, result)
 
 print 'best threshold: ', best_f2_threshold
 print '==== End ===='
