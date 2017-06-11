@@ -107,11 +107,6 @@ for epoch in range(N_EPOCH):
                     t_batch_inputs.append(rt90_inputs)
                     t_batch_labels.append(targets)
 
-                    # rotate 180
-                    rt180_inputs = np.rot90(inputs, 2, axes=(1, 2))
-                    t_batch_inputs.append(rt180_inputs)
-                    t_batch_labels.append(targets)
-
                     # flip h
                     flip_h_inputs = np.flip(inputs, 2)
                     t_batch_inputs.append(flip_h_inputs)
@@ -187,11 +182,6 @@ for epoch in range(N_EPOCH):
                     # rotate 90
                     rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))
                     v_batch_inputs.append(rt90_inputs)
-                    v_batch_labels.append(targets)
-
-                    # rotate 180
-                    rt180_inputs = np.rot90(v_inputs, 2, axes=(1, 2))
-                    v_batch_inputs.append(rt180_inputs)
                     v_batch_labels.append(targets)
 
                     # flip h
