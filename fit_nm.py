@@ -223,7 +223,7 @@ for epoch in range(N_EPOCH):
             float(model.optimizer.lr.get_value()))
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.8:
+        if v_f2 > 0.9:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \

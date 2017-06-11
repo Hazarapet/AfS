@@ -21,7 +21,7 @@ print 'images loading...'
 X_test = os.listdir('resource/test-tif-v2')
 
 result = predict.result_main(X_test, 'resource/test-tif-v2/{}')
-thres = [0.1, 0.2375, 0.19, 0.5, 0.4, 0.0875, 0.5, 0.1925, 0.265, 0.4, 0.1375, 0.2175, 0.2225, 0.1475, 0.5, 0.5, 0.14]  # Heng CherKeng's example
+thres = [0.05, 0.17, 0.05, 0.25, 0.32, 0.06, 0.1, 0.27, 0.28, 0.21, 0.09, 0.18, 0.16, 0.03, 0.2, 0.13, 0.04]  # Heng CherKeng's example
 
 df_test = pd.DataFrame([[p.replace('.tif', ''), p] for p in X_test])
 df_test.columns = ['image_name', 'tags']
