@@ -171,7 +171,7 @@ def result(X, path):
         test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
         p_agr_test = agriculture_model.predict_on_batch(test_batch_inputs)
-        p_agr_test = agg(p_agr_test) # avg of prediction
+        p_agr_test = agg(p_agr_test)  # avg of prediction
 
         prediction_vector[label_map['agriculture']] = p_agr_test
 
@@ -267,4 +267,56 @@ def result(X, path):
 
     return result
 
+def result_main(X, path):
+    weights_path = 'models/main/structures/tr_l:0.1053-tr_a:0.76-tr_f2:0.9535-val_l:0.2932-val_a:0.3096-val_f2:0.8206-time:11-06-2017-02:15:24-dur:486.767.h5'
+    model_structure = 'models/main/structures/tr_l:0.1053-tr_a:0.76-tr_f2:0.9535-val_l:0.2932-val_a:0.3096-val_f2:0.8206-time:11-06-2017-02:15:24-dur:486.767.json'
 
+    with open(model_structure, 'r') as model_json:
+        main_model = model_from_json(json.loads(model_json.read()))
+        main_model.load_weights(weights_path)
+        print 'main_model is loaded!'
+
+        # loading the data
+        count = 0
+        result = []
+        print 'images loading...'
+
+        for f in common_util.iterate_minibatches(X, batchsize=BATCH_SIZE):
+            test_batch_inputs = []
+
+            rgbn = UtilImage.process_tif(path.format(f[0]))
+
+            ndvi = UtilImage.ndvi(rgbn)
+            ndwi = UtilImage.ndwi(rgbn)
+            ior = UtilImage.ior(rgbn)
+            bai = UtilImage.bai(rgbn)
+
+            # resize
+            red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+
+            # ----------------------------------------------------------------------------
+            # ---------------------------------- Models ----------------------------------
+            # ----------------------------------------------------------------------------
+            # red, green, blue, nir, ndvi, ndwi, ior, bai
+            inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
+
+            test_batch_inputs.append(inputs)
+            test_batch_inputs = aug(test_batch_inputs, inputs)
+            test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
+
+            p_group_test = main_model.predict_on_batch(test_batch_inputs)
+            p_group_test = agg(p_group_test)
+
+            count += BATCH_SIZE
+            result.append(p_group_test)
+
+            print '{}/{} predicted'.format(count, len(X))
+
+    return result

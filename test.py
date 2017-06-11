@@ -20,7 +20,7 @@ count = 0
 print 'images loading...'
 X_test = os.listdir('resource/test-tif-v2')
 
-result = predict.result(X_test, 'resource/test-tif-v2/{}')
+result = predict.result_main(X_test, 'resource/test-tif-v2/{}')
 thres = [0.1, 0.2375, 0.19, 0.5, 0.4, 0.0875, 0.5, 0.1925, 0.265, 0.4, 0.1375, 0.2175, 0.2225, 0.1475, 0.5, 0.5, 0.14]  # Heng CherKeng's example
 
 df_test = pd.DataFrame([[p.replace('.tif', ''), p] for p in X_test])
