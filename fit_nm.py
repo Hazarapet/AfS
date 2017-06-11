@@ -58,6 +58,14 @@ print "training..."
 
 for epoch in range(N_EPOCH):
 
+    t_loss_graph_ep = []
+    t_acc_graph_ep = []
+    t_f2_graph_ep = []
+
+    v_loss_graph_ep = []
+    v_acc_graph_ep = []
+    v_f2_graph_ep = []
+
     print "Epoch: {}".format(epoch)
     trained_batch = 0
 
@@ -128,9 +136,9 @@ for epoch in range(N_EPOCH):
             trained_batch += len(t_l)
 
             [t_loss, t_f2, t_acc] = model.train_on_batch(t_i, t_l)
-            t_loss_graph = np.append(t_loss_graph, [t_loss])
-            t_acc_graph = np.append(t_acc_graph, [t_acc])
-            t_f2_graph = np.append(t_f2_graph, [t_f2])
+            t_loss_graph_ep = np.append(t_loss_graph_ep, [t_loss])
+            t_acc_graph_ep = np.append(t_acc_graph_ep, [t_acc])
+            t_f2_graph_ep = np.append(t_f2_graph_ep, [t_f2])
 
             print "examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}".format(trained_batch,
                    len(train),
@@ -201,9 +209,9 @@ for epoch in range(N_EPOCH):
 
         val_batch += len(min_batch)
 
-        v_loss_graph = np.append(v_loss_graph, [v_loss])
-        v_f2_graph = np.append(v_f2_graph, [v_f2])
-        v_acc_graph = np.append(v_acc_graph, [v_acc])
+        v_loss_graph_ep = np.append(v_loss_graph_ep, [v_loss])
+        v_acc_graph_ep = np.append(v_acc_graph_ep, [v_acc])
+        v_f2_graph_ep = np.append(v_f2_graph_ep, [v_f2])
 
         print "Val Examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}, l_rate: {:.5f}".format(val_batch,
             len(val),
@@ -237,6 +245,14 @@ for epoch in range(N_EPOCH):
     if epoch == 5:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-3)
+
+    t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
+    t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
+    t_f2_graph = np.append(t_f2_graph, [np.mean(t_f2_graph_ep)])
+
+    v_loss_graph = np.append(v_loss_graph, [np.mean(v_loss_graph_ep)])
+    v_acc_graph = np.append(v_acc_graph, [np.mean(v_acc_graph_ep)])
+    v_f2_graph = np.append(v_f2_graph, [np.mean(v_f2_graph_ep)])
 
 
 # create file name to save the state with useful information
