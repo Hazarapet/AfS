@@ -20,7 +20,7 @@ count = 0
 print 'images loading...'
 X_train = os.listdir('resource/train-tif-v2')
 
-result = predict.result_main(df_train['image_name'].values[:1000], 'resource/train-tif-v2/{}.tif')
+result = predict.result_single(df_train['image_name'].values[:1000], 'resource/train-tif-v2/{}.tif')
 thres = [0.05, 0.17, 0.05, 0.25, 0.32, 0.06, 0.1, 0.27, 0.28, 0.21, 0.09, 0.18, 0.16, 0.03, 0.2, 0.13, 0.04]  # Heng CherKeng's example
 
 y = []
@@ -42,7 +42,7 @@ result = np.array(result).astype(np.float32)
 # print result
 print 'F2: ', common.f2_score(y, p).eval()
 
-best_f2_threshold = optimize_f2.optimise_f2_thresholds(y, result)
+# best_f2_threshold = optimize_f2.optimise_f2_thresholds(y, result)
 
 # print 'best threshold: ', best_f2_threshold
 print '==== End ===='
