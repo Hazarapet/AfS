@@ -41,7 +41,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 np.random.shuffle(df_train.values)
 
 # splitting to train and validation set
-index = int(len(df_train.values) * 0.85)
+index = int(len(df_train.values) * 0.9)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
@@ -240,11 +240,11 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 5:
+    if epoch == 2:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-3)
 
-    if epoch == 8:
+    if epoch == 5:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-3)
 

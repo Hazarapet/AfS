@@ -104,11 +104,11 @@ def model(weights_path=None):
 
     _model.add(Dense(512, kernel_regularizer=l2(1e-5)))
     _model.add(Activation('relu'))
-    _model.add(Dropout(0.05))
+    _model.add(Dropout(0.1))
 
     _model.add(Dense(512, kernel_regularizer=l2(1e-5)))
     _model.add(Activation('relu'))
-    _model.add(Dropout(0.05))
+    _model.add(Dropout(0.1))
 
     _model.add(Dense(17, activation='sigmoid'))
 
