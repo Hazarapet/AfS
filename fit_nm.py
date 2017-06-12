@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.nm.model import model as nm_model
 
 st_time = time.time()
-N_EPOCH = 10
+N_EPOCH = 1
 BATCH_SIZE = 60
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
@@ -45,9 +45,9 @@ index = int(len(df_train.values) * 0.9)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = nm_model()
+[model, structure] = nm_model('models/nm/structures/tr_l:0.0825-tr_a:0.8667-tr_f2:0.9682-val_l:0.3765-val_a:0.334-val_f2:0.772-time:12-06-2017-04:32:35-dur:452.988.h5')
 
-adam = Adam(lr=6e-3, decay=0.)
+adam = Adam(lr=1e-3, decay=0.)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
