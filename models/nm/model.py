@@ -94,6 +94,11 @@ def model(weights_path=None):
     bn43 = BatchNormalization(axis=1)(conv43)
     act43 = Activation('relu')(bn43)
 
+    # conv44 = Conv2D(512, (3, 3))(act43)
+    # bn44 = BatchNormalization(axis=1)(conv44)
+    # act44 = Activation('relu')(bn44)
+
+    # TODO input's shape is 3x3. MaxPooling loses 1 column's data, which are very useful
     pool44 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act43)
 
     # Dense layers
