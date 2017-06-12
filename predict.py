@@ -29,10 +29,6 @@ def aug(array, input):
     rt90 = np.rot90(input, 1, axes=(1, 2))
     array.append(rt90)
 
-    # rotate 180
-    rt180 = np.rot90(input, 2, axes=(1, 2))
-    array.append(rt180)
-
     # flip h
     flip_h = np.flip(input, 2)
     array.append(flip_h)
