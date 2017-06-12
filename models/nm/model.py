@@ -94,28 +94,22 @@ def model(weights_path=None):
     bn43 = BatchNormalization(axis=1)(conv43)
     act43 = Activation('relu')(bn43)
 
-    # conv44 = Conv2D(512, (3, 3))(act43)
-    # bn44 = BatchNormalization(axis=1)(conv44)
-    # act44 = Activation('relu')(bn44)
-
     # TODO input's shape is 3x3. MaxPooling loses 1 column's data, which are very useful
-    pool44 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act43)
+    # pool44 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act43)
 
     # Dense layers
-    _model = Sequential()
-    _model.add(Model(inputs=input, outputs=pool44))
+    flt = Flatten()(act43)
+    dense1 = Dense(512, kernel_regularizer=l2(2e-5))(flt)
+    dnact1 = Activation('relu')(dense1)
+    dndrop1 = Dropout(0.1)(dnact1)
 
-    _model.add(Flatten())
+    dense2 = Dense(512, kernel_regularizer=l2(2e-5))(dndrop1)
+    dnact2 = Activation('relu')(dense2)
+    dndrop2 = Dropout(0.1)(dnact2)
 
-    _model.add(Dense(512, kernel_regularizer=l2(1e-5)))
-    _model.add(Activation('relu'))
-    _model.add(Dropout(0.1))
+    output = Dense(17, activation='sigmoid')(dndrop2)
 
-    _model.add(Dense(512, kernel_regularizer=l2(1e-5)))
-    _model.add(Activation('relu'))
-    _model.add(Dropout(0.1))
-
-    _model.add(Dense(17, activation='sigmoid'))
+    _model = Model(inputs=input, outputs=output)
 
     if weights_path:
         _model.load_weights(weights_path)
