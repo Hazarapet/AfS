@@ -162,7 +162,7 @@ def model(weights_path=None):
     bn46 = BatchNormalization(axis=1)(conv46)
     act46 = Activation('relu')(bn46)
 
-    pool41 = AveragePooling2D(pool_size=(3, 3), strides=(1, 1))(act46)
+    pool41 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(act46)
 
     # ------------------------------------------------------
     # ------------------ Conv Block 5 ----------------------
