@@ -31,7 +31,7 @@ def model(weights_path=None):
     # ------------------------------------------------------
     # ------------------ Conv Block 2 ----------------------
     prev1 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(input)
-    prev_conv1 = Conv2D(4, (5, 5))(prev1)
+    prev_conv1 = Conv2D(16, (5, 5))(prev1)
     concat1 = concatenate([prev_conv1, pool14], axis=1)
 
     conv21 = Conv2D(128, (3, 3))(concat1)
@@ -55,7 +55,7 @@ def model(weights_path=None):
     # ------------------------------------------------------
     # ------------------ Conv Block 3 ----------------------
     prev2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(pool14)
-    prev_conv2 = Conv2D(4, (5, 5))(prev2)
+    prev_conv2 = Conv2D(32, (5, 5))(prev2)
     concat2 = concatenate([prev_conv2, pool24], axis=1)
 
     conv31 = Conv2D(256, (3, 3))(concat2)
@@ -79,7 +79,7 @@ def model(weights_path=None):
     # ------------------------------------------------------
     # ------------------ Conv Block 4 ----------------------
     prev3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(pool24)
-    prev_conv3 = Conv2D(4, (5, 5))(prev3)
+    prev_conv3 = Conv2D(64, (5, 5))(prev3)
     concat3 = concatenate([prev_conv3, pool34], axis=1)
 
     conv41 = Conv2D(512, (3, 3))(concat3)
@@ -94,16 +94,20 @@ def model(weights_path=None):
     bn43 = BatchNormalization(axis=1)(conv43)
     act43 = Activation('relu')(bn43)
 
+    conv44 = Conv2D(512, (3, 3))(act43)
+    bn44 = BatchNormalization(axis=1)(conv44)
+    act44 = Activation('relu')(bn44)
+
     # TODO input's shape is 3x3. MaxPooling loses 1 column's data, which are very useful
     # pool44 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act43)
 
     # Dense layers
-    flt = Flatten()(act43)
-    dense1 = Dense(512, kernel_regularizer=l2(2e-5))(flt)
+    flt = Flatten()(act44)
+    dense1 = Dense(512, kernel_regularizer=l2(1e-5))(flt)
     dnact1 = Activation('relu')(dense1)
     dndrop1 = Dropout(0.1)(dnact1)
 
-    dense2 = Dense(512, kernel_regularizer=l2(2e-5))(dndrop1)
+    dense2 = Dense(512, kernel_regularizer=l2(1e-5))(dndrop1)
     dnact2 = Activation('relu')(dense2)
     dndrop2 = Dropout(0.1)(dnact2)
 

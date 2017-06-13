@@ -238,11 +238,11 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 2:
+    if epoch == 1:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-3)
 
-    if epoch == 7:
+    if epoch == 5:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-3)
 
