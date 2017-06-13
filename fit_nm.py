@@ -48,7 +48,7 @@ print 'model loading...'
 [model, structure] = nm_model()
 
 print model.summary()
-sys.exit(0)
+
 adam = Adam(lr=1e-1, decay=1e-4)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
