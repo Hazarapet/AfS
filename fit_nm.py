@@ -47,7 +47,9 @@ train, val = df_train.values[:index], df_train.values[index:]
 print 'model loading...'
 [model, structure] = nm_model()
 
-adam = Adam(lr=6e-3, decay=0.)
+print model.summary()
+sys.exit(0)
+adam = Adam(lr=1e-1, decay=1e-4)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -238,13 +240,13 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 1:
+    if epoch == 2:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-3)
+        model.optimizer.lr.set_value(1e-2)
 
     if epoch == 5:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(3e-3)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
