@@ -49,7 +49,7 @@ print 'model loading...'
 
 print model.summary()
 
-adam = Adam(lr=1e-1, decay=1e-4)
+adam = Adam(lr=3e-2, decay=1e-4)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
