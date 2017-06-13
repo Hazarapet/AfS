@@ -49,7 +49,7 @@ print 'model loading...'
 
 print model.summary()
 
-adam = Adam(lr=3e-2, decay=1e-4)
+adam = Adam(lr=1e-1, decay=1e-4)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -240,11 +240,11 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 2:
+    if epoch == 3:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-2)
 
-    if epoch == 5:
+    if epoch == 7:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-3)
 
