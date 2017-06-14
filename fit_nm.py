@@ -13,7 +13,7 @@ from models.nm.model import model as nm_model
 
 st_time = time.time()
 N_EPOCH = 10
-BATCH_SIZE = 25
+BATCH_SIZE = 20
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
@@ -45,11 +45,11 @@ index = int(len(df_train.values) * 0.9)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = nm_model('models/nm/structures/tr_l:0.3968-tr_a:0.2725-tr_f2:0.7534-val_l:0.3723-val_a:0.2857-val_f2:0.7623-time:14-06-2017-04:13:01-dur:284.07.h5')
+[model, structure] = nm_model()
 
 print model.summary()
 
-adam = Adam(lr=1e-2, decay=1e-4)
+adam = Adam(lr=3e-2, decay=1e-4)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -240,13 +240,13 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 3:
+    if epoch == 2:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(6e-3)
+        model.optimizer.lr.set_value(1e-2)
 
     if epoch == 7:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-3)
+        model.optimizer.lr.set_value(6e-3)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
