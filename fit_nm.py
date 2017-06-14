@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.nm.model import model as nm_model
 
 st_time = time.time()
-N_EPOCH = 10
+N_EPOCH = 20
 BATCH_SIZE = 20
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
@@ -49,7 +49,7 @@ print 'model loading...'
 
 print model.summary()
 
-adam = Adam(lr=3e-2, decay=1e-4)
+adam = Adam(lr=1e-1, decay=1e-4)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -81,31 +81,21 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
-            assert rgbn is not None
+            img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
+            assert img is not None
 
-            if rgbn is not None:
+            if img is not None:
                 targets = np.zeros(17)
                 for t in tags.split(' '):
                     targets[label_map[t]] = 1
 
-                ndvi = UtilImage.ndvi(rgbn)
-                ndwi = UtilImage.ndwi(rgbn)
-                ior = UtilImage.ior(rgbn)
-                bai = UtilImage.bai(rgbn)
+                img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+                img[:, :, 0] -= 103.939
+                img[:, :, 1] -= 116.779
+                img[:, :, 2] -= 123.68
+                img = img.transpose((2, 0, 1))
 
-                # resize
-                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
-
-                # red, green, blue, nir, ndvi, ndwi, ior, bai
-                inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
+                inputs = img
 
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
@@ -150,31 +140,21 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
-            assert rgbn is not None
+            img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
+            assert img is not None
 
-            if rgbn is not None:
+            if img is not None:
                 targets = np.zeros(17)
                 for t in tags.split(' '):
                     targets[label_map[t]] = 1
 
-                ndvi = UtilImage.ndvi(rgbn)
-                ndwi = UtilImage.ndwi(rgbn)
-                ior = UtilImage.ior(rgbn)
-                bai = UtilImage.bai(rgbn)
+                img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+                img[:, :, 0] -= 103.939
+                img[:, :, 1] -= 116.779
+                img[:, :, 2] -= 123.68
+                img = img.transpose((2, 0, 1))
 
-                # resize
-                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
-
-                # red, green, blue, nir, ndvi, ndwi, ior, bai
-                v_inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
+                v_inputs = img
 
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
@@ -225,13 +205,13 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 2:
-        lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-2)
-
     if epoch == 7:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(6e-3)
+        model.optimizer.lr.set_value(3e-2)
+
+    if epoch == 10:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(1e-2)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
