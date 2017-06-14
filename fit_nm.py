@@ -110,21 +110,13 @@ for epoch in range(N_EPOCH):
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if False:
+                if targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
                     # --- augmentation ---
-                    # rotate 90
-                    rt90_inputs = np.rot90(inputs, 1, axes=(1, 2))
-                    t_batch_inputs.append(rt90_inputs)
-                    t_batch_labels.append(targets)
+                    t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
 
-                    # flip h
-                    flip_h_inputs = np.flip(inputs, 2)
-                    t_batch_inputs.append(flip_h_inputs)
+                    # cause 3x|input|
                     t_batch_labels.append(targets)
-
-                    # flip v
-                    flip_v_inputs = np.flip(inputs, 1)
-                    t_batch_inputs.append(flip_v_inputs)
+                    t_batch_labels.append(targets)
                     t_batch_labels.append(targets)
 
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
@@ -187,21 +179,14 @@ for epoch in range(N_EPOCH):
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
 
-                if False:
+                if targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
                     # --- augmentation ---
-                    # rotate 90
-                    rt90_inputs = np.rot90(v_inputs, 1, axes=(1, 2))
-                    v_batch_inputs.append(rt90_inputs)
-                    v_batch_labels.append(targets)
+                    # --- augmentation ---
+                    v_batch_inputs = common_util.aug(v_batch_inputs, v_inputs)
 
-                    # flip h
-                    flip_h_inputs = np.flip(v_inputs, 2)
-                    v_batch_inputs.append(flip_h_inputs)
+                    # cause 3x|input|
                     v_batch_labels.append(targets)
-
-                    # flip v
-                    flip_v_inputs = np.flip(v_inputs, 1)
-                    v_batch_inputs.append(flip_v_inputs)
+                    v_batch_labels.append(targets)
                     v_batch_labels.append(targets)
 
         v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)

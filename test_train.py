@@ -42,7 +42,7 @@ result = np.array(result).astype(np.float32)
 # print result
 print 'F2: ', common.f2_score(y, p).eval()
 
-# best_f2_threshold = optimize_f2.optimise_f2_thresholds(y, result)
+best_f2_threshold = optimize_f2.optimise_f2_thresholds(y, result)
 
 # print 'best threshold: ', best_f2_threshold
 print '==== End ===='
