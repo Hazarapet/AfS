@@ -45,11 +45,11 @@ index = int(len(df_train.values) * 0.9)
 train, val = df_train.values[:index], df_train.values[index:]
 
 print 'model loading...'
-[model, structure] = nm_model()
+[model, structure] = nm_model('models/nm/structures/tr_l:0.3968-tr_a:0.2725-tr_f2:0.7534-val_l:0.3723-val_a:0.2857-val_f2:0.7623-time:14-06-2017-04:13:01-dur:284.07.h5')
 
 print model.summary()
 
-adam = Adam(lr=3e-2, decay=1e-4)
+adam = Adam(lr=1e-2, decay=1e-4)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
               optimizer=adam,
@@ -242,7 +242,7 @@ for epoch in range(N_EPOCH):
 
     if epoch == 3:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-2)
+        model.optimizer.lr.set_value(6e-3)
 
     if epoch == 7:
         lr = model.optimizer.lr.get_value()
