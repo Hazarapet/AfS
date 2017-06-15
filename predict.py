@@ -280,28 +280,15 @@ def result_single(X, path):
         for f in common_util.iterate_minibatches(X, batchsize=BATCH_SIZE):
             test_batch_inputs = []
 
-            rgbn = UtilImage.process_tif(path.format(f[0]))
+            img = cv2.imread(path.format(f))
 
-            ndvi = UtilImage.ndvi(rgbn)
-            ndwi = UtilImage.ndwi(rgbn)
-            ior = UtilImage.ior(rgbn)
-            bai = UtilImage.bai(rgbn)
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            img[:, :, 0] -= 103.939
+            img[:, :, 1] -= 116.779
+            img[:, :, 2] -= 123.68
+            img = img.transpose((2, 0, 1))
 
-            # resize
-            red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
-
-            # ----------------------------------------------------------------------------
-            # ---------------------------------- Models ----------------------------------
-            # ----------------------------------------------------------------------------
-            # red, green, blue, nir, ndvi, ndwi, ior, bai
-            inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
+            inputs = img
 
             test_batch_inputs.append(inputs)
             test_batch_inputs = aug(test_batch_inputs, inputs)
