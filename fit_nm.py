@@ -54,7 +54,7 @@ sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
 adam = Adam(lr=1e-2, decay=1e-4)
 
-model.compile(loss=components.f2_binary_cross_entropy(l=0),
+model.compile(loss=components.f2_binary_cross_entropy(l=1),
               optimizer=sgd,
               metrics=[common_util.f2_score, 'accuracy'])
 
