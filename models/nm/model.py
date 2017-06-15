@@ -8,7 +8,7 @@ from keras.regularizers import l2
 
 
 def model(weights_path=None):
-    input = Input((3, 128, 128))
+    input = Input((8, 128, 128))
 
     # ------------------------------------------------------
     # ------------------ Conv Block 1 ----------------------
