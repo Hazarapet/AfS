@@ -1,9 +1,11 @@
-from keras.models import Sequential, Model
+from keras.models import Model
 from keras.layers import Input, concatenate
 from keras.layers.core import Flatten, Dense, Dropout, Activation
-from keras.layers.convolutional import Conv2D, MaxPooling2D, AveragePooling2D
+from keras.layers.convolutional import Conv2D
+from keras.layers.pooling import MaxPooling2D, AveragePooling2D, GlobalMaxPooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
+
 
 def model(weights_path=None):
     input = Input((3, 128, 128))
@@ -49,17 +51,17 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 1 ----------------------
-    bridge_conv11 = Conv2D(64, (3, 3), padding='same')(pool11)
+    bridge_conv11 = Conv2D(64, (1, 1), padding='same')(pool11)
     bridge_bn11 = BatchNormalization(axis=1)(bridge_conv11)
     bridge_act11 = Activation('relu')(bridge_bn11)
 
     # ------------------------------------------------------
     # ------------------ Conv Block 2 ----------------------
     # ---------------------- 64x64 -------------------------
-    input_bridge1 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(input)
-    concat_bridge1 = concatenate([input_bridge1, bridge_act11], axis=1)
+    # input_bridge1 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(input)
+    # concat_bridge1 = concatenate([input_bridge1, bridge_act11], axis=1)
 
-    conv21 = Conv2D(76, (3, 3), padding='same')(concat_bridge1)
+    conv21 = Conv2D(76, (3, 3), padding='same')(bridge_act11)
     bn21 = BatchNormalization(axis=1)(conv21)
     act21 = Activation('relu')(bn21)
 
@@ -97,17 +99,17 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 2 ----------------------
-    bridge_conv21 = Conv2D(128, (3, 3), padding='same')(pool21)
+    bridge_conv21 = Conv2D(76, (1, 1), padding='same')(pool21)
     bridge_bn21 = BatchNormalization(axis=1)(bridge_conv21)
     bridge_act21 = Activation('relu')(bridge_bn21)
 
     # ------------------------------------------------------
     # ------------------ Conv Block 3 ----------------------
     # ---------------------- 32x32 -------------------------
-    input_bridge2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act21)
-    concat_bridge2 = concatenate([input_bridge2, bridge_act21], axis=1)
+    # input_bridge2 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act21)
+    # concat_bridge2 = concatenate([input_bridge2, bridge_act21], axis=1)
 
-    conv31 = Conv2D(88, (3, 3), padding='same')(concat_bridge2)
+    conv31 = Conv2D(88, (3, 3), padding='same')(bridge_act21)
     bn31 = BatchNormalization(axis=1)(conv31)
     act31 = Activation('relu')(bn31)
 
@@ -145,17 +147,17 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 3 ----------------------
-    bridge_conv31 = Conv2D(256, (3, 3), padding='same')(pool31)
+    bridge_conv31 = Conv2D(88, (1, 1), padding='same')(pool31)
     bridge_bn31 = BatchNormalization(axis=1)(bridge_conv31)
     bridge_act31 = Activation('relu')(bridge_bn31)
 
     # ------------------------------------------------------
     # ------------------ Conv Block 4 ----------------------
     # ---------------------- 16x16 -------------------------
-    input_bridge3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act31)
-    concat_bridge3 = concatenate([input_bridge3, bridge_act31], axis=1)
+    # input_bridge3 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act31)
+    # concat_bridge3 = concatenate([input_bridge3, bridge_act31], axis=1)
 
-    conv41 = Conv2D(100, (3, 3), padding='same')(concat_bridge3)
+    conv41 = Conv2D(100, (3, 3), padding='same')(bridge_act31)
     bn41 = BatchNormalization(axis=1)(conv41)
     act41 = Activation('relu')(bn41)
 
@@ -193,17 +195,17 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 4 ----------------------
-    bridge_conv41 = Conv2D(256, (3, 3), padding='same')(pool41)
+    bridge_conv41 = Conv2D(100, (1, 1), padding='same')(pool41)
     bridge_bn41 = BatchNormalization(axis=1)(bridge_conv41)
     bridge_act41 = Activation('relu')(bridge_bn41)
 
     # ------------------------------------------------------
     # ------------------ Conv Block 5 ----------------------
     # ----------------------- 8x8 --------------------------
-    input_bridge4 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act41)
-    concat_bridge4 = concatenate([input_bridge4, bridge_act41], axis=1)
+    # input_bridge4 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act41)
+    # concat_bridge4 = concatenate([input_bridge4, bridge_act41], axis=1)
 
-    conv51 = Conv2D(112, (3, 3), padding='same')(concat_bridge4)
+    conv51 = Conv2D(112, (3, 3), padding='same')(bridge_act41)
     bn51 = BatchNormalization(axis=1)(conv51)
     act51 = Activation('relu')(bn51)
 
@@ -237,19 +239,64 @@ def model(weights_path=None):
     bn56 = BatchNormalization(axis=1)(conv56)
     act56 = Activation('relu')(bn56)
 
-    pool51 = MaxPooling2D(pool_size=(4, 4), strides=(2, 2))(act56)
+    pool51 = MaxPooling2D(pool_size=(4, 4), strides=(4, 4))(act56)
+
+    # -----------------------------------------------------
+    # --------------------- Bridge 5 ----------------------
+    # bridge_conv51 = Conv2D(112, (1, 1), padding='same')(pool51)
+    # bridge_bn51 = BatchNormalization(axis=1)(bridge_conv51)
+    # bridge_act51 = Activation('relu')(bridge_bn51)
+
+    # ------------------------------------------------------
+    # ------------------ Conv Block 6 ----------------------
+    # ----------------------- 4x4 --------------------------
+    # input_bridge4 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act41)
+    # concat_bridge4 = concatenate([input_bridge4, bridge_act41], axis=1)
+
+    # conv61 = Conv2D(124, (3, 3), padding='same')(bridge_act51)
+    # bn61 = BatchNormalization(axis=1)(conv61)
+    # act61 = Activation('relu')(bn61)
+    #
+    # concat61 = concatenate([bridge_act51, act61], axis=1)
+    #
+    # conv62 = Conv2D(124, (3, 3), padding='same')(concat61)
+    # bn62 = BatchNormalization(axis=1)(conv62)
+    # act62 = Activation('relu')(bn62)
+    #
+    # concat62 = concatenate([bridge_act51, act61, act62], axis=1)
+    #
+    # conv63 = Conv2D(124, (3, 3), padding='same')(concat62)
+    # bn63 = BatchNormalization(axis=1)(conv63)
+    # act63 = Activation('relu')(bn63)
+    #
+    # concat63 = concatenate([bridge_act51, act61, act62, act63], axis=1)
+    #
+    # conv64 = Conv2D(124, (3, 3), padding='same')(concat63)
+    # bn64 = BatchNormalization(axis=1)(conv64)
+    # act64 = Activation('relu')(bn64)
+    #
+    # concat64 = concatenate([bridge_act51, act61, act62, act63, act64], axis=1)
+    #
+    # conv65 = Conv2D(124, (3, 3), padding='same')(concat64)
+    # bn65 = BatchNormalization(axis=1)(conv65)
+    # act65 = Activation('relu')(bn65)
+    #
+    # concat65 = concatenate([bridge_act51, act61, act62, act63, act64, act65], axis=1)
+    #
+    # conv66 = Conv2D(124, (3, 3), padding='same')(concat65)
+    # bn66 = BatchNormalization(axis=1)(conv66)
+    # act66 = Activation('relu')(bn66)
+    #
+    # pool61 = MaxPooling2D(pool_size=(4, 4), strides=(1, 1))(act66)
 
     # Dense layers
     flt = Flatten()(pool51)
-    dense1 = Dense(256, kernel_regularizer=l2(1e-5))(flt)
+    dense1 = Dense(512, kernel_regularizer=l2(1e-5))(flt)
+    # dnbn1 = BatchNormalization(axis=1)(dense1)
     dnact1 = Activation('relu')(dense1)
     dndrop1 = Dropout(0.1)(dnact1)
 
-    dense2 = Dense(256, kernel_regularizer=l2(1e-5))(dndrop1)
-    dnact2 = Activation('relu')(dense2)
-    dndrop2 = Dropout(0.1)(dnact2)
-
-    output = Dense(17, activation='sigmoid')(dndrop2)
+    output = Dense(17, activation='sigmoid')(dndrop1)
 
     _model = Model(inputs=input, outputs=output)
 

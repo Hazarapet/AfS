@@ -6,16 +6,17 @@ import plots
 import numpy as np
 import pandas as pd
 from utils import components
-from keras.optimizers import Adam
+from keras.optimizers import Adam, SGD
 from utils import image as UtilImage
 from utils import common as common_util
 from models.nm.model import model as nm_model
 
 st_time = time.time()
-N_EPOCH = 20
+N_EPOCH = 10
 BATCH_SIZE = 22
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
+AUGMENT = False
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -49,16 +50,19 @@ print 'model loading...'
 
 print model.summary()
 
-adam = Adam(lr=3e-2, decay=1e-4)
+sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
-model.compile(loss=components.f2_binary_cross_entropy(),
-              optimizer=adam,
+adam = Adam(lr=1e-2, decay=1e-4)
+
+model.compile(loss=components.f2_binary_cross_entropy(l=0),
+              optimizer=sgd,
               metrics=[common_util.f2_score, 'accuracy'])
 
 print model.inputs
 print "training..."
 
 for epoch in range(N_EPOCH):
+    tr_time = time.time()
 
     t_loss_graph_ep = []
     t_acc_graph_ep = []
@@ -100,7 +104,7 @@ for epoch in range(N_EPOCH):
                 t_batch_inputs.append(inputs)
                 t_batch_labels.append(targets)
 
-                if targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
+                if AUGMENT and targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
                     # --- augmentation ---
                     t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
 
@@ -159,8 +163,7 @@ for epoch in range(N_EPOCH):
                 v_batch_inputs.append(v_inputs)
                 v_batch_labels.append(targets)
 
-                if targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
-                    # --- augmentation ---
+                if AUGMENT and targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
                     # --- augmentation ---
                     v_batch_inputs = common_util.aug(v_batch_inputs, v_inputs)
 
@@ -180,12 +183,13 @@ for epoch in range(N_EPOCH):
         v_acc_graph_ep = np.append(v_acc_graph_ep, [v_acc])
         v_f2_graph_ep = np.append(v_f2_graph_ep, [v_f2])
 
-        print "Val Examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}, l_rate: {:.5f}".format(val_batch,
+        print "Val Examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
             len(val),
             float(v_loss),
             float(v_acc),
             float(v_f2),
-            float(model.optimizer.lr.get_value()))
+            float(model.optimizer.lr.get_value()),
+            (time.time() - tr_time) / 60)
 
         # if model has reach to good results, we save that model
         if v_f2 > 0.9:
@@ -207,11 +211,11 @@ for epoch in range(N_EPOCH):
 
     if epoch == 7:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-2)
+        model.optimizer.lr.set_value(3e-2)
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-3)
+        model.optimizer.lr.set_value(1e-2)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
