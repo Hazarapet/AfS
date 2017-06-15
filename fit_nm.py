@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.nm.model import model as nm_model
 
 st_time = time.time()
-N_EPOCH = 10
-BATCH_SIZE = 22
+N_EPOCH = 20
+BATCH_SIZE = 24
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = False
@@ -212,7 +212,7 @@ for epoch in range(N_EPOCH):
             (time.time() - tr_time) / 60)
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.92:
+        if v_f2 > 0.91:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -236,6 +236,10 @@ for epoch in range(N_EPOCH):
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-2)
+
+    if epoch == 17:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(3e-3)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
