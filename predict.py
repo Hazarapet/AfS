@@ -280,7 +280,7 @@ def result_single(X, path):
         for f in common_util.iterate_minibatches(X, batchsize=BATCH_SIZE):
             test_batch_inputs = []
 
-            img = cv2.imread(path.format(f))
+            img = cv2.imread(path.format(f[0]))
 
             img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
             img[:, :, 0] -= 103.939
