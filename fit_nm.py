@@ -83,43 +83,32 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
-            assert rgbn is not None
 
-            if rgbn is not None:
-                targets = np.zeros(17)
-                for t in tags.split(' '):
-                    targets[label_map[t]] = 1
+            targets = np.zeros(17)
+            for t in tags.split(' '):
+                targets[label_map[t]] = 1
 
-                ndvi = UtilImage.ndvi(rgbn)
-                ndwi = UtilImage.ndwi(rgbn)
-                ior = UtilImage.ior(rgbn)
-                bai = UtilImage.bai(rgbn)
+            img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
-                # resize
-                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            img[:, :, 0] -= 103.939
+            img[:, :, 1] -= 116.779
+            img[:, :, 2] -= 123.68
+            img = img.transpose((2, 0, 1))
 
-                # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
-                inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
+            inputs = img
 
-                t_batch_inputs.append(inputs)
+            t_batch_inputs.append(inputs)
+            t_batch_labels.append(targets)
+
+            if AUGMENT and targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
+                # --- augmentation ---
+                t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
+
+                # cause 3x|input|
                 t_batch_labels.append(targets)
-
-                if AUGMENT and targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
-                    # --- augmentation ---
-                    t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
-
-                    # cause 3x|input|
-                    t_batch_labels.append(targets)
-                    t_batch_labels.append(targets)
-                    t_batch_labels.append(targets)
+                t_batch_labels.append(targets)
+                t_batch_labels.append(targets)
 
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
         t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
@@ -152,43 +141,31 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
-            assert rgbn is not None
+            targets = np.zeros(17)
+            for t in tags.split(' '):
+                targets[label_map[t]] = 1
 
-            if rgbn is not None:
-                targets = np.zeros(17)
-                for t in tags.split(' '):
-                    targets[label_map[t]] = 1
+            img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
-                ndvi = UtilImage.ndvi(rgbn)
-                ndwi = UtilImage.ndwi(rgbn)
-                ior = UtilImage.ior(rgbn)
-                bai = UtilImage.bai(rgbn)
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            img[:, :, 0] -= 103.939
+            img[:, :, 1] -= 116.779
+            img[:, :, 2] -= 123.68
+            img = img.transpose((2, 0, 1))
 
-                # resize
-                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
-                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            v_inputs = img
 
-                # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
-                v_inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
+            v_batch_inputs.append(v_inputs)
+            v_batch_labels.append(targets)
 
-                v_batch_inputs.append(v_inputs)
+            if AUGMENT and targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
+                # --- augmentation ---
+                v_batch_inputs = common_util.aug(v_batch_inputs, v_inputs)
+
+                # cause 3x|input|
                 v_batch_labels.append(targets)
-
-                if AUGMENT and targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
-                    # --- augmentation ---
-                    v_batch_inputs = common_util.aug(v_batch_inputs, v_inputs)
-
-                    # cause 3x|input|
-                    v_batch_labels.append(targets)
-                    v_batch_labels.append(targets)
-                    v_batch_labels.append(targets)
+                v_batch_labels.append(targets)
+                v_batch_labels.append(targets)
 
         v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
         v_batch_labels = np.array(v_batch_labels).astype(np.uint8)

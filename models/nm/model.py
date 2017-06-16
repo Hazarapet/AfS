@@ -8,7 +8,7 @@ from keras.regularizers import l2
 
 
 def model(weights_path=None):
-    input = Input((8, 128, 128))
+    input = Input((3, 128, 128))
 
     # ------------------------------------------------------
     # ------------------ Conv Block 1 ----------------------
@@ -299,7 +299,7 @@ def model(weights_path=None):
     dnact1 = Activation('relu')(dnbn1)
     dndrop1 = Dropout(0.2)(dnact1)
 
-    dense2 = Dense(512, kernel_regularizer=l2(2e-5))(dndrop1)
+    dense2 = Dense(256, kernel_regularizer=l2(2e-5))(dndrop1)
     dnbn2 = BatchNormalization(axis=1)(dense2)
     dnact2 = Activation('relu')(dnbn2)
     dndrop2 = Dropout(0.2)(dnact2)
