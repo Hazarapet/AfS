@@ -21,10 +21,10 @@ def model(weights_path=None):
     input = Input((3, 128, 128))
 
     # ------------------------------------------------------
-    start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), padding='same')(input)
-    start_conv = BatchNormalization(axis=1)(start_conv)
-    start_conv = Activation('relu')(start_conv)
-    start_conv = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(start_conv)
+    start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), padding='same', name='gateway_conv')(input)
+    start_conv = BatchNormalization(axis=1, name='gateway_bn')(start_conv)
+    start_conv = Activation('relu', name='gateway_act')(start_conv)
+    start_conv = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='gateway_max_pool')(start_conv)
 
     tmp_input = start_conv
     # ------------------------------------------------------
