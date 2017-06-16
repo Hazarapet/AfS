@@ -24,12 +24,12 @@ def model(weights_path=None):
     start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), padding='same')(input)
     start_conv = BatchNormalization(axis=1)(start_conv)
     start_conv = Activation('relu')(start_conv)
-    start_conv = MaxPooling2D(pool_size=(4, 4), strides=(2, 2))(start_conv)
+    start_conv = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(start_conv)
 
     tmp_input = start_conv
     # ------------------------------------------------------
     # ------------------ Conv Block 1 ----------------------
-    # --------------------- 128x128 ------------------------
+    # --------------------- 64x64 ------------------------
     for i in range(6):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv1], axis=1)
@@ -46,7 +46,7 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     # ------------------ Conv Block 2 ----------------------
-    # ---------------------- 64x64 -------------------------
+    # ---------------------- 32x32 -------------------------
     tmp_input = bridge_pool11
     for i in range(12):
         if i > 0:
@@ -63,7 +63,7 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     # ------------------ Conv Block 3 ----------------------
-    # ---------------------- 32x32 -------------------------
+    # ---------------------- 16x16 -------------------------
     tmp_input = bridge_pool21
     for i in range(10):
         if i > 0:
@@ -80,21 +80,21 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     # ------------------ Conv Block 4 ----------------------
-    # ---------------------- 16x16 -------------------------
+    # ---------------------- 8x8 -------------------------
     tmp_input = bridge_pool31
     for i in range(10):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv4], axis=1)
         conv4 = conv_block(tmp_input, nm_filter)
         nm_filter += k
+
     # -----------------------------------------------------
     # --------------------- Bridge 4 ----------------------
-
     bridge_conv41 = Conv2D(nm_filter, (3, 3), padding='same')(conv4)
     bridge_bn41 = BatchNormalization(axis=1)(bridge_conv41)
     bridge_act41 = Activation('relu')(bridge_bn41)
 
-    bridge_pool41 = MaxPooling2D(pool_size=(4, 4), strides=(4, 4))(bridge_act41)
+    bridge_pool41 = MaxPooling2D(pool_size=(4, 4), strides=(2, 2))(bridge_act41)
 
     # Dense layers
     flt = Flatten()(bridge_pool41)
