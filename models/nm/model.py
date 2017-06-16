@@ -8,8 +8,8 @@ from keras.regularizers import l2
 
 
 def conv_block(input, nm_filter):
-    conv11 = Conv2D(nm_filter, (1, 1), padding='same', bias=False)(input)
-    conv33 = Conv2D(nm_filter, (3, 3), padding='same', bias=False)(conv11)
+    conv11 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(input)
+    conv33 = Conv2D(nm_filter, (3, 3), padding='same', use_bias=False)(conv11)
     bn = BatchNormalization(axis=1)(conv33)
     act = Activation('relu')(bn)
 
@@ -23,8 +23,8 @@ def model(weights_path=None):
     # ------------------------------------------------------
     start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), padding='same')(input)
     start_conv = BatchNormalization(axis=1)(start_conv)
-    start_conv = BatchNormalization(axis=1)(start_conv)
     start_conv = Activation('relu')(start_conv)
+    start_conv = MaxPooling2D(pool_size=(4, 4), strides=(2, 2))(start_conv)
 
     tmp_input = start_conv
     # ------------------------------------------------------
