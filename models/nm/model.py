@@ -211,7 +211,7 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 3 ----------------------
-    bridge_conv31 = Conv2D(256, (3, 3), padding='same')(act312)
+    bridge_conv31 = Conv2D(128, (3, 3), padding='same')(act312)
     bridge_bn31 = BatchNormalization(axis=1)(bridge_conv31)
     bridge_act31 = Activation('relu')(bridge_bn31)
 
@@ -280,7 +280,7 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 4 ----------------------
-    bridge_conv41 = Conv2D(256, (3, 3), padding='same')(act410)
+    bridge_conv41 = Conv2D(128, (3, 3), padding='same')(act410)
     bridge_bn41 = BatchNormalization(axis=1)(bridge_conv41)
     bridge_act41 = Activation('relu')(bridge_bn41)
 
@@ -290,8 +290,8 @@ def model(weights_path=None):
     flt = Flatten()(bridge_pool41)
 
     dense1 = Dense(512, kernel_regularizer=l2(1e-5))(flt)
-    dnbn1 = BatchNormalization(axis=1)(dense1)
-    dnact1 = Activation('relu')(dnbn1)
+    # dnbn1 = BatchNormalization(axis=1)(dense1)
+    dnact1 = Activation('relu')(dense1)
     dndrop1 = Dropout(0.2)(dnact1)
 
     output = Dense(17, activation='sigmoid')(dndrop1)
