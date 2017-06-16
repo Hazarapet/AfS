@@ -12,11 +12,11 @@ from utils import common as common_util
 from models.nm.model import model as nm_model
 
 st_time = time.time()
-N_EPOCH = 7
-BATCH_SIZE = 24
+N_EPOCH = 20
+BATCH_SIZE = 22
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
-AUGMENT = False
+AUGMENT = True
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -44,7 +44,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = nm_model('models/nm/structures/tr_l:0.1973-tr_a:0.3345-tr_f2:0.8839-val_l:0.2553-val_a:0.3386-val_f2:0.8566-time:16-06-2017-08:53:55-dur:572.693.h5')
+[model, structure] = nm_model()
 
 print model.summary()
 
@@ -210,7 +210,7 @@ for epoch in range(N_EPOCH):
             (time.time() - tr_time) / 60)
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.91:
+        if v_f2 > 0.9:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -226,10 +226,6 @@ for epoch in range(N_EPOCH):
             with open(model_filename + '.json', 'w') as outfile:
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
-
-    if epoch == 7:
-        lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-2)
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()

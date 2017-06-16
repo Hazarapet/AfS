@@ -294,15 +294,15 @@ def model(weights_path=None):
     # Dense layers
     flt = Flatten()(bridge_pool61)
 
-    dense1 = Dense(512, kernel_regularizer=l2(1e-5))(flt)
+    dense1 = Dense(512, kernel_regularizer=l2(2e-5))(flt)
     dnbn1 = BatchNormalization(axis=1)(dense1)
     dnact1 = Activation('relu')(dnbn1)
-    dndrop1 = Dropout(0.1)(dnact1)
+    dndrop1 = Dropout(0.2)(dnact1)
 
-    dense2 = Dense(512, kernel_regularizer=l2(1e-5))(dndrop1)
+    dense2 = Dense(512, kernel_regularizer=l2(2e-5))(dndrop1)
     dnbn2 = BatchNormalization(axis=1)(dense2)
     dnact2 = Activation('relu')(dnbn2)
-    dndrop2 = Dropout(0.1)(dnact2)
+    dndrop2 = Dropout(0.2)(dnact2)
 
     output = Dense(17, activation='sigmoid')(dndrop2)
 
