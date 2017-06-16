@@ -263,9 +263,10 @@ def result(X, path):
 
     return result
 
+
 def result_single(X, path):
-    weights_path = 'models/nm/structures/tr_l:0.0994-tr_a:0.3453-tr_f2:0.8661-val_l:0.113-val_a:0.4804-val_f2:0.8531-time:15-06-2017-21:18:28-dur:262.024.h5'
-    model_structure = 'models/nm/structures/tr_l:0.0994-tr_a:0.3453-tr_f2:0.8661-val_l:0.113-val_a:0.4804-val_f2:0.8531-time:15-06-2017-21:18:28-dur:262.024.json'
+    weights_path = 'models/nm/structures/tr_l:0.1973-tr_a:0.3345-tr_f2:0.8839-val_l:0.2553-val_a:0.3386-val_f2:0.8566-time:16-06-2017-08:53:55-dur:572.693.h5'
+    model_structure = 'models/nm/structures/tr_l:0.1973-tr_a:0.3345-tr_f2:0.8839-val_l:0.2553-val_a:0.3386-val_f2:0.8566-time:16-06-2017-08:53:55-dur:572.693.json'
 
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))
@@ -280,15 +281,25 @@ def result_single(X, path):
         for f in common_util.iterate_minibatches(X, batchsize=BATCH_SIZE):
             test_batch_inputs = []
 
-            img = cv2.imread(path.format(f[0]))
+            rgbn = UtilImage.process_tif(path.format(f[0]))
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
-            img[:, :, 0] -= 103.939
-            img[:, :, 1] -= 116.779
-            img[:, :, 2] -= 123.68
-            img = img.transpose((2, 0, 1))
+            ndvi = UtilImage.ndvi(rgbn)
+            ndwi = UtilImage.ndwi(rgbn)
+            ior = UtilImage.ior(rgbn)
+            bai = UtilImage.bai(rgbn)
 
-            inputs = img
+            # resize
+            red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
+            ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+            bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+
+            # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
+            inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
 
             test_batch_inputs.append(inputs)
             test_batch_inputs = aug(test_batch_inputs, inputs)

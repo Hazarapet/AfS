@@ -6,7 +6,7 @@ import plots
 import numpy as np
 import pandas as pd
 from utils import components
-import tif_data_augmentation as tfa
+import split as tfa
 from utils import image as UtilImage
 from keras.optimizers import SGD, Adam
 from utils import common as common_util

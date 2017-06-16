@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.nm.model import model as nm_model
 
 st_time = time.time()
-N_EPOCH = 20
+N_EPOCH = 7
 BATCH_SIZE = 24
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
@@ -32,21 +32,19 @@ print 'data loading...'
 # loading the data
 df_train = pd.read_csv('train_v2.csv')
 
+df_tr = pd.read_csv('train_split.csv')
+df_val = pd.read_csv('val_split.csv')
+
 flatten = lambda l: [item for sublist in l for item in sublist]
 labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
 
 label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
 
-# we should shuffle all examples
-np.random.shuffle(df_train.values)
-
-# splitting to train and validation set
-index = int(len(df_train.values) * 0.9)
-train, val = df_train.values[:index], df_train.values[index:]
+train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = nm_model()
+[model, structure] = nm_model('models/nm/structures/tr_l:0.1973-tr_a:0.3345-tr_f2:0.8839-val_l:0.2553-val_a:0.3386-val_f2:0.8566-time:16-06-2017-08:53:55-dur:572.693.h5')
 
 print model.summary()
 
