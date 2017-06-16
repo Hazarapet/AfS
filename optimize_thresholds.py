@@ -4,7 +4,6 @@ import json
 import predict
 import numpy as np
 import pandas as pd
-import optimize_f2
 import utils.common as common
 
 # loading the data
