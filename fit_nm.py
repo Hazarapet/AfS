@@ -18,6 +18,9 @@ IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = True
 
+rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
+        'blooming', 'selective_logging', 'blow_down']
+
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
 t_f2_graph = np.array([])
@@ -83,10 +86,13 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-
+            exists = False
             targets = np.zeros(17)
+
             for t in tags.split(' '):
                 targets[label_map[t]] = 1
+                if t in rare:
+                    exists = True
 
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
@@ -101,7 +107,7 @@ for epoch in range(N_EPOCH):
             t_batch_inputs.append(inputs)
             t_batch_labels.append(targets)
 
-            if AUGMENT and targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
+            if AUGMENT and exists:
                 # --- augmentation ---
                 t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
 
@@ -141,9 +147,13 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
+            exists = False
             targets = np.zeros(17)
+
             for t in tags.split(' '):
                 targets[label_map[t]] = 1
+                if t in rare:
+                    exists = True
 
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
@@ -158,7 +168,7 @@ for epoch in range(N_EPOCH):
             v_batch_inputs.append(v_inputs)
             v_batch_labels.append(targets)
 
-            if AUGMENT and targets[label_map['primary']] == 0 and targets[label_map['clear']] == 0:
+            if AUGMENT and exists:
                 # --- augmentation ---
                 v_batch_inputs = common_util.aug(v_batch_inputs, v_inputs)
 
