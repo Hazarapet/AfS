@@ -22,14 +22,16 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), padding='same', name='gateway_conv')(input)
-    start_conv = BatchNormalization(axis=1, name='gateway_bn')(start_conv)
-    start_conv = Activation('relu', name='gateway_act')(start_conv)
-    start_conv = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='gateway_max_pool')(start_conv)
+    start_bn = BatchNormalization(axis=1, name='gateway_bn')(start_conv)
+    start_act = Activation('relu', name='gateway_act')(start_bn)
 
-    tmp_input = start_conv
+    start_pool = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='gateway_max_pool')(start_act)
+
     # ------------------------------------------------------
     # ------------------ Conv Block 1 ----------------------
-    # --------------------- 64x64 ------------------------
+    # ---------------------- 64x64 -------------------------
+    tmp_input = start_pool
+
     for i in range(6):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv1], axis=1)
