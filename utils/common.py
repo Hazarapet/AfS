@@ -75,3 +75,29 @@ def aug(array, input):
     array.append(flip_v)
 
     return array
+
+def optimise_f2_thresholds(y, p, verbose=True, resolution=100):
+  def mf(x):
+    p2 = np.zeros_like(p)
+    for i in range(17):
+      p2[:, i] = (p[:, i] > x[i]).astype(np.int)
+    score = f2_score(y, p2).eval()
+    return score
+
+  x = [0.2] * 17
+
+  for i in range(17):
+    best_i2 = 0
+    best_score = 0
+    for i2 in range(resolution):
+      i2 /= float(resolution)
+      x[i] = i2
+      score = mf(x)
+      if score > best_score:
+        best_i2 = i2
+        best_score = score
+    x[i] = best_i2
+    if verbose:
+      print(i, best_i2, best_score)
+
+  return x
