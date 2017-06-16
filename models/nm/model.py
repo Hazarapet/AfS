@@ -284,55 +284,10 @@ def model(weights_path=None):
     bridge_bn41 = BatchNormalization(axis=1)(bridge_conv41)
     bridge_act41 = Activation('relu')(bridge_bn41)
 
-    bridge_pool41 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_act41)
-
-    # ------------------------------------------------------
-    # ------------------ Conv Block 5 ----------------------
-    # ----------------------- 8x8 --------------------------
-    conv51 = Conv2D(112, (3, 3), padding='same')(bridge_pool41)
-    bn51 = BatchNormalization(axis=1)(conv51)
-    act51 = Activation('relu')(bn51)
-
-    concat51 = concatenate([bridge_pool41, act51], axis=1)
-
-    conv52 = Conv2D(112, (3, 3), padding='same')(concat51)
-    bn52 = BatchNormalization(axis=1)(conv52)
-    act52 = Activation('relu')(bn52)
-
-    concat52 = concatenate([concat51, act52], axis=1)
-
-    conv53 = Conv2D(112, (3, 3), padding='same')(concat52)
-    bn53 = BatchNormalization(axis=1)(conv53)
-    act53 = Activation('relu')(bn53)
-
-    concat53 = concatenate([concat52, act53], axis=1)
-
-    conv54 = Conv2D(112, (3, 3), padding='same')(concat53)
-    bn54 = BatchNormalization(axis=1)(conv54)
-    act54 = Activation('relu')(bn54)
-
-    concat54 = concatenate([concat53, act54], axis=1)
-
-    conv55 = Conv2D(112, (3, 3), padding='same')(concat54)
-    bn55 = BatchNormalization(axis=1)(conv55)
-    act55 = Activation('relu')(bn55)
-
-    concat55 = concatenate([concat54, act55], axis=1)
-
-    conv56 = Conv2D(112, (3, 3), padding='same')(concat55)
-    bn56 = BatchNormalization(axis=1)(conv56)
-    act56 = Activation('relu')(bn56)
-
-    # -----------------------------------------------------
-    # --------------------- Bridge 5 ----------------------
-    bridge_conv51 = Conv2D(512, (3, 3), padding='same')(act56)
-    bridge_bn51 = BatchNormalization(axis=1)(bridge_conv51)
-    bridge_act51 = Activation('relu')(bridge_bn51)
-
-    bridge_pool51 = MaxPooling2D(pool_size=(4, 4), strides=(2, 2))(bridge_act51)
+    bridge_pool41 = MaxPooling2D(pool_size=(4, 4), strides=(4, 4))(bridge_act41)
 
     # Dense layers
-    flt = Flatten()(bridge_pool51)
+    flt = Flatten()(bridge_pool41)
 
     dense1 = Dense(512, kernel_regularizer=l2(1e-5))(flt)
     dnbn1 = BatchNormalization(axis=1)(dense1)
