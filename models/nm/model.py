@@ -250,7 +250,7 @@ def model(weights_path=None):
     # ------------------------------------------------------
     # ------------------ Conv Block 6 ----------------------
     # ----------------------- 4x4 --------------------------
-    input_bridge4 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act41)
+    input_bridge4 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(act51)
     concat_bridge4 = concatenate([input_bridge4, bridge_pool51], axis=1)
 
     conv61 = Conv2D(124, (3, 3), padding='same')(concat_bridge4)
