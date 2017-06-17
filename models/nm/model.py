@@ -1,15 +1,18 @@
 from keras.models import Model
 from keras.layers import Input, concatenate
 from keras.layers.core import Flatten, Dense, Dropout, Activation
-from keras.layers.convolutional import Conv2D
-from keras.layers.pooling import MaxPooling2D, AveragePooling2D, GlobalMaxPooling2D
+from keras.layers.convolutional import Conv2D, ZeroPadding2D
+from keras.layers.pooling import MaxPooling2D, AveragePooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 
 def conv_block(input, nm_filter):
     conv11 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(input)
-    conv33 = Conv2D(nm_filter, (3, 3), padding='same', use_bias=False)(conv11)
+    bn11 = BatchNormalization(axis=1)(conv11)
+    act11 = Activation('relu')(bn11)
+
+    conv33 = Conv2D(nm_filter, (3, 3), padding='same', use_bias=False)(act11)
     bn = BatchNormalization(axis=1)(conv33)
     act = Activation('relu')(bn)
 
@@ -21,11 +24,13 @@ def model(weights_path=None):
     input = Input((3, 224, 224))
 
     # ------------------------------------------------------
-    start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), padding='same', name='gateway_conv')(input)
-    start_bn = BatchNormalization(axis=1, name='gateway_bn')(start_conv)
-    start_act = Activation('relu', name='gateway_act')(start_bn)
+    start_conv = ZeroPadding2D((3, 3), name='gateway_padding3x3')(input)
+    start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), name='gateway_conv')(start_conv)
+    start_conv = BatchNormalization(axis=1, name='gateway_bn')(start_conv)
+    start_conv = Activation('relu', name='gateway_act')(start_conv)
 
-    start_pool = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name='gateway_max_pool')(start_act)
+    start_conv = ZeroPadding2D((1, 1), name='gateway_padding1x1')(start_conv)
+    start_pool = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='gateway_max_pool')(start_conv)
 
     # ------------------------------------------------------
     # ------------------ Conv Block 1 ----------------------
