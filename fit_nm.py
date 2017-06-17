@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.nm.model import model as nm_model
 
 st_time = time.time()
-N_EPOCH = 25
-BATCH_SIZE = 19
+N_EPOCH = 30
+BATCH_SIZE = 20
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True
@@ -96,7 +96,7 @@ for epoch in range(N_EPOCH):
 
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float16)
             img[:, :, 0] -= 103.939
             img[:, :, 1] -= 116.779
             img[:, :, 2] -= 123.68
@@ -116,7 +116,7 @@ for epoch in range(N_EPOCH):
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
 
-        t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
+        t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
         t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
 
         for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
@@ -157,7 +157,7 @@ for epoch in range(N_EPOCH):
 
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float16)
             img[:, :, 0] -= 103.939
             img[:, :, 1] -= 116.779
             img[:, :, 2] -= 123.68
@@ -177,7 +177,7 @@ for epoch in range(N_EPOCH):
                 v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
 
-        v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
+        v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
         v_batch_labels = np.array(v_batch_labels).astype(np.uint8)
 
         [v_loss, v_f2, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
@@ -218,9 +218,13 @@ for epoch in range(N_EPOCH):
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-2)
 
-    if epoch == 17:
+    if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-3)
+        model.optimizer.lr.set_value(1e-3)
+
+    if epoch == 30:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(1e-3)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
