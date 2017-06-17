@@ -67,7 +67,7 @@ def model(weights_path=None):
     # ------------------ Conv Block 3 ----------------------
     # ---------------------- 16x16 -------------------------
     tmp_input = bridge_pool21
-    for i in range(10):
+    for i in range(12):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv3], axis=1)
         conv3 = conv_block(tmp_input, nm_filter)
