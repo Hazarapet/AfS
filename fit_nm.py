@@ -13,9 +13,9 @@ from models.nm.model import model as nm_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 60
-IMAGE_WIDTH = 128
-IMAGE_HEIGHT = 128
+BATCH_SIZE = 80
+IMAGE_WIDTH = 224
+IMAGE_HEIGHT = 224
 AUGMENT = True
 
 rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',

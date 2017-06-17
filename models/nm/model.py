@@ -18,7 +18,7 @@ def conv_block(input, nm_filter):
 def model(weights_path=None):
     k = 12
     nm_filter = 64
-    input = Input((3, 128, 128))
+    input = Input((3, 224, 224))
 
     # ------------------------------------------------------
     start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), padding='same', name='gateway_conv')(input)
@@ -29,7 +29,7 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     # ------------------ Conv Block 1 ----------------------
-    # ---------------------- 64x64 -------------------------
+    # ---------------------- 112x112 -------------------------
     tmp_input = start_pool
 
     for i in range(6):
