@@ -45,7 +45,7 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 1 ----------------------
-    bridge_conv11 = Conv2D(nm_filter, (3, 3), padding='same')(conv1)
+    bridge_conv11 = Conv2D(nm_filter, (1, 1), padding='same')(conv1)
     bridge_bn11 = BatchNormalization(axis=1)(bridge_conv11)
     bridge_act11 = Activation('relu')(bridge_bn11)
 
@@ -62,7 +62,7 @@ def model(weights_path=None):
         nm_filter += k
     # -----------------------------------------------------
     # --------------------- Bridge 2 ----------------------
-    bridge_conv21 = Conv2D(nm_filter, (3, 3), padding='same')(conv2)
+    bridge_conv21 = Conv2D(nm_filter, (1, 1), padding='same')(conv2)
     bridge_bn21 = BatchNormalization(axis=1)(bridge_conv21)
     bridge_act21 = Activation('relu')(bridge_bn21)
 
@@ -79,7 +79,7 @@ def model(weights_path=None):
         nm_filter += k
     # -----------------------------------------------------
     # --------------------- Bridge 3 ----------------------
-    bridge_conv31 = Conv2D(nm_filter, (3, 3), padding='same')(conv3)
+    bridge_conv31 = Conv2D(nm_filter, (1, 1), padding='same')(conv3)
     bridge_bn31 = BatchNormalization(axis=1)(bridge_conv31)
     bridge_act31 = Activation('relu')(bridge_bn31)
 
@@ -97,7 +97,7 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 4 ----------------------
-    bridge_conv41 = Conv2D(nm_filter, (3, 3), padding='same')(conv4)
+    bridge_conv41 = Conv2D(nm_filter, (1, 1), padding='same')(conv4)
     bridge_bn41 = BatchNormalization(axis=1)(bridge_conv41)
     bridge_act41 = Activation('relu')(bridge_bn41)
 
