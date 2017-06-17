@@ -25,7 +25,7 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     start_conv = ZeroPadding2D((3, 3), name='gateway_padding3x3')(input)
-    start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), name='gateway_conv')(start_conv)
+    start_conv = Conv2D(2*k, (7, 7), strides=(2, 2), name='gateway_conv')(start_conv)
     start_conv = BatchNormalization(axis=1, name='gateway_bn')(start_conv)
     start_conv = Activation('relu', name='gateway_act')(start_conv)
 
@@ -34,17 +34,19 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     # ------------------ Conv Block 1 ----------------------
-    # ---------------------- 112x112 -------------------------
+    # ---------------------- 56x56 -------------------------
     tmp_input = start_pool
 
     for i in range(6):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv1], axis=1)
         conv1 = conv_block(tmp_input, nm_filter)
-        nm_filter += k
+
+    nm_filter += k
 
     # -----------------------------------------------------
     # --------------------- Bridge 1 ----------------------
+
     bridge_conv11 = Conv2D(nm_filter, (1, 1), padding='same')(conv1)
     bridge_bn11 = BatchNormalization(axis=1)(bridge_conv11)
     bridge_act11 = Activation('relu')(bridge_bn11)
@@ -53,13 +55,16 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     # ------------------ Conv Block 2 ----------------------
-    # ---------------------- 32x32 -------------------------
+    # ---------------------- 28x28 -------------------------
+
     tmp_input = bridge_pool11
     for i in range(12):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv2], axis=1)
         conv2 = conv_block(tmp_input, nm_filter)
-        nm_filter += k
+
+    nm_filter += k
+
     # -----------------------------------------------------
     # --------------------- Bridge 2 ----------------------
     bridge_conv21 = Conv2D(nm_filter, (1, 1), padding='same')(conv2)
@@ -70,13 +75,16 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     # ------------------ Conv Block 3 ----------------------
-    # ---------------------- 16x16 -------------------------
+    # ---------------------- 14x14 -------------------------
+
     tmp_input = bridge_pool21
     for i in range(24):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv3], axis=1)
         conv3 = conv_block(tmp_input, nm_filter)
-        nm_filter += k
+
+    nm_filter += k
+
     # -----------------------------------------------------
     # --------------------- Bridge 3 ----------------------
     bridge_conv31 = Conv2D(nm_filter, (1, 1), padding='same')(conv3)
@@ -87,13 +95,15 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     # ------------------ Conv Block 4 ----------------------
-    # ---------------------- 8x8 -------------------------
+    # ---------------------- 7x7 -------------------------
+
     tmp_input = bridge_pool31
     for i in range(16):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv4], axis=1)
         conv4 = conv_block(tmp_input, nm_filter)
-        nm_filter += k
+
+    nm_filter += k
 
     # -----------------------------------------------------
     # --------------------- Bridge 4 ----------------------
