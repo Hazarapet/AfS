@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.nm.model import model as nm_model
 
 st_time = time.time()
-N_EPOCH = 15
-BATCH_SIZE = 32
+N_EPOCH = 25
+BATCH_SIZE = 25
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True
