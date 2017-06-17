@@ -8,18 +8,18 @@ from keras.regularizers import l2
 
 
 def conv_block(input, nm_filter):
-    conv11 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(input)
-    bn11 = BatchNormalization(axis=1)(conv11)
+    bn11 = BatchNormalization(axis=1)(input)
     act11 = Activation('relu')(bn11)
+    conv11 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(act11)
 
-    conv33 = Conv2D(nm_filter, (3, 3), padding='same', use_bias=False)(act11)
-    bn = BatchNormalization(axis=1)(conv33)
-    act = Activation('relu')(bn)
+    bn33 = BatchNormalization(axis=1)(conv11)
+    act33 = Activation('relu')(bn33)
+    conv33 = Conv2D(nm_filter, (3, 3), padding='same', use_bias=False)(act33)
 
-    return act
+    return conv33
 
 def model(weights_path=None):
-    k = 12
+    k = 32
     nm_filter = 64
     input = Input((3, 224, 224))
 
@@ -49,7 +49,7 @@ def model(weights_path=None):
     bridge_bn11 = BatchNormalization(axis=1)(bridge_conv11)
     bridge_act11 = Activation('relu')(bridge_bn11)
 
-    bridge_pool11 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_act11)
+    bridge_pool11 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_act11)
 
     # ------------------------------------------------------
     # ------------------ Conv Block 2 ----------------------
@@ -66,13 +66,13 @@ def model(weights_path=None):
     bridge_bn21 = BatchNormalization(axis=1)(bridge_conv21)
     bridge_act21 = Activation('relu')(bridge_bn21)
 
-    bridge_pool21 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_act21)
+    bridge_pool21 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_act21)
 
     # ------------------------------------------------------
     # ------------------ Conv Block 3 ----------------------
     # ---------------------- 16x16 -------------------------
     tmp_input = bridge_pool21
-    for i in range(12):
+    for i in range(24):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv3], axis=1)
         conv3 = conv_block(tmp_input, nm_filter)
@@ -83,13 +83,13 @@ def model(weights_path=None):
     bridge_bn31 = BatchNormalization(axis=1)(bridge_conv31)
     bridge_act31 = Activation('relu')(bridge_bn31)
 
-    bridge_pool31 = MaxPooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_act31)
+    bridge_pool31 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_act31)
 
     # ------------------------------------------------------
     # ------------------ Conv Block 4 ----------------------
     # ---------------------- 8x8 -------------------------
     tmp_input = bridge_pool31
-    for i in range(10):
+    for i in range(16):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv4], axis=1)
         conv4 = conv_block(tmp_input, nm_filter)
@@ -101,17 +101,17 @@ def model(weights_path=None):
     bridge_bn41 = BatchNormalization(axis=1)(bridge_conv41)
     bridge_act41 = Activation('relu')(bridge_bn41)
 
-    bridge_pool41 = MaxPooling2D(pool_size=(4, 4), strides=(2, 2))(bridge_act41)
+    bridge_pool41 = AveragePooling2D(pool_size=(7, 7), strides=(1, 1))(bridge_act41)
 
     # Dense layers
     flt = Flatten()(bridge_pool41)
 
-    dense1 = Dense(512, kernel_regularizer=l2(1e-5))(flt)
-    # dnbn1 = BatchNormalization(axis=1)(dense1)
-    dnact1 = Activation('relu')(dense1)
-    dndrop1 = Dropout(0.2)(dnact1)
+    # dense1 = Dense(256, kernel_regularizer=l2(1e-5))(flt)
+    # # dnbn1 = BatchNormalization(axis=1)(dense1)
+    # dnact1 = Activation('relu')(dense1)
+    # dndrop1 = Dropout(0.2)(dnact1)
 
-    output = Dense(17, activation='sigmoid')(dndrop1)
+    output = Dense(17, activation='sigmoid')(flt)
 
     _model = Model(inputs=input, outputs=output)
 
