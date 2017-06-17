@@ -13,7 +13,7 @@ from models.nm.model import model as nm_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 30
+BATCH_SIZE = 15
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True
