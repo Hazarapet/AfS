@@ -50,6 +50,8 @@ train, val = df_tr.values, df_val.values
 print 'model loading...'
 [model, structure] = main_model()
 
+print model.summary()
+
 sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
 model.compile(loss=components.f2_binary_cross_entropy(),
