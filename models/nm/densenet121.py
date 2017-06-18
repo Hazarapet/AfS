@@ -187,3 +187,8 @@ def load_weights(model):
             layer.set_weights(ar)
 
     return model
+
+if __name__ == '__main__':
+    [model, s] = densenet121_model(img_rows=224, img_cols=224, color_type=3, num_classes=17, dropout_rate=0.1)
+
+    print model.summary()
