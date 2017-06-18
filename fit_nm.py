@@ -52,7 +52,7 @@ print 'model loading...'
     img_rows=IMAGE_WIDTH,
     img_cols=IMAGE_HEIGHT,
     color_type=3,
-    dropout_rate=0.2)
+    dropout_rate=0.4)
 
 print model.summary()
 
