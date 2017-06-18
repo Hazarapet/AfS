@@ -4,6 +4,8 @@ from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import AveragePooling2D, GlobalAveragePooling2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.models import Model
+import h5py
+import numpy as np
 import keras.backend as K
 
 from utils.custom_layers.scale_layer import Scale
@@ -70,7 +72,7 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
 
     model = Model(img_input, x_fc, name='densenet')
 
-    # weights_path = 'models/nm/structures/densenet121_weights_th.h5'
+    model = load_weights(model)
 
     return [model, 'models/nm/structures/']
 
@@ -164,3 +166,24 @@ def dense_block(x, stage, nb_layers, nb_filter, growth_rate, dropout_rate=None, 
             nb_filter += growth_rate
 
     return concat_feat, nb_filter
+
+
+def load_weights(model):
+    weights_path = 'models/nm/structures/densenet121_weights_th.h5'
+
+    f = h5py.File(weights_path, "r")
+
+    weights = {k: v for k, v in zip(f.keys(), f.values())}
+
+    for layer in model.layers:
+        if 'fc' not in layer.name and 'scale' not in layer.name:
+            w = weights[layer.name]
+            ar = []
+            for v in w.values():
+                ar.append(v[()])
+
+            ar = np.array(ar).astype(np.float32)
+
+            layer.set_weights(ar)
+
+    return model
