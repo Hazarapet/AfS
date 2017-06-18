@@ -1,4 +1,3 @@
-from keras.optimizers import SGD
 from keras.layers import Input, concatenate, ZeroPadding2D
 from keras.layers.core import Dense, Dropout, Activation
 from keras.layers.convolutional import Convolution2D
@@ -37,18 +36,9 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
     # compute compression factor
     compression = 1.0 - reduction
 
-    # Handle Dimension Ordering for different backends
-    global concat_axis
-    if K.image_dim_ordering() == 'tf':
-      concat_axis = 3
-      img_input = Input((img_rows, img_cols, color_type), name='data')
-    else:
-      concat_axis = 1
-      img_input = Input((color_type, img_rows, img_cols), name='data')
-
-    # From architecture for ImageNet (Table 1 in the paper)
-    nb_filter = 64
-    nb_layers = [6, 12, 24, 16] # For DenseNet-121
+    concat_axis = 1
+    img_input = Input((color_type, img_rows, img_cols), name='data')
+    nb_layers = [6, 12, 24, 16]  # For DenseNet-121
 
     # Initial convolution
     x = ZeroPadding2D((3, 3), name='conv1_zeropadding')(img_input)
@@ -61,7 +51,7 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
 
     # Add dense blocks
     for block_idx in range(nb_dense_block - 1):
-        stage = block_idx+2
+        stage = block_idx + 2
         x, nb_filter = dense_block(x, stage, nb_layers[block_idx], nb_filter, growth_rate, dropout_rate=dropout_rate, weight_decay=weight_decay)
 
         # Add transition_block
@@ -71,7 +61,7 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
     final_stage = stage + 1
     x, nb_filter = dense_block(x, final_stage, nb_layers[-1], nb_filter, growth_rate, dropout_rate=dropout_rate, weight_decay=weight_decay)
 
-    x = BatchNormalization(epsilon=eps, axis=concat_axis, name='conv'+str(final_stage)+'_blk_bn')(x)
+    x = BatchNormalization(epsilon=eps, axis=1, name='conv'+str(final_stage)+'_blk_bn')(x)
     # x = Scale(axis=concat_axis, name='conv'+str(final_stage)+'_blk_scale')(x)
     x = Activation('relu', name='relu'+str(final_stage)+'_blk')(x)
 
@@ -81,12 +71,7 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
 
     model = Model(img_input, x_fc, name='densenet')
 
-    if K.image_dim_ordering() == 'th':
-      # Use pre-trained weights for Theano backend
-      weights_path = 'models/nm/structures/densenet121_weights_th.h5'
-    else:
-      # Use pre-trained weights for Tensorflow backend
-      weights_path = 'imagenet_models/densenet121_weights_tf.h5'
+    # weights_path = 'models/nm/structures/densenet121_weights_th.h5'
 
     return [model, 'models/nm/structures/']
 
@@ -107,7 +92,7 @@ def conv_block(x, stage, branch, nb_filter, dropout_rate=None, weight_decay=1e-4
 
     # 1x1 Convolution (Bottleneck layer)
     inter_channel = nb_filter * 4  
-    x = BatchNormalization(epsilon=eps, axis=concat_axis, name=conv_name_base+'_x1_bn')(x)
+    x = BatchNormalization(epsilon=eps, axis=1, name=conv_name_base+'_x1_bn')(x)
     # x = Scale(axis=concat_axis, name=conv_name_base+'_x1_scale')(x)
     x = Activation('relu', name=relu_name_base+'_x1')(x)
     x = Convolution2D(inter_channel, (1, 1), name=conv_name_base+'_x1', use_bias=False)(x)
@@ -116,7 +101,7 @@ def conv_block(x, stage, branch, nb_filter, dropout_rate=None, weight_decay=1e-4
         x = Dropout(dropout_rate)(x)
 
     # 3x3 Convolution
-    x = BatchNormalization(epsilon=eps, axis=concat_axis, name=conv_name_base+'_x2_bn')(x)
+    x = BatchNormalization(epsilon=eps, axis=1, name=conv_name_base+'_x2_bn')(x)
     # x = Scale(axis=concat_axis, name=conv_name_base+'_x2_scale')(x)
     x = Activation('relu', name=relu_name_base+'_x2')(x)
     x = ZeroPadding2D((1, 1), name=conv_name_base+'_x2_zeropadding')(x)
@@ -144,7 +129,7 @@ def transition_block(x, stage, nb_filter, compression=1.0, dropout_rate=None, we
     relu_name_base = 'relu' + str(stage) + '_blk'
     pool_name_base = 'pool' + str(stage) 
 
-    x = BatchNormalization(epsilon=eps, axis=concat_axis, name=conv_name_base+'_bn')(x)
+    x = BatchNormalization(epsilon=eps, axis=1, name=conv_name_base+'_bn')(x)
     # x = Scale(axis=concat_axis, name=conv_name_base+'_scale')(x)
     x = Activation('relu', name=relu_name_base)(x)
     x = Convolution2D(int(nb_filter * compression), (1, 1), name=conv_name_base, use_bias=False)(x)
@@ -174,9 +159,9 @@ def dense_block(x, stage, nb_layers, nb_filter, growth_rate, dropout_rate=None, 
     concat_feat = x
 
     for i in range(nb_layers):
-        branch = i+1
+        branch = i + 1
         x = conv_block(concat_feat, stage, branch, growth_rate, dropout_rate, weight_decay)
-        concat_feat = concatenate([concat_feat, x], axis=concat_axis, name='concat_'+str(stage)+'_'+str(branch))
+        concat_feat = concatenate([concat_feat, x], axis=1, name='concat_' + str(stage) + '_' + str(branch))
 
         if grow_nb_filters:
             nb_filter += growth_rate
