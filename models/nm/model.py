@@ -7,7 +7,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 
-def conv_block(input, nm_filter, dp=0.2):
+def conv_block(input, nm_filter, dp=0.1):
     bn11 = BatchNormalization(axis=1)(input)
     act11 = Activation('relu')(bn11)
     conv11 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(act11)
@@ -81,7 +81,7 @@ def model(weights_path=None):
     # ---------------------- 14x14 -------------------------
 
     tmp_input = bridge_pool21
-    for i in range(32):
+    for i in range(24):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv3], axis=1)
         conv3 = conv_block(tmp_input, nm_filter)
@@ -101,7 +101,7 @@ def model(weights_path=None):
     # ---------------------- 7x7 -------------------------
 
     tmp_input = bridge_pool31
-    for i in range(32):
+    for i in range(16):
         if i > 0:
             tmp_input = concatenate([tmp_input, conv4], axis=1)
         conv4 = conv_block(tmp_input, nm_filter)
