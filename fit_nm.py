@@ -47,7 +47,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = nm_model()
+[model, structure] = nm_model('models/nm/structures/densenet121_weights_th.h5')
 
 print model.summary()
 
