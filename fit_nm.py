@@ -13,7 +13,7 @@ from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
-N_EPOCH = 30
+N_EPOCH = 40
 BATCH_SIZE = 32
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
@@ -225,7 +225,7 @@ for epoch in range(N_EPOCH):
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-4)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])

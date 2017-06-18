@@ -35,8 +35,8 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
 
     # compute compression factor
     compression = 1.0 - reduction
-    
-    img_input = Input((color_type, img_rows, img_cols), name='data')
+
+    img_input = Input((color_type, img_rows, img_cols), name='input')
     nb_layers = [6, 12, 24, 16]  # For DenseNet-121
 
     # Initial convolution
@@ -66,7 +66,7 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
 
     x_fc = GlobalAveragePooling2D(name='pool'+str(final_stage))(x)
     x_fc = Dense(17, name='fc6')(x_fc)
-    x_fc = Activation('sigmoid', name='prob')(x_fc)
+    x_fc = Activation('sigmoid', name='output')(x_fc)
 
     model = Model(img_input, x_fc, name='densenet')
 
@@ -153,8 +153,6 @@ def dense_block(x, stage, nb_layers, nb_filter, growth_rate, dropout_rate=None, 
             weight_decay: weight decay factor
             grow_nb_filters: flag to decide to allow number of filters to grow
     '''
-
-    eps = 1.1e-5
     concat_feat = x
 
     for i in range(nb_layers):
