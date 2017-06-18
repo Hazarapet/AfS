@@ -10,6 +10,7 @@ from keras.optimizers import Adam, SGD
 from utils import image as UtilImage
 from utils import common as common_util
 from models.nm.model import model as nm_model
+from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
 N_EPOCH = 30
@@ -47,7 +48,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = nm_model('models/nm/structures/densenet121_weights_th.h5')
+[model, structure] = densenet121_model(img_rows=IMAGE_WIDTH, img_cols=IMAGE_HEIGHT, color_type=1, num_classes=17)
 
 print model.summary()
 
