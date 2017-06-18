@@ -10,7 +10,7 @@ import keras.backend as K
 
 from utils.custom_layers.scale_layer import Scale
 
-def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=None):
+def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=None, weights_path=None):
     '''
     DenseNet 121 Model for Keras
 
@@ -71,6 +71,9 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
     x_fc = Activation('sigmoid', name='output')(x_fc)
 
     model = Model(img_input, x_fc, name='densenet')
+
+    if weights_path:
+        model.load_weights(weights_path)
 
     # model = load_weights(model)
 

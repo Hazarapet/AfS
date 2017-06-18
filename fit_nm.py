@@ -48,11 +48,17 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = densenet121_model(img_rows=IMAGE_WIDTH, img_cols=IMAGE_HEIGHT, color_type=3, num_classes=17, dropout_rate=0.1)
+[model, structure] = densenet121_model(
+    img_rows=IMAGE_WIDTH,
+    img_cols=IMAGE_HEIGHT,
+    color_type=3,
+    num_classes=17,
+    dropout_rate=0.1,
+    weights_path='models/nm/structures/ tr_l:0.3149-tr_a:0.324-tr_f2:0.8149-val_l:0.3889-val_a:0.5016-val_f2:0.8052-time:18-06-2017-20:06:44-dur:410.049.h5')
 
 print model.summary()
 
-sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-2, momentum=.9, decay=1e-4)
 
 # adam = Adam(lr=1e-2, decay=1e-4)
 
@@ -217,15 +223,15 @@ for epoch in range(N_EPOCH):
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-2)
+        model.optimizer.lr.set_value(1e-3)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-4)
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-5)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
