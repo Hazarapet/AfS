@@ -184,7 +184,7 @@ def load_weights(model):
 
             ar = np.array(ar).astype(np.float32)
             if 'conv' in layer.name and ar.ndim == 5:
-                ar = ar.transpose((0, 3, 4, 2, 1))
+                ar = ar.transpose((0, 4, 3, 2, 1))
 
             layer.set_weights(ar)
 
