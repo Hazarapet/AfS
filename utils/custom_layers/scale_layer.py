@@ -1,6 +1,6 @@
 from keras.layers.core import Layer
 from keras.engine import InputSpec
-from keras import initializations
+from keras import initializers as initializations
 from keras import backend as K
 
 class Scale(Layer):
