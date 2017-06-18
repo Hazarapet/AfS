@@ -76,8 +76,8 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
     x = Activation('relu', name='relu'+str(final_stage)+'_blk')(x)
 
     x_fc = GlobalAveragePooling2D(name='pool'+str(final_stage))(x)
-    x_fc = Dense(1000, name='fc6')(x_fc)
-    x_fc = Activation('softmax', name='prob')(x_fc)
+    x_fc = Dense(17, name='fc6')(x_fc)
+    x_fc = Activation('sigmoid', name='prob')(x_fc)
 
     model = Model(img_input, x_fc, name='densenet')
 
@@ -87,17 +87,6 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
     else:
       # Use pre-trained weights for Tensorflow backend
       weights_path = 'imagenet_models/densenet121_weights_tf.h5'
-
-    # model.load_weights(weights_path, by_name=True)
-
-    # Truncate and replace softmax layer for transfer learning
-    # Cannot use model.layers.pop() since model is not of Sequential() type
-    # The method below works since pre-trained weights are stored in layers but not in the model
-    x_newfc = GlobalAveragePooling2D(name='pool'+str(final_stage))(x)
-    x_newfc = Dense(num_classes, name='fc6')(x_newfc)
-    x_newfc = Activation('softmax', name='prob')(x_newfc)
-
-    model = Model(img_input, x_newfc)
 
     return [model, 'models/nm/structures/']
 
