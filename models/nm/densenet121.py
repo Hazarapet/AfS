@@ -72,7 +72,7 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
 
     model = Model(img_input, x_fc, name='densenet')
 
-    model = load_weights(model)
+    # model = load_weights(model)
 
     return [model, 'models/nm/structures/']
 
