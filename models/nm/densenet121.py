@@ -38,7 +38,7 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
     # compute compression factor
     compression = 1.0 - reduction
 
-    img_input = Input((color_type, img_rows, img_cols), name='input')
+    img_input = Input((color_type, img_rows, img_cols), name='data')
     nb_layers = [6, 12, 24, 16]  # For DenseNet-121
 
     # Initial convolution
@@ -185,6 +185,8 @@ def load_weights(model):
             ar = np.array(ar).astype(np.float32)
 
             layer.set_weights(ar)
+
+            print 'layer "' + layer.name + '" weights are loaded'
 
     return model
 
