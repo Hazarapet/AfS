@@ -6,11 +6,8 @@ from keras.layers.normalization import BatchNormalization
 from keras.models import Model
 import h5py
 import numpy as np
-import keras.backend as K
 
-from utils.custom_layers.scale_layer import Scale
-
-def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, num_classes=None, weights_path=None):
+def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, weights_path=None):
     '''
     DenseNet 121 Model for Keras
 
@@ -39,7 +36,7 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
     compression = 1.0 - reduction
 
     img_input = Input((color_type, img_rows, img_cols), name='data')
-    nb_layers = [6, 12, 24, 16]  # For DenseNet-121
+    nb_layers = [6, 12, 32, 32]  # For DenseNet-121
 
     # Initial convolution
     x = ZeroPadding2D((3, 3), name='conv1_zeropadding')(img_input)
