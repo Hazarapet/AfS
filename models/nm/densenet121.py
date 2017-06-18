@@ -176,14 +176,15 @@ def load_weights(model):
     weights = {k: v for k, v in zip(f.keys(), f.values())}
 
     for layer in model.layers:
-        if 'fc' not in layer.name and 'scale' not in layer.name:
+        if 'fc' not in layer.name and 'scale' not in layer.name and layer.name in weights:
             w = weights[layer.name]
             ar = []
             for v in w.values():
                 ar.append(v[()])
 
             ar = np.array(ar).astype(np.float32)
-
+            if 'conv' in layer.name:
+                ar = ar.transpose((2, 3, 1, 0))
             layer.set_weights(ar)
 
             print 'layer "' + layer.name + '" weights are loaded'
