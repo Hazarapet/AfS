@@ -52,7 +52,7 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=1e-2, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
 # adam = Adam(lr=1e-2, decay=1e-4)
 
@@ -217,15 +217,15 @@ for epoch in range(N_EPOCH):
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-2)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-3)
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
+        model.optimizer.lr.set_value(1e-4)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
