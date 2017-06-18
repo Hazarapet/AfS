@@ -54,7 +54,7 @@ print 'model loading...'
     color_type=3,
     num_classes=17,
     dropout_rate=0.1,
-    weights_path='models/nm/structures/ tr_l:0.3149-tr_a:0.324-tr_f2:0.8149-val_l:0.3889-val_a:0.5016-val_f2:0.8052-time:18-06-2017-20:06:44-dur:410.049.h5')
+    weights_path='models/nm/structures/tr_l:0.3149-tr_a:0.324-tr_f2:0.8149-val_l:0.3889-val_a:0.5016-val_f2:0.8052-time:18-06-2017-20:06:44-dur:410.049.h5')
 
 print model.summary()
 
