@@ -62,6 +62,7 @@ def parallel_shuffle(x, y, shuffle=True):
 
     return [x, y]
 
+
 def aug(array, input):
     rt90 = np.rot90(input, 1, axes=(1, 2))
     array.append(rt90)
@@ -75,6 +76,7 @@ def aug(array, input):
     array.append(flip_v)
 
     return array
+
 
 def optimise_f2_thresholds(y, p, verbose=True, resolution=100):
   def mf(x):

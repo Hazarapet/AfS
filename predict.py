@@ -265,8 +265,8 @@ def result(X, path):
 
 
 def result_single(X, path):
-    weights_path = 'models/nm/structures/tr_l:0.202-tr_a:0.3416-tr_f2:0.8815-val_l:0.2442-val_a:0.3562-val_f2:0.8606-time:16-06-2017-18:26:01-dur:200.076.h5'
-    model_structure = 'models/nm/structures/tr_l:0.202-tr_a:0.3416-tr_f2:0.8815-val_l:0.2442-val_a:0.3562-val_f2:0.8606-time:16-06-2017-18:26:01-dur:200.076.json'
+    weights_path = 'models/nm/structures/tr_l:0.3149-tr_a:0.324-tr_f2:0.8149-val_l:0.3889-val_a:0.5016-val_f2:0.8052-time:18-06-2017-20:06:44-dur:410.049.h5'
+    model_structure = 'models/nm/structures/tr_l:0.3149-tr_a:0.324-tr_f2:0.8149-val_l:0.3889-val_a:0.5016-val_f2:0.8052-time:18-06-2017-20:06:44-dur:410.049.json'
 
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))
@@ -281,25 +281,15 @@ def result_single(X, path):
         for f in common_util.iterate_minibatches(X, batchsize=BATCH_SIZE):
             test_batch_inputs = []
 
-            rgbn = UtilImage.process_tif(path.format(f[0]))
+            img = cv2.imread(path.format(f[0]))
 
-            ndvi = UtilImage.ndvi(rgbn)
-            ndwi = UtilImage.ndwi(rgbn)
-            ior = UtilImage.ior(rgbn)
-            bai = UtilImage.bai(rgbn)
+            img = cv2.resize(img, (224, 224)).astype(np.float16)
+            img[:, :, 0] -= 103.939
+            img[:, :, 1] -= 116.779
+            img[:, :, 2] -= 123.68
+            img = img.transpose((2, 0, 1))
 
-            # resize
-            red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
-
-            # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
-            inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
+            inputs = img
 
             test_batch_inputs.append(inputs)
             test_batch_inputs = aug(test_batch_inputs, inputs)
