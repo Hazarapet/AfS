@@ -265,8 +265,8 @@ def result(X, path):
 
 
 def result_single(X, path):
-    weights_path = 'models/nm/structures/tr_l:0.3149-tr_a:0.324-tr_f2:0.8149-val_l:0.3889-val_a:0.5016-val_f2:0.8052-time:18-06-2017-20:06:44-dur:410.049.h5'
-    model_structure = 'models/nm/structures/tr_l:0.3149-tr_a:0.324-tr_f2:0.8149-val_l:0.3889-val_a:0.5016-val_f2:0.8052-time:18-06-2017-20:06:44-dur:410.049.json'
+    weights_path = 'models/nm/structures/tr_l:0.2904-tr_a:0.3433-tr_f2:0.8299-val_l:0.3654-val_a:0.4009-val_f2:0.8153-time:19-06-2017-22:56:02-dur:390.733.h5'
+    model_structure = 'models/nm/structures/tr_l:0.2904-tr_a:0.3433-tr_f2:0.8299-val_l:0.3654-val_a:0.4009-val_f2:0.8153-time:19-06-2017-22:56:02-dur:390.733.json'
 
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))

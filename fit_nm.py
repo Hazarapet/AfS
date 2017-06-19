@@ -14,7 +14,7 @@ from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True
@@ -52,7 +52,7 @@ print 'model loading...'
     img_rows=IMAGE_WIDTH,
     img_cols=IMAGE_HEIGHT,
     color_type=3,
-    dropout_rate=0,
+    dropout_rate=0.2,
     weights_path='models/nm/structures/tr_l:0.3149-tr_a:0.324-tr_f2:0.8149-val_l:0.3889-val_a:0.5016-val_f2:0.8052-time:18-06-2017-20:06:44-dur:410.049.h5')
 
 print model.summary()
