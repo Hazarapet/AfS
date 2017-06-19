@@ -52,12 +52,12 @@ print 'model loading...'
     img_rows=IMAGE_WIDTH,
     img_cols=IMAGE_HEIGHT,
     color_type=3,
-    dropout_rate=0.2,
-    weights_path='models/nm/structures/tr_l:0.3149-tr_a:0.324-tr_f2:0.8149-val_l:0.3889-val_a:0.5016-val_f2:0.8052-time:18-06-2017-20:06:44-dur:410.049.h5')
+    dropout_rate=0.3,
+    weights_path='models/nm/structures/tr_l:0.2904-tr_a:0.3433-tr_f2:0.8299-val_l:0.3654-val_a:0.4009-val_f2:0.8153-time:19-06-2017-22:56:02-dur:390.733.h5')
 
 print model.summary()
 
-sgd = SGD(lr=3e-3, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-3, momentum=.9, decay=1e-4)
 
 # adam = Adam(lr=1e-2, decay=1e-4)
 
@@ -203,7 +203,7 @@ for epoch in range(N_EPOCH):
             (time.time() - tr_time) / 60)
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.9:
+        if v_f2 > 0.88:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -222,15 +222,15 @@ for epoch in range(N_EPOCH):
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(3e-4)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-4)
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-5)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
