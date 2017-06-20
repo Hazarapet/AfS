@@ -12,7 +12,7 @@ def f2_score_alt(y_true, y_pred):
     return fbeta_score(y_true, y_pred, beta=2, average='samples')
 
 
-def f2_score(y_true, y_pred, threshold_shift=0):
+def f2_score(y_true, y_pred, threshold_shift=.2):
     beta = 2
 
     # just in case of hipster activation at the final layer
