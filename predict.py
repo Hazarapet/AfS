@@ -25,6 +25,18 @@ CLOUDS = ['cloudy', 'partly_cloudy']
 SMALL_GROUP = ['habitation', 'clear', 'slash_burn']
 
 
+def ensemble(array):
+    new_array = []
+    for cl in range(array.shape[1]):
+        cn = list(array[:, cl]).count(1)
+        all_cn = array.shape[0]
+        if cn > all_cn / 2:
+            new_array.append(1)
+        else:
+            new_array.append(0)
+    return new_array
+
+
 def aug(array, input):
     rt90 = np.rot90(input, 1, axes=(1, 2))
     array.append(rt90)

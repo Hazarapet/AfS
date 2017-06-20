@@ -14,6 +14,15 @@ FIXEDPATH = os.path.join(WORKING, 'fixed')
 df = pd.read_csv(CSVPATH)
 
 
+def fix_submission():
+    # loading the data
+    df_train = pd.read_csv('submission_0.csv')
+
+    df_test = pd.DataFrame([[p.replace('.jpg', ''), t] for p, t in df_train.values])
+    df_test.columns = ['image_name', 'tags']
+    df_test.to_csv('submission_0_fixed.csv', index=False)
+
+
 def copy_and_rename():
     '''Copy up to `num_files` images to the scratch directory.
     `num_files` is needed because you can only write a few hundred
@@ -39,3 +48,7 @@ def copy_and_rename():
         os.remove(old)
 
         print '{} copied'.format(index)
+
+
+if __name__ == '__main__':
+    fix_submission()
