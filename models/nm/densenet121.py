@@ -7,7 +7,7 @@ from keras.models import Model
 import h5py
 import numpy as np
 
-def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.5, dropout_rate=0.0, weight_decay=1e-4, weights_path=None):
+def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.5, dropout_rate=0.0, weights_path=None):
     '''
     DenseNet 121 Model for Keras
 
@@ -24,7 +24,6 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
         nb_filter: initial number of filters
         reduction: reduction factor of transition blocks.
         dropout_rate: dropout rate
-        weight_decay: weight decay factor
         classes: optional number of classes to classify images
         weights_path: path to pre-trained weights
     # Returns
@@ -50,14 +49,14 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
     # Add dense blocks
     for block_idx in range(nb_dense_block - 1):
         stage = block_idx + 2
-        x, nb_filter = dense_block(x, stage, nb_layers[block_idx], nb_filter, growth_rate, dropout_rate=dropout_rate, weight_decay=weight_decay)
+        x, nb_filter = dense_block(x, stage, nb_layers[block_idx], nb_filter, growth_rate, dropout_rate=dropout_rate)
 
         # Add transition_block
-        x = transition_block(x, stage, nb_filter, compression=compression, dropout_rate=dropout_rate, weight_decay=weight_decay)
+        x = transition_block(x, stage, nb_filter, compression=compression, dropout_rate=dropout_rate)
         nb_filter = int(nb_filter * compression)
 
     final_stage = stage + 1
-    x, nb_filter = dense_block(x, final_stage, nb_layers[-1], nb_filter, growth_rate, dropout_rate=dropout_rate, weight_decay=weight_decay)
+    x, nb_filter = dense_block(x, final_stage, nb_layers[-1], nb_filter, growth_rate, dropout_rate=dropout_rate)
 
     x = BatchNormalization(epsilon=eps, axis=1, name='conv'+str(final_stage)+'_blk_bn')(x)
     # x = Scale(axis=1, name='conv'+str(final_stage)+'_blk_scale')(x)
@@ -77,7 +76,7 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
     return [model, 'models/nm/structures/']
 
 
-def conv_block(x, stage, branch, nb_filter, dropout_rate=None, weight_decay=1e-4):
+def conv_block(x, stage, branch, nb_filter, dropout_rate=None):
     '''Apply BatchNorm, Relu, bottleneck 1x1 Conv2D, 3x3 Conv2D, and option dropout
         # Arguments
             x: input tensor 
@@ -85,7 +84,6 @@ def conv_block(x, stage, branch, nb_filter, dropout_rate=None, weight_decay=1e-4
             branch: layer index within each dense block
             nb_filter: number of filters
             dropout_rate: dropout rate
-            weight_decay: weight decay factor
     '''
     eps = 1.1e-5
     conv_name_base = 'conv' + str(stage) + '_' + str(branch)
@@ -114,7 +112,7 @@ def conv_block(x, stage, branch, nb_filter, dropout_rate=None, weight_decay=1e-4
     return x
 
 
-def transition_block(x, stage, nb_filter, compression=1.0, dropout_rate=None, weight_decay=1E-4):
+def transition_block(x, stage, nb_filter, compression=1.0, dropout_rate=None):
     ''' Apply BatchNorm, 1x1 Convolution, averagePooling, optional compression, dropout 
         # Arguments
             x: input tensor
@@ -122,7 +120,6 @@ def transition_block(x, stage, nb_filter, compression=1.0, dropout_rate=None, we
             nb_filter: number of filters
             compression: calculated as 1 - reduction. Reduces the number of feature maps in the transition block.
             dropout_rate: dropout rate
-            weight_decay: weight decay factor
     '''
 
     eps = 1.1e-5
@@ -143,7 +140,7 @@ def transition_block(x, stage, nb_filter, compression=1.0, dropout_rate=None, we
     return x
 
 
-def dense_block(x, stage, nb_layers, nb_filter, growth_rate, dropout_rate=None, weight_decay=1e-4, grow_nb_filters=True):
+def dense_block(x, stage, nb_layers, nb_filter, growth_rate, dropout_rate=None, grow_nb_filters=True):
     ''' Build a dense_block where the output of each conv_block is fed to subsequent ones
         # Arguments
             x: input tensor
@@ -152,14 +149,13 @@ def dense_block(x, stage, nb_layers, nb_filter, growth_rate, dropout_rate=None, 
             nb_filter: number of filters
             growth_rate: growth rate
             dropout_rate: dropout rate
-            weight_decay: weight decay factor
             grow_nb_filters: flag to decide to allow number of filters to grow
     '''
     concat_feat = x
 
     for i in range(nb_layers):
         branch = i + 1
-        x = conv_block(concat_feat, stage, branch, growth_rate, dropout_rate, weight_decay)
+        x = conv_block(concat_feat, stage, branch, growth_rate, dropout_rate)
         concat_feat = concatenate([concat_feat, x], axis=1, name='concat_' + str(stage) + '_' + str(branch))
 
         if grow_nb_filters:

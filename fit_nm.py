@@ -60,7 +60,11 @@ sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
 # adam = Adam(lr=1e-2, decay=1e-4)
 
-model.compile(loss=components.f2_binary_cross_entropy(l=0),
+# model.compile(loss=components.f2_binary_cross_entropy(l=0),
+#               optimizer=sgd,
+#               metrics=[common_util.f2_score, 'accuracy'])
+
+model.compile(loss='binary_crossentropy',
               optimizer=sgd,
               metrics=[common_util.f2_score, 'accuracy'])
 
@@ -116,7 +120,8 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
 
-                # cause 2x|input|
+                # cause 3x|input|
+                t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
 
