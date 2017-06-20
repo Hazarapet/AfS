@@ -13,7 +13,7 @@ from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
-N_EPOCH = 27
+N_EPOCH = 20
 BATCH_SIZE = 29
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
@@ -52,7 +52,7 @@ print 'model loading...'
     img_rows=IMAGE_WIDTH,
     img_cols=IMAGE_HEIGHT,
     color_type=3,
-    dropout_rate=0.2)
+    dropout_rate=0.4)
 
 print model.summary()
 
@@ -60,7 +60,7 @@ sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
 # adam = Adam(lr=1e-2, decay=1e-4)
 
-model.compile(loss=components.f2_binary_cross_entropy(l=0.2),
+model.compile(loss=components.f2_binary_cross_entropy(l=0),
               optimizer=sgd,
               metrics=[common_util.f2_score, 'accuracy'])
 
@@ -116,8 +116,7 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
 
-                # cause 3x|input|
-                t_batch_labels.append(targets)
+                # cause 2x|input|
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
 

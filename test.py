@@ -20,15 +20,16 @@ count = 0
 print 'images loading...'
 X_test = os.listdir('resource/test-tif-v2')
 
-result = predict.result_single(X_test, 'resource/test-tif-v2/{}')
+result = predict.result_single_jpg(X_test, 'resource/train-jpg/{}.jpg')
 thres = [0.05, 0.17, 0.05, 0.25, 0.32, 0.06, 0.1, 0.27, 0.28, 0.21, 0.09, 0.18, 0.16, 0.03, 0.2, 0.13, 0.04]  # Heng CherKeng's example
+my_thres = [0.32, 0.13, 0.96, 0.05, 0.6, 0.96, 0.08, 0.24, 0.12, 0.11, 0.31, 0.08, 0.6, 0.08, 0.05, 0.11, 0.98]  # Heng CherKeng's example
 
 df_test = pd.DataFrame([[p.replace('.tif', ''), p] for p in X_test])
 df_test.columns = ['image_name', 'tags']
 
 tags = []
 for r in result:
-    r = list(r > thres)
+    r = list(r > my_thres)
     t = [inv_label_map[i] for i, j in enumerate(r) if j]
     tags.append(' '.join(t))
 
