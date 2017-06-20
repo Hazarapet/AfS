@@ -52,11 +52,12 @@ print 'model loading...'
     img_rows=IMAGE_WIDTH,
     img_cols=IMAGE_HEIGHT,
     color_type=3,
-    dropout_rate=0.4)
+    dropout_rate=0.5,
+    weights_path='models/nm/structures/tr_l:0.1467-tr_a:0.9411-tr_f2:0.7909-val_l:0.2166-val_a:0.9319-val_f2:0.7635-time:20-06-2017-23:28:27-dur:406.82.h5')
 
 print model.summary()
 
-sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
+sgd = SGD(lr=3e-3, momentum=.9, decay=1e-4)
 
 # adam = Adam(lr=1e-2, decay=1e-4)
 
@@ -225,11 +226,11 @@ for epoch in range(N_EPOCH):
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-2)
+        model.optimizer.lr.set_value(1e-3)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(3e-4)
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
