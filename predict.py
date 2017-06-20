@@ -277,8 +277,8 @@ def result(X, path):
 
 
 def result_single_jpg(X, path):
-    weights_path = 'models/nm/structures/tr_l:0.1666-tr_a:0.2941-tr_f2:0.8559-val_l:0.2524-val_a:0.4652-val_f2:0.818-time:20-06-2017-10:28:19-dur:569.032.h5'
-    model_structure = 'models/nm/structures/tr_l:0.1666-tr_a:0.2941-tr_f2:0.8559-val_l:0.2524-val_a:0.4652-val_f2:0.818-time:20-06-2017-10:28:19-dur:569.032.json'
+    weights_path = 'models/nm/structures/tr_l:0.1467-tr_a:0.9411-tr_f2:0.7909-val_l:0.2166-val_a:0.9319-val_f2:0.7635-time:20-06-2017-23:28:27-dur:406.82.h5'
+    model_structure = 'models/nm/structures/tr_l:0.1467-tr_a:0.9411-tr_f2:0.7909-val_l:0.2166-val_a:0.9319-val_f2:0.7635-time:20-06-2017-23:28:27-dur:406.82.json'
 
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))
