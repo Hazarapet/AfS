@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.main.model import model as main_model
 
 st_time = time.time()
-N_EPOCH = 20
-BATCH_SIZE = 120
+N_EPOCH = 7
+BATCH_SIZE = 130
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = True
@@ -52,7 +52,7 @@ print 'model loading...'
 
 print model.summary()
 
-adam = Adam(lr=1e-5, decay=0.)
+adam = Adam(lr=1e-3, decay=0.)
 
 # sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
@@ -221,7 +221,7 @@ for epoch in range(N_EPOCH):
             (time.time() - tr_time) / 60)
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.85:
+        if v_f2 > 0.83:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -240,15 +240,15 @@ for epoch in range(N_EPOCH):
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-2)
+        model.optimizer.lr.set_value(1e-4)
 
     if epoch == 18:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-3)
+        model.optimizer.lr.set_value(3e-5)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-5)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])

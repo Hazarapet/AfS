@@ -21,7 +21,7 @@ def ensemble(array):
             new_array.append(1)
         else:
             new_array.append(0)
-            
+
     return new_array
 
 
