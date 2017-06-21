@@ -29,6 +29,15 @@ def transition_block(input, nm_filter):
 
     return out
 
+def dense_block(nb_layers, tmp_input, nm_filter, k):
+    for i in range(nb_layers):
+        conv = conv_block(tmp_input, k)
+        tmp_input = concatenate([tmp_input, conv], axis=1)
+
+        nm_filter += k
+
+    return tmp_input, nm_filter
+
 def model(weights_path=None):
     k = 32
     nm_filter = 64
@@ -51,14 +60,13 @@ def model(weights_path=None):
     tmp_input = start_pool
 
     for ind in range(len(blocks) - 1):
-        for i in range(blocks[ind]):
-            conv = conv_block(tmp_input, k)
-            tmp_input = concatenate([tmp_input, conv], axis=1)
-
-            nm_filter += k
+        tmp_input, nm_filter = dense_block(nb_layers=blocks[ind], tmp_input=tmp_input, nm_filter=nm_filter, k=k)
 
         nm_filter = int(nm_filter * compression)
+
         tmp_input = transition_block(tmp_input, nm_filter)
+
+    tmp_input, nm_filter = dense_block(nb_layers=blocks[-1], tmp_input=tmp_input, nm_filter=nm_filter, k=k)
 
     # -----------------------------------------------------
     # --------------------- Bridge 4 ----------------------
