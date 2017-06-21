@@ -22,9 +22,9 @@ X_test = os.listdir('resource/test-jpg')
 
 result = predict.result_single_jpg(X_test, 'resource/test-jpg/{}')
 thres = [0.05, 0.17, 0.05, 0.25, 0.32, 0.06, 0.1, 0.27, 0.28, 0.21, 0.09, 0.18, 0.16, 0.03, 0.2, 0.13, 0.04]  # Heng CherKeng's example
-my_thres = [0.32, 0.13, 0.96, 0.05, 0.6, 0.96, 0.08, 0.24, 0.12, 0.11, 0.31, 0.08, 0.6, 0.08, 0.05, 0.11, 0.98]  # Heng CherKeng's example
+my_thres = [0.32, 0.02, 0.24, 0.01, 0.94, 0.05, 0.03, 0.24, 0.24, 0.19, 0.81, 0.13, 0.52, 0.08, 0.01, 0.12, 0.31]
 
-df_test = pd.DataFrame([[p.replace('.tif', ''), p] for p in X_test])
+df_test = pd.DataFrame([[p.replace('.jpg', ''), p] for p in X_test])
 df_test.columns = ['image_name', 'tags']
 
 tags = []
