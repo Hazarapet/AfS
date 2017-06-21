@@ -35,7 +35,7 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
     compression = 1.0 - reduction
 
     img_input = Input((color_type, img_rows, img_cols), name='data')
-    nb_layers = [6, 6, 6, 6]  # For DenseNet-121
+    nb_layers = [6, 12, 24, 16]  # For DenseNet-121
 
     # Initial convolution
     x = ZeroPadding2D((3, 3), name='conv1_zeropadding')(img_input)

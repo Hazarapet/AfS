@@ -48,19 +48,17 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = densenet121_model(
-    img_rows=IMAGE_WIDTH,
-    img_cols=IMAGE_HEIGHT,
-    color_type=3,
-    dropout_rate=0.5)
+# [model, structure] = densenet121_model(
+#     img_rows=IMAGE_WIDTH,
+#     img_cols=IMAGE_HEIGHT,
+#     color_type=3,
+#     dropout_rate=0.5)
 
-[models, structures] = nm_model()
+[model, structure] = nm_model()
 
-print models.summary()
 print model.summary()
 
-sys.exit(0)
-sgd = SGD(lr=3e-3, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
 # adam = Adam(lr=1e-2, decay=1e-4)
 
@@ -229,11 +227,11 @@ for epoch in range(N_EPOCH):
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-2)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-4)
+        model.optimizer.lr.set_value(1e-3)
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()

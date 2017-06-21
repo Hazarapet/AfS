@@ -7,7 +7,7 @@ df_train = pd.read_csv('train_v2.csv')
 np.random.shuffle(df_train.values)
 
 # splitting to train and validation set
-index = int(len(df_train.values) * 0.9)
+index = int(len(df_train.values) * 0.95)
 train, val = df_train.values[:index], df_train.values[index:]
 
 df_tr = pd.DataFrame([[f, t] for f, t in df_train.values[:index]])

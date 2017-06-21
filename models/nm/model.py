@@ -8,17 +8,18 @@ from keras.regularizers import l2
 
 
 def conv_block(input, nm_filter, dp=0.1):
-    bn11 = BatchNormalization(axis=1)(input)
-    act11 = Activation('relu')(bn11)
-    conv11 = Conv2D(4 * nm_filter, (1, 1), padding='same', use_bias=False)(act11)
+    out = BatchNormalization(axis=1)(input)
+    out = Activation('relu')(out)
+    out = Conv2D(4 * nm_filter, (1, 1), padding='same', use_bias=False)(out)
 
-    bn33 = BatchNormalization(axis=1)(conv11)
-    act33 = Activation('relu')(bn33)
-    conv33 = Conv2D(nm_filter, (3, 3), padding='same', use_bias=False)(act33)
+    out = BatchNormalization(axis=1)(out)
+    out = Activation('relu')(out)
+    out = Conv2D(nm_filter, (3, 3), padding='same', use_bias=False)(out)
 
-    drp = Dropout(dp)(conv33)
+    if dp:
+        out = Dropout(dp)(out)
 
-    return drp
+    return out
 
 def transition_block(input, nm_filter):
     out = BatchNormalization(axis=1)(input)
@@ -42,8 +43,9 @@ def model(weights_path=None):
     k = 32
     nm_filter = 64
     compression = 0.5
+    blocks = [6, 12, 24, 16]
+
     input = Input((3, 224, 224))
-    blocks = [6, 6, 6, 6]
 
     # ------------------------------------------------------
     start_conv = ZeroPadding2D((3, 3), name='gateway_padding3x3')(input)
