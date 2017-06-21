@@ -89,7 +89,7 @@ def result_single_tif(X, path):
             p_group_test = main_model.predict_on_batch(test_batch_inputs)
 
             p_group = []
-            for example in np.split(p_group_test, 3):
+            for example in np.split(p_group_test, 4):
                 p_group.append(ensemble(example))
 
             count += BATCH_SIZE
@@ -136,7 +136,7 @@ def result_single_jpg(X, path):
             p_group_test = main_model.predict_on_batch(test_batch_inputs)
 
             p_group = []
-            for example in np.split(p_group_test, 3):
+            for example in np.split(p_group_test, 4):
                 p_group.append(ensemble(example))
 
             count += BATCH_SIZE
