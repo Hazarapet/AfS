@@ -109,7 +109,7 @@ def model(weights_path=None):
     bridge_bn41 = BatchNormalization(axis=1)(conv4)
     bridge_act41 = Activation('relu')(bridge_bn41)
 
-    bridge_pool41 = GlobalAveragePooling2D(pool_size=(7, 7), strides=(1, 1))(bridge_act41)
+    bridge_pool41 = GlobalAveragePooling2D()(bridge_act41)
 
     # Dense layers
 
