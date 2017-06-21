@@ -51,7 +51,7 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 1 ----------------------
-    bridge_bn11 = BatchNormalization(axis=1)(conv1)
+    bridge_bn11 = BatchNormalization(axis=1)(tmp_input)
     bridge_act11 = Activation('relu')(bridge_bn11)
     bridge_conv11 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act11)
 
@@ -72,7 +72,7 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 2 ----------------------
-    bridge_bn21 = BatchNormalization(axis=1)(conv2)
+    bridge_bn21 = BatchNormalization(axis=1)(tmp_input)
     bridge_act21 = Activation('relu')(bridge_bn21)
     bridge_conv21 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act21)
 
@@ -93,7 +93,7 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 3 ----------------------
-    bridge_bn31 = BatchNormalization(axis=1)(conv3)
+    bridge_bn31 = BatchNormalization(axis=1)(tmp_input)
     bridge_act31 = Activation('relu')(bridge_bn31)
     bridge_conv31 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act31)
 
@@ -112,7 +112,7 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge 4 ----------------------
-    bridge_bn41 = BatchNormalization(axis=1)(conv4)
+    bridge_bn41 = BatchNormalization(axis=1)(tmp_input)
     bridge_act41 = Activation('relu')(bridge_bn41)
 
     bridge_pool41 = GlobalAveragePooling2D()(bridge_act41)
