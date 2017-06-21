@@ -12,19 +12,6 @@ BATCH_SIZE = 200
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
-GROUP = ['artisinal_mine',
-         'bare_ground',
-         'blooming',
-         'blow_down',
-         'conventional_mine',
-         'cultivation',
-         'haze',
-         'selective_logging']
-
-CLOUDS = ['cloudy', 'partly_cloudy']
-SMALL_GROUP = ['habitation', 'clear', 'slash_burn']
-
-
 def ensemble(array):
     new_array = []
     for cl in range(array.shape[1]):
@@ -34,6 +21,7 @@ def ensemble(array):
             new_array.append(1)
         else:
             new_array.append(0)
+            
     return new_array
 
 
@@ -70,37 +58,42 @@ def result_single_tif(X, path):
         result = []
         print 'images loading...'
 
-        for f in common_util.iterate_minibatches(X, batchsize=BATCH_SIZE):
+        for files in common_util.iterate_minibatches(X, batchsize=BATCH_SIZE):
             test_batch_inputs = []
 
-            rgbn = UtilImage.process_tif(path.format(f[0]))
+            for f in files:
+                rgbn = UtilImage.process_tif(path.format(f))
 
-            ndvi = UtilImage.ndvi(rgbn)
-            ndwi = UtilImage.ndwi(rgbn)
-            ior = UtilImage.ior(rgbn)
-            bai = UtilImage.bai(rgbn)
+                ndvi = UtilImage.ndvi(rgbn)
+                ndwi = UtilImage.ndwi(rgbn)
+                ior = UtilImage.ior(rgbn)
+                bai = UtilImage.bai(rgbn)
 
-            # resize
-            red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                # resize
+                red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
+                bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
 
-            # red, green, blue, nir, ndvi, ndwi, ior, bai
-            inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
-            test_batch_inputs.append(inputs)
-            test_batch_inputs = aug(test_batch_inputs, inputs)
+                # red, green, blue, nir, ndvi, ndwi, ior, bai
+                inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
+                test_batch_inputs.append(inputs)
+                test_batch_inputs = aug(test_batch_inputs, inputs)
+
             test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
             p_group_test = main_model.predict_on_batch(test_batch_inputs)
-            p_group_test = ensemble(p_group_test)
+
+            p_group = []
+            for example in np.split(p_group_test, 3):
+                p_group.append(ensemble(example))
 
             count += BATCH_SIZE
-            result.append(p_group_test)
+            result = result + p_group
 
             print '{}/{} predicted'.format(count, len(X))
 
