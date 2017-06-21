@@ -48,15 +48,17 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = densenet121_model(
-    img_rows=IMAGE_WIDTH,
-    img_cols=IMAGE_HEIGHT,
-    color_type=3,
-    dropout_rate=0.5,
-    weights_path='models/nm/structures/tr_l:0.1467-tr_a:0.9411-tr_f2:0.7909-val_l:0.2166-val_a:0.9319-val_f2:0.7635-time:20-06-2017-23:28:27-dur:406.82.h5')
+# [model, structure] = densenet121_model(
+#     img_rows=IMAGE_WIDTH,
+#     img_cols=IMAGE_HEIGHT,
+#     color_type=3,
+#     dropout_rate=0.5)
+
+[model, structure] = nm_model()
 
 print model.summary()
 
+sys.exit(0)
 sgd = SGD(lr=3e-3, momentum=.9, decay=1e-4)
 
 # adam = Adam(lr=1e-2, decay=1e-4)

@@ -2,7 +2,7 @@ from keras.models import Model
 from keras.layers import Input, concatenate
 from keras.layers.core import Flatten, Dense, Dropout, Activation
 from keras.layers.convolutional import Conv2D, ZeroPadding2D
-from keras.layers.pooling import MaxPooling2D, AveragePooling2D
+from keras.layers.pooling import MaxPooling2D, AveragePooling2D, GlobalAveragePooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
@@ -28,7 +28,7 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     start_conv = ZeroPadding2D((3, 3), name='gateway_padding3x3')(input)
-    start_conv = Conv2D(2*k, (7, 7), strides=(2, 2), name='gateway_conv')(start_conv)
+    start_conv = Conv2D(2*k, (7, 7), strides=(2, 2), name='gateway_conv', use_bias=False)(start_conv)
     start_conv = BatchNormalization(axis=1, name='gateway_bn')(start_conv)
     start_conv = Activation('relu', name='gateway_act')(start_conv)
 
@@ -45,14 +45,14 @@ def model(weights_path=None):
             tmp_input = concatenate([tmp_input, conv1], axis=1)
         conv1 = conv_block(tmp_input, nm_filter)
 
-    nm_filter += k
+        nm_filter += k
 
     # -----------------------------------------------------
     # --------------------- Bridge 1 ----------------------
 
     bridge_bn11 = BatchNormalization(axis=1)(conv1)
     bridge_act11 = Activation('relu')(bridge_bn11)
-    bridge_conv11 = Conv2D(nm_filter, (1, 1), padding='same')(bridge_act11)
+    bridge_conv11 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act11)
 
     bridge_pool11 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_conv11)
 
@@ -66,13 +66,13 @@ def model(weights_path=None):
             tmp_input = concatenate([tmp_input, conv2], axis=1)
         conv2 = conv_block(tmp_input, nm_filter)
 
-    nm_filter += k
+        nm_filter += k
 
     # -----------------------------------------------------
     # --------------------- Bridge 2 ----------------------
     bridge_bn21 = BatchNormalization(axis=1)(conv2)
     bridge_act21 = Activation('relu')(bridge_bn21)
-    bridge_conv21 = Conv2D(nm_filter, (1, 1), padding='same')(bridge_act21)
+    bridge_conv21 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act21)
 
     bridge_pool21 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_conv21)
 
@@ -86,13 +86,13 @@ def model(weights_path=None):
             tmp_input = concatenate([tmp_input, conv3], axis=1)
         conv3 = conv_block(tmp_input, nm_filter)
 
-    nm_filter += k
+        nm_filter += k
 
     # -----------------------------------------------------
     # --------------------- Bridge 3 ----------------------
     bridge_bn31 = BatchNormalization(axis=1)(conv3)
     bridge_act31 = Activation('relu')(bridge_bn31)
-    bridge_conv31 = Conv2D(nm_filter, (1, 1), padding='same')(bridge_act31)
+    bridge_conv31 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act31)
 
     bridge_pool31 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_conv31)
 
@@ -106,25 +106,23 @@ def model(weights_path=None):
             tmp_input = concatenate([tmp_input, conv4], axis=1)
         conv4 = conv_block(tmp_input, nm_filter)
 
-    nm_filter += k
+        nm_filter += k
 
     # -----------------------------------------------------
     # --------------------- Bridge 4 ----------------------
     bridge_bn41 = BatchNormalization(axis=1)(conv4)
     bridge_act41 = Activation('relu')(bridge_bn41)
-    bridge_conv41 = Conv2D(nm_filter, (1, 1), padding='same')(bridge_act41)
 
-    bridge_pool41 = AveragePooling2D(pool_size=(7, 7), strides=(1, 1))(bridge_conv41)
+    bridge_pool41 = GlobalAveragePooling2D(pool_size=(7, 7), strides=(1, 1))(bridge_act41)
 
     # Dense layers
-    flt = Flatten()(bridge_pool41)
 
     # dense1 = Dense(512, kernel_regularizer=l2(1e-5))(flt)
     # dnbn1 = BatchNormalization(axis=1)(dense1)
     # dnact1 = Activation('relu')(dnbn1)
-    dndrop1 = Dropout(0.2)(flt)
+    # dndrop1 = Dropout(0.2)(flt)
 
-    output = Dense(17, activation='sigmoid')(dndrop1)
+    output = Dense(17, activation='sigmoid')(bridge_pool41)
 
     _model = Model(inputs=input, outputs=output)
 
