@@ -24,6 +24,7 @@ def conv_block(input, nm_filter, dp=0.1):
 def model(weights_path=None):
     k = 32
     nm_filter = 64
+    compression = 0.5
     input = Input((3, 224, 224))
 
     # ------------------------------------------------------
@@ -46,12 +47,13 @@ def model(weights_path=None):
 
         nm_filter += k
 
+    nm_filter = int(nm_filter * compression)
+
     # -----------------------------------------------------
     # --------------------- Bridge 1 ----------------------
-
     bridge_bn11 = BatchNormalization(axis=1)(conv1)
     bridge_act11 = Activation('relu')(bridge_bn11)
-    bridge_conv11 = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False)(bridge_act11)
+    bridge_conv11 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act11)
 
     bridge_pool11 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_conv11)
 
@@ -66,11 +68,13 @@ def model(weights_path=None):
 
         nm_filter += k
 
+    nm_filter = int(nm_filter * compression)
+
     # -----------------------------------------------------
     # --------------------- Bridge 2 ----------------------
     bridge_bn21 = BatchNormalization(axis=1)(conv2)
     bridge_act21 = Activation('relu')(bridge_bn21)
-    bridge_conv21 = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False)(bridge_act21)
+    bridge_conv21 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act21)
 
     bridge_pool21 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_conv21)
 
@@ -85,11 +89,13 @@ def model(weights_path=None):
 
         nm_filter += k
 
+    nm_filter = int(nm_filter * compression)
+
     # -----------------------------------------------------
     # --------------------- Bridge 3 ----------------------
     bridge_bn31 = BatchNormalization(axis=1)(conv3)
     bridge_act31 = Activation('relu')(bridge_bn31)
-    bridge_conv31 = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False)(bridge_act31)
+    bridge_conv31 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act31)
 
     bridge_pool31 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_conv31)
 
@@ -103,7 +109,7 @@ def model(weights_path=None):
         tmp_input = concatenate([tmp_input, conv4], axis=1)
 
         nm_filter += k
-
+        
     # -----------------------------------------------------
     # --------------------- Bridge 4 ----------------------
     bridge_bn41 = BatchNormalization(axis=1)(conv4)
