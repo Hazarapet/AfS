@@ -41,9 +41,8 @@ def model(weights_path=None):
     tmp_input = start_pool
 
     for i in range(6):
-        if i > 0:
-            tmp_input = concatenate([tmp_input, conv1], axis=1)
         conv1 = conv_block(tmp_input, nm_filter)
+        tmp_input = concatenate([tmp_input, conv1], axis=1)
 
         nm_filter += k
 
@@ -61,10 +60,9 @@ def model(weights_path=None):
     # ---------------------- 28x28 -------------------------
 
     tmp_input = bridge_pool11
-    for i in range(12):
-        if i > 0:
-            tmp_input = concatenate([tmp_input, conv2], axis=1)
+    for i in range(6):
         conv2 = conv_block(tmp_input, nm_filter)
+        tmp_input = concatenate([tmp_input, conv2], axis=1)
 
         nm_filter += k
 
@@ -81,10 +79,9 @@ def model(weights_path=None):
     # ---------------------- 14x14 -------------------------
 
     tmp_input = bridge_pool21
-    for i in range(24):
-        if i > 0:
-            tmp_input = concatenate([tmp_input, conv3], axis=1)
+    for i in range(6):
         conv3 = conv_block(tmp_input, nm_filter)
+        tmp_input = concatenate([tmp_input, conv3], axis=1)
 
         nm_filter += k
 
@@ -101,10 +98,9 @@ def model(weights_path=None):
     # ---------------------- 7x7 -------------------------
 
     tmp_input = bridge_pool31
-    for i in range(16):
-        if i > 0:
-            tmp_input = concatenate([tmp_input, conv4], axis=1)
+    for i in range(6):
         conv4 = conv_block(tmp_input, nm_filter)
+        tmp_input = concatenate([tmp_input, conv4], axis=1)
 
         nm_filter += k
 
