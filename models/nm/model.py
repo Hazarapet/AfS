@@ -42,7 +42,7 @@ def model(weights_path=None):
     tmp_input = start_pool
 
     for i in range(6):
-        conv1 = conv_block(tmp_input, nm_filter)
+        conv1 = conv_block(tmp_input, k)
         tmp_input = concatenate([tmp_input, conv1], axis=1)
 
         nm_filter += k
@@ -63,7 +63,7 @@ def model(weights_path=None):
 
     tmp_input = bridge_pool11
     for i in range(6):
-        conv2 = conv_block(tmp_input, nm_filter)
+        conv2 = conv_block(tmp_input, k)
         tmp_input = concatenate([tmp_input, conv2], axis=1)
 
         nm_filter += k
@@ -84,7 +84,7 @@ def model(weights_path=None):
 
     tmp_input = bridge_pool21
     for i in range(6):
-        conv3 = conv_block(tmp_input, nm_filter)
+        conv3 = conv_block(tmp_input, k)
         tmp_input = concatenate([tmp_input, conv3], axis=1)
 
         nm_filter += k
@@ -105,11 +105,11 @@ def model(weights_path=None):
 
     tmp_input = bridge_pool31
     for i in range(6):
-        conv4 = conv_block(tmp_input, nm_filter)
+        conv4 = conv_block(tmp_input, k)
         tmp_input = concatenate([tmp_input, conv4], axis=1)
 
         nm_filter += k
-        
+
     # -----------------------------------------------------
     # --------------------- Bridge 4 ----------------------
     bridge_bn41 = BatchNormalization(axis=1)(conv4)

@@ -35,7 +35,7 @@ def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth
     compression = 1.0 - reduction
 
     img_input = Input((color_type, img_rows, img_cols), name='data')
-    nb_layers = [6, 12, 24, 16]  # For DenseNet-121
+    nb_layers = [6, 6, 6, 6]  # For DenseNet-121
 
     # Initial convolution
     x = ZeroPadding2D((3, 3), name='conv1_zeropadding')(img_input)
@@ -155,7 +155,7 @@ def dense_block(x, stage, nb_layers, nb_filter, growth_rate, dropout_rate=None, 
 
     for i in range(nb_layers):
         branch = i + 1
-        x = conv_block(concat_feat, stage, branch, nb_filter, dropout_rate)
+        x = conv_block(concat_feat, stage, branch, growth_rate, dropout_rate)
         concat_feat = concatenate([concat_feat, x], axis=1, name='concat_' + str(stage) + '_' + str(branch))
 
         if grow_nb_filters:
