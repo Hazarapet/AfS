@@ -1,7 +1,7 @@
 import os
 import cv2
 import numpy as np
-
+import math
 
 def ensemble(array):
     new_array = []
@@ -16,10 +16,13 @@ def ensemble(array):
 
 if __name__ == '__main__':
 
-    array = np.ones((4, 3)) * (np.random.random((4, 3)) > 0.4) * 1
-    array = array.astype(np.uint8)
-    ens = ensemble(array)
+    array = np.random.random((12, 3))
 
-    print array
-    print ens
+    list1 = []
+    list2 = []
+
+    list1.append([1, 2, 3, 6])
+    list2.append([10, 20, 30, 60])
+
+    print list1 + list2
 

@@ -8,7 +8,7 @@ from utils import common as common_util
 from utils import image as UtilImage
 from keras.models import model_from_json
 
-BATCH_SIZE = 1
+BATCH_SIZE = 200
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
@@ -290,28 +290,33 @@ def result_single_jpg(X, path):
         result = []
         print 'images loading...'
 
-        for f in common_util.iterate_minibatches(X, batchsize=BATCH_SIZE):
+        for files in common_util.iterate_minibatches(X, batchsize=BATCH_SIZE):
             test_batch_inputs = []
 
-            img = cv2.imread(path.format(f[0]))
+            for f in files:
+                img = cv2.imread(path.format(f))
 
-            img = cv2.resize(img, (224, 224)).astype(np.float16)
-            img[:, :, 0] -= 103.939
-            img[:, :, 1] -= 116.779
-            img[:, :, 2] -= 123.68
-            img = img.transpose((2, 0, 1))
+                img = cv2.resize(img, (224, 224)).astype(np.float16)
+                img[:, :, 0] -= 103.939
+                img[:, :, 1] -= 116.779
+                img[:, :, 2] -= 123.68
+                img = img.transpose((2, 0, 1))
 
-            inputs = img
+                inputs = img
 
-            test_batch_inputs.append(inputs)
-            test_batch_inputs = aug(test_batch_inputs, inputs)
+                test_batch_inputs.append(inputs)
+                test_batch_inputs = aug(test_batch_inputs, inputs)
+
             test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
             p_group_test = main_model.predict_on_batch(test_batch_inputs)
-            p_group_test = agg(p_group_test)
+
+            p_group = []
+            for example in np.split(p_group_test, 3):
+                p_group.append(ensemble(example))
 
             count += BATCH_SIZE
-            result.append(p_group_test)
+            result = result + p_group
 
             print '{}/{} predicted'.format(count, len(X))
 
