@@ -20,12 +20,21 @@ def conv_block(input, nm_filter, dp=0.1):
 
     return drp
 
+def transition_block(input, nm_filter):
+    out = BatchNormalization(axis=1)(input)
+    out = Activation('relu')(out)
+    out = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(out)
+
+    out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(out)
+
+    return out
 
 def model(weights_path=None):
     k = 32
     nm_filter = 64
     compression = 0.5
     input = Input((3, 224, 224))
+    blocks = [6, 6, 6, 6]
 
     # ------------------------------------------------------
     start_conv = ZeroPadding2D((3, 3), name='gateway_padding3x3')(input)
@@ -41,74 +50,15 @@ def model(weights_path=None):
     # ---------------------- 56x56 -------------------------
     tmp_input = start_pool
 
-    for i in range(6):
-        conv1 = conv_block(tmp_input, k)
-        tmp_input = concatenate([tmp_input, conv1], axis=1)
+    for ind in range(len(blocks) - 1):
+        for i in range(blocks[ind]):
+            conv = conv_block(tmp_input, k)
+            tmp_input = concatenate([tmp_input, conv], axis=1)
 
-        nm_filter += k
+            nm_filter += k
 
-    nm_filter = int(nm_filter * compression)
-
-    # -----------------------------------------------------
-    # --------------------- Bridge 1 ----------------------
-    bridge_bn11 = BatchNormalization(axis=1)(tmp_input)
-    bridge_act11 = Activation('relu')(bridge_bn11)
-    bridge_conv11 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act11)
-
-    bridge_pool11 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_conv11)
-
-    # ------------------------------------------------------
-    # ------------------ Conv Block 2 ----------------------
-    # ---------------------- 28x28 -------------------------
-
-    tmp_input = bridge_pool11
-    for i in range(6):
-        conv2 = conv_block(tmp_input, k)
-        tmp_input = concatenate([tmp_input, conv2], axis=1)
-
-        nm_filter += k
-
-    nm_filter = int(nm_filter * compression)
-
-    # -----------------------------------------------------
-    # --------------------- Bridge 2 ----------------------
-    bridge_bn21 = BatchNormalization(axis=1)(tmp_input)
-    bridge_act21 = Activation('relu')(bridge_bn21)
-    bridge_conv21 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act21)
-
-    bridge_pool21 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_conv21)
-
-    # ------------------------------------------------------
-    # ------------------ Conv Block 3 ----------------------
-    # ---------------------- 14x14 -------------------------
-
-    tmp_input = bridge_pool21
-    for i in range(6):
-        conv3 = conv_block(tmp_input, k)
-        tmp_input = concatenate([tmp_input, conv3], axis=1)
-
-        nm_filter += k
-
-    nm_filter = int(nm_filter * compression)
-
-    # -----------------------------------------------------
-    # --------------------- Bridge 3 ----------------------
-    bridge_bn31 = BatchNormalization(axis=1)(tmp_input)
-    bridge_act31 = Activation('relu')(bridge_bn31)
-    bridge_conv31 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(bridge_act31)
-
-    bridge_pool31 = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(bridge_conv31)
-
-    # ------------------------------------------------------
-    # ------------------ Conv Block 4 ----------------------
-    # ---------------------- 7x7 -------------------------
-
-    tmp_input = bridge_pool31
-    for i in range(6):
-        conv4 = conv_block(tmp_input, k)
-        tmp_input = concatenate([tmp_input, conv4], axis=1)
-
-        nm_filter += k
+        nm_filter = int(nm_filter * compression)
+        tmp_input = transition_block(tmp_input, nm_filter)
 
     # -----------------------------------------------------
     # --------------------- Bridge 4 ----------------------
