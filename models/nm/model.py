@@ -10,7 +10,7 @@ from keras.regularizers import l2
 def conv_block(input, nm_filter, dp=0.1):
     bn11 = BatchNormalization(axis=1)(input)
     act11 = Activation('relu')(bn11)
-    conv11 = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(act11)
+    conv11 = Conv2D(4 * nm_filter, (1, 1), padding='same', use_bias=False)(act11)
 
     bn33 = BatchNormalization(axis=1)(conv11)
     act33 = Activation('relu')(bn33)
