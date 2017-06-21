@@ -48,14 +48,15 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-# [model, structure] = densenet121_model(
-#     img_rows=IMAGE_WIDTH,
-#     img_cols=IMAGE_HEIGHT,
-#     color_type=3,
-#     dropout_rate=0.5)
+[model, structure] = densenet121_model(
+    img_rows=IMAGE_WIDTH,
+    img_cols=IMAGE_HEIGHT,
+    color_type=3,
+    dropout_rate=0.5)
 
-[model, structure] = nm_model()
+[models, structures] = nm_model()
 
+print models.summary()
 print model.summary()
 
 sys.exit(0)
