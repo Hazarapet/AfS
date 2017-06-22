@@ -8,7 +8,7 @@ from utils import common as common_util
 from utils import image as UtilImage
 from keras.models import model_from_json
 
-BATCH_SIZE = 100
+BATCH_SIZE = 10
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 
