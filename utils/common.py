@@ -4,17 +4,18 @@ import numpy as np
 import keras.backend as K
 from sklearn.metrics import fbeta_score
 
-thres = [0.05, 0.17, 0.05, 0.25, 0.32, 0.06, 0.1, 0.27, 0.28, 0.21, 0.09, 0.18, 0.16, 0.03, 0.2, 0.13, 0.04]
+thres = [0.17, 0.22, 0.19, 0.26, 0.25, 0.12, 0.23, 0.23, 0.17, 0.17, 0.25, 0.27, 0.34, 0.07, 0.16, 0.16, 0.24]
 
 
 def f2_score_alt(y_true, y_pred):
     # fbeta_score throws a confusing error if inputs are not numpy arrays
     y_true, y_pred, = np.array(y_true).astype(np.float16), np.array(y_pred).astype(np.float16)
+
     # We need to use average='samples' here, any other average method will generate bogus results
     return fbeta_score(y_true, y_pred, beta=2, average='samples')
 
 
-def f2_score(y_true, y_pred, threshold_shift=.0):
+def f2_score(y_true, y_pred, threshold_shift=(0.5 - thres)):
     beta = 2
 
     # just in case of hipster activation at the final layer

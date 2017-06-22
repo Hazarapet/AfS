@@ -7,10 +7,13 @@ from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 
-def conv_block(input, nm_filter, dp=0.3):
+def conv_block(input, nm_filter, dp=0.0):
     out = BatchNormalization(axis=1)(input)
     out = Activation('relu')(out)
     out = Conv2D(4 * nm_filter, (1, 1), padding='same', use_bias=False)(out)
+
+    if dp:
+        out = Dropout(dp)(out)
 
     out = BatchNormalization(axis=1)(out)
     out = Activation('relu')(out)
@@ -21,6 +24,7 @@ def conv_block(input, nm_filter, dp=0.3):
 
     return out
 
+
 def transition_block(input, nm_filter):
     out = BatchNormalization(axis=1)(input)
     out = Activation('relu')(out)
@@ -30,6 +34,7 @@ def transition_block(input, nm_filter):
 
     return out
 
+
 def dense_block(nb_layers, tmp_input, nm_filter, k):
     for i in range(nb_layers):
         conv = conv_block(tmp_input, k)
@@ -38,6 +43,7 @@ def dense_block(nb_layers, tmp_input, nm_filter, k):
         nm_filter += k
 
     return tmp_input, nm_filter
+
 
 def model(weights_path=None):
     k = 32
