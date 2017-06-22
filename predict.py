@@ -32,8 +32,8 @@ def agg(array):
 
 
 def result_single_tif(X, path, do_agg=True):
-    weights_path = 'models/main/structures/tr_l:0.1874-tr_a:0.9411-tr_f2:0.7921-val_l:0.1808-val_a:0.942-val_f2:0.7967-time:22-06-2017-03:15:05-dur:151.751.h5'
-    model_structure = 'models/main/structures/tr_l:0.1874-tr_a:0.9411-tr_f2:0.7921-val_l:0.1808-val_a:0.942-val_f2:0.7967-time:22-06-2017-03:15:05-dur:151.751.json'
+    weights_path = 'models/main/structures/tr_l:0.1456-tr_a:0.9445-tr_f2:0.8612-val_l:0.1469-val_a:0.9446-val_f2:0.8574-time:22-06-2017-22:41:25-dur:335.64.h5'
+    model_structure = 'models/main/structures/tr_l:0.1456-tr_a:0.9445-tr_f2:0.8612-val_l:0.1469-val_a:0.9446-val_f2:0.8574-time:22-06-2017-22:41:25-dur:335.64.json'
 
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))
