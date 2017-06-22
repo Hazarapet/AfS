@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.main.model import model as main_model
 
 st_time = time.time()
-N_EPOCH = 4
+N_EPOCH = 14
 BATCH_SIZE = 130
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
@@ -48,11 +48,11 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = main_model('models/main/structures/tr_l:0.1874-tr_a:0.9411-tr_f2:0.7921-val_l:0.1808-val_a:0.942-val_f2:0.7967-time:22-06-2017-03:15:05-dur:151.751.h5')
+[model, structure] = main_model()
 
 print model.summary()
 
-adam = Adam(lr=1e-5, decay=0.)
+adam = Adam(lr=1e-4, decay=0.)
 
 # sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
@@ -238,13 +238,13 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 10:
+    if epoch == 7:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-5)
 
     if epoch == 18:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-5)
+        model.optimizer.lr.set_value(1e-5)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()

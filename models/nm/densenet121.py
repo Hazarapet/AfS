@@ -7,6 +7,7 @@ from keras.models import Model
 import h5py
 import numpy as np
 
+
 def densenet121_model(img_rows, img_cols, color_type=3, nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.5, dropout_rate=0.0, weights_path=None):
     '''
     DenseNet 121 Model for Keras
