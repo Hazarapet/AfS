@@ -51,7 +51,7 @@ def result_single_tif(X, path):
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))
         main_model.load_weights(weights_path)
-        print 'main_model is loaded!'
+        print 'model is loaded!'
 
         # loading the data
         count = 0
@@ -107,7 +107,7 @@ def result_single_jpg(X, path):
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))
         main_model.load_weights(weights_path)
-        print 'main_model is loaded!'
+        print 'model is loaded!'
 
         # loading the data
         count = 0
