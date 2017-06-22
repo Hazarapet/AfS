@@ -80,6 +80,19 @@ def aug(array, input):
     return array
 
 
+def ensemble(array):
+    new_array = []
+    for cl in range(array.shape[1]):
+        cn = list(array[:, cl]).count(1)
+        all_cn = array.shape[0]
+        if cn > all_cn / 2:
+            new_array.append(1)
+        else:
+            new_array.append(0)
+
+    return new_array
+
+
 def optimise_f2_thresholds(y, p, verbose=True, resolution=100):
   def mf(x):
     p2 = np.zeros_like(p)

@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.main.model import model as main_model
 
 st_time = time.time()
-N_EPOCH = 7
+N_EPOCH = 4
 BATCH_SIZE = 130
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
@@ -48,7 +48,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = main_model('models/main/structures/tr_l:0.2377-tr_a:0.9283-tr_f2:0.7393-val_l:0.2277-val_a:0.9322-val_f2:0.7464-time:21-06-2017-23:27:47-dur:155.846.h5')
+[model, structure] = main_model('models/main/structures/tr_l:0.1874-tr_a:0.9411-tr_f2:0.7921-val_l:0.1808-val_a:0.942-val_f2:0.7967-time:22-06-2017-03:15:05-dur:151.751.h5')
 
 print model.summary()
 
