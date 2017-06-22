@@ -48,7 +48,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = main_model()
+[model, structure] = main_model('models/main/structures/tr_l:0.2377-tr_a:0.9283-tr_f2:0.7393-val_l:0.2277-val_a:0.9322-val_f2:0.7464-time:21-06-2017-23:27:47-dur:155.846.h5')
 
 print model.summary()
 
