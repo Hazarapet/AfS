@@ -39,8 +39,6 @@ y = np.array(y).astype(np.float32)
 p = np.array(p).astype(np.float32)
 result = np.array(result).astype(np.float32)
 
-print result[0], result[1]
-sys.exit(0)
 # print result
 print 'F2: ', common.f2_score(y, p).eval()
 

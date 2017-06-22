@@ -90,7 +90,8 @@ def result_single_tif(X, path):
 
             p_group = []
             for example in np.split(p_group_test, 4):
-                p_group.append(ensemble(example))
+                # TODO ensemble
+                p_group.append(agg(example))
 
             count += BATCH_SIZE
             result = result + p_group
@@ -137,7 +138,8 @@ def result_single_jpg(X, path):
 
             p_group = []
             for example in np.split(p_group_test, 4):
-                p_group.append(ensemble(example))
+                # TODO ensemble
+                p_group.append(agg(example))
 
             count += BATCH_SIZE
             result = result + p_group
