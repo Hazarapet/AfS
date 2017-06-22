@@ -13,7 +13,7 @@ from models.main.model import model as main_model
 
 st_time = time.time()
 N_EPOCH = 14
-BATCH_SIZE = 130
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = True
@@ -52,7 +52,7 @@ print 'model loading...'
 
 print model.summary()
 
-adam = Adam(lr=1e-4, decay=0.)
+adam = Adam(lr=3e-4, decay=0.)
 
 # sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
@@ -221,7 +221,7 @@ for epoch in range(N_EPOCH):
             (time.time() - tr_time) / 60)
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.83:
+        if v_f2 > 0.87:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -238,11 +238,11 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 7:
+    if epoch == 5:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
+        model.optimizer.lr.set_value(1e-4)
 
-    if epoch == 18:
+    if epoch == 10:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-5)
 
