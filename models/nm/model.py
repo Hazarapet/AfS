@@ -7,7 +7,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 
-def conv_block(input, nm_filter, dp=0.1):
+def conv_block(input, nm_filter, dp=0.3):
     out = BatchNormalization(axis=1)(input)
     out = Activation('relu')(out)
     out = Conv2D(4 * nm_filter, (1, 1), padding='same', use_bias=False)(out)
