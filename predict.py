@@ -8,9 +8,9 @@ from utils import common as common_util
 from utils import image as UtilImage
 from keras.models import model_from_json
 
-BATCH_SIZE = 10
-IMAGE_WIDTH = 224
-IMAGE_HEIGHT = 224
+BATCH_SIZE = 100
+IMAGE_WIDTH = 128
+IMAGE_HEIGHT = 128
 
 def ensemble(array):
     new_array = []
