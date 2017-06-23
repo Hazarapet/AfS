@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.main.model import model as main_model
 
 st_time = time.time()
-N_EPOCH = 14
-BATCH_SIZE = 100
+N_EPOCH = 7
+BATCH_SIZE = 90
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = True
@@ -48,11 +48,10 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = main_model()
-
+[model, structure] = main_model('models/main/structures/tr_l:0.1456-tr_a:0.9445-tr_f2:0.8612-val_l:0.1469-val_a:0.9446-val_f2:0.8574-time:22-06-2017-22:41:25-dur:335.64.h5')
 print model.summary()
 
-adam = Adam(lr=3e-4, decay=0.)
+adam = Adam(lr=1e-4, decay=0.)
 
 # sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
@@ -221,7 +220,7 @@ for epoch in range(N_EPOCH):
             (time.time() - tr_time) / 60)
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.87:
+        if v_f2 > 0.89:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -240,15 +239,15 @@ for epoch in range(N_EPOCH):
 
     if epoch == 5:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-5)
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
+        model.optimizer.lr.set_value(1e-6)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
+        model.optimizer.lr.set_value(1e-6)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
