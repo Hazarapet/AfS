@@ -38,7 +38,7 @@ def transition_block(input, nm_filter):
 def transition_bridge_block(input, nm_filter):
     out = BatchNormalization(axis=1)(input)
     out = Activation('relu')(out)
-    out = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(out)
+    out = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False)(out)
 
     out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(out)
 
@@ -56,11 +56,11 @@ def dense_block(nb_layers, tmp_input, nm_filter, k):
 
 
 def model(weights_path=None):
-    k = 32
+    k = 16
     nm_filter = 64
     compression = 0.5
     # blocks = [6, 12, 24, 24, 16]
-    blocks = [6, 24, 32, 32]
+    blocks = [6, 12, 36, 36]
 
     input = Input((3, 224, 224))
 
@@ -83,7 +83,7 @@ def model(weights_path=None):
 
         nm_filter = int(nm_filter * compression)
 
-        # TODO Every Dense block takes as input transition_output + prev_dense_block_input
+        # TODO Every Dense block takes as input [transition_output, prev_dense_block_input]
         tmp_input = transition_block(tmp_input, nm_filter)
         tmp_bridge_input = transition_bridge_block(prev_input, nm_filter)
 
@@ -97,13 +97,6 @@ def model(weights_path=None):
     bridge_act41 = Activation('relu')(bridge_bn41)
 
     bridge_pool41 = GlobalAveragePooling2D()(bridge_act41)
-
-    # Dense layers
-
-    # dense1 = Dense(512, kernel_regularizer=l2(1e-5))(flt)
-    # dnbn1 = BatchNormalization(axis=1)(dense1)
-    # dnact1 = Activation('relu')(dnbn1)
-    # dndrop1 = Dropout(0.2)(flt)
 
     output = Dense(17, activation='sigmoid')(bridge_pool41)
 
