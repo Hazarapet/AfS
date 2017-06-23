@@ -35,6 +35,16 @@ def transition_block(input, nm_filter):
     return out
 
 
+def transition_bridge_block(input, nm_filter):
+    out = BatchNormalization(axis=1)(input)
+    out = Activation('relu')(out)
+    out = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(out)
+
+    out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(out)
+
+    return out
+
+
 def dense_block(nb_layers, tmp_input, nm_filter, k):
     for i in range(nb_layers):
         conv = conv_block(tmp_input, k)
@@ -49,7 +59,8 @@ def model(weights_path=None):
     k = 32
     nm_filter = 64
     compression = 0.5
-    blocks = [6, 12, 24, 16]
+    # blocks = [6, 12, 24, 24, 16]
+    blocks = [6, 24, 32, 32]
 
     input = Input((3, 224, 224))
 
@@ -64,20 +75,24 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     # ------------------ Conv Block 1 ----------------------
-    # ---------------------- 56x56 -------------------------
     tmp_input = start_pool
 
     for ind in range(len(blocks) - 1):
+        prev_input = tmp_input
         tmp_input, nm_filter = dense_block(nb_layers=blocks[ind], tmp_input=tmp_input, nm_filter=nm_filter, k=k)
 
         nm_filter = int(nm_filter * compression)
 
+        # TODO Every Dense block takes as input transition_output + prev_dense_block_input
         tmp_input = transition_block(tmp_input, nm_filter)
+        tmp_bridge_input = transition_bridge_block(prev_input, nm_filter)
+
+        tmp_input = concatenate([tmp_input, tmp_bridge_input], axis=1)
 
     tmp_input, nm_filter = dense_block(nb_layers=blocks[-1], tmp_input=tmp_input, nm_filter=nm_filter, k=k)
 
     # -----------------------------------------------------
-    # --------------------- Bridge 4 ----------------------
+    # --------------------- Bridge ------------------------
     bridge_bn41 = BatchNormalization(axis=1)(tmp_input)
     bridge_act41 = Activation('relu')(bridge_bn41)
 
