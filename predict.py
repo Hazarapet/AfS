@@ -87,8 +87,8 @@ def result_single_tif(X, path, do_agg=True):
 
 
 def result_single_jpg(X, path, do_agg=True):
-    weights_path = 'models/nm/structures/tr_l:0.1215-tr_a:0.9505-tr_f2:0.8852-val_l:0.21-val_a:0.9398-val_f2:0.8432-time:24-06-2017-11:44:59-dur:680.987.h5'
-    model_structure = 'models/nm/structures/tr_l:0.1215-tr_a:0.9505-tr_f2:0.8852-val_l:0.21-val_a:0.9398-val_f2:0.8432-time:24-06-2017-11:44:59-dur:680.987.json'
+    weights_path = 'models/main/structures/tr_l:0.0943-tr_a:0.9655-tr_f2:0.9116-val_l:0.1057-val_a:0.9613-val_f2:0.9005-time:24-06-2017-18:21:26-dur:67.032.h5'
+    model_structure = 'models/main/structures/tr_l:0.0943-tr_a:0.9655-tr_f2:0.9116-val_l:0.1057-val_a:0.9613-val_f2:0.9005-time:24-06-2017-18:21:26-dur:67.032.json'
 
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))

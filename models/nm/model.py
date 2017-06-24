@@ -56,13 +56,13 @@ def dense_block(nb_layers, tmp_input, nm_filter, k):
 
 
 def model(weights_path=None):
-    k = 32
+    k = 64
     nm_filter = 64
     compression = 0.4
     # blocks = [6, 12, 24, 24, 16]
-    blocks = [6, 24, 42, 36]
+    blocks = [6, 12, 24]
 
-    input = Input((3, 224, 224))
+    input = Input((3, 128, 128))
 
     # ------------------------------------------------------
     start_conv = ZeroPadding2D((3, 3), name='gateway_padding3x3')(input)
@@ -70,12 +70,12 @@ def model(weights_path=None):
     start_conv = BatchNormalization(axis=1, name='gateway_bn')(start_conv)
     start_conv = Activation('relu', name='gateway_act')(start_conv)
 
-    start_conv = ZeroPadding2D((1, 1), name='gateway_padding1x1')(start_conv)
-    start_pool = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='gateway_max_pool')(start_conv)
+    # start_conv = ZeroPadding2D((1, 1), name='gateway_padding1x1')(start_conv)
+    # start_pool = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='gateway_max_pool')(start_conv)
 
     # ------------------------------------------------------
     # ------------------ Conv Block 1 ----------------------
-    tmp_input = start_pool
+    tmp_input = start_conv
 
     for ind in range(len(blocks) - 1):
         prev_input = tmp_input
