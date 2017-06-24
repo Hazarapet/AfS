@@ -48,10 +48,10 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = main_model()
+[model, structure] = main_model('models/main/structures/tr_l:0.0943-tr_a:0.9655-tr_f2:0.9116-val_l:0.1057-val_a:0.9613-val_f2:0.9005-time:24-06-2017-18:21:26-dur:67.032.h5')
 print model.summary()
 
-adam = Adam(lr=3e-4, decay=1e-4)
+adam = Adam(lr=3e-5, decay=1e-4)
 
 # sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
@@ -197,7 +197,7 @@ for epoch in range(N_EPOCH):
             (time.time() - tr_time) / 60)
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.89:
+        if v_f2 > 0.92:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -216,7 +216,7 @@ for epoch in range(N_EPOCH):
 
     if epoch == 5:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-5)
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()

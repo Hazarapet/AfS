@@ -17,7 +17,7 @@ N_EPOCH = 20
 BATCH_SIZE = 20
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
-AUGMENT = False  # makes train slower
+AUGMENT = False  # TODO somethings wrong with this.It also makes train slower
 
 rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
         'blooming', 'selective_logging', 'blow_down']
