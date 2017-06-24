@@ -13,7 +13,7 @@ from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
-N_EPOCH = 10
+N_EPOCH = 20
 BATCH_SIZE = 40
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
@@ -58,15 +58,15 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=1e-3, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
-model.compile(loss=components.f2_binary_cross_entropy(l=0.1),
-              optimizer=sgd,
-              metrics=[common_util.f2_score, 'accuracy'])
-
-# model.compile(loss='binary_crossentropy',
+# model.compile(loss=components.f2_binary_cross_entropy(l=0.1),
 #               optimizer=sgd,
 #               metrics=[common_util.f2_score, 'accuracy'])
+
+model.compile(loss='binary_crossentropy',
+              optimizer=sgd,
+              metrics=[common_util.f2_score, 'accuracy'])
 
 print model.inputs
 print "training..."
@@ -206,7 +206,7 @@ for epoch in range(N_EPOCH):
             (time.time() - tr_time) / 60)
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.88:
+        if v_f2 > 0.9:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -225,15 +225,15 @@ for epoch in range(N_EPOCH):
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-2)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
+        model.optimizer.lr.set_value(1e-3)
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
+        model.optimizer.lr.set_value(1e-4)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
