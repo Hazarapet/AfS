@@ -56,7 +56,7 @@ def dense_block(nb_layers, tmp_input, nm_filter, k):
 
 
 def model(weights_path=None):
-    k = 64
+    k = 32
     nm_filter = 64
     compression = 0.4
     # blocks = [6, 12, 24, 24, 16]
