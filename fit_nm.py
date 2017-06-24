@@ -13,14 +13,15 @@ from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
-N_EPOCH = 30
+N_EPOCH = 10
 BATCH_SIZE = 24
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
-AUGMENT = True
+AUGMENT = False
 
 rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
         'blooming', 'selective_logging', 'blow_down']
+
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -58,15 +59,15 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-3, momentum=.9, decay=1e-4)
 
-# model.compile(loss=components.f2_binary_cross_entropy(l=0),
-#               optimizer=sgd,
-#               metrics=[common_util.f2_score, 'accuracy'])
-
-model.compile(loss='binary_crossentropy',
+model.compile(loss=components.f2_binary_cross_entropy(l=0.1),
               optimizer=sgd,
               metrics=[common_util.f2_score, 'accuracy'])
+
+# model.compile(loss='binary_crossentropy',
+#               optimizer=sgd,
+#               metrics=[common_util.f2_score, 'accuracy'])
 
 print model.inputs
 print "training..."
@@ -225,15 +226,15 @@ for epoch in range(N_EPOCH):
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-2)
+        model.optimizer.lr.set_value(1e-4)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-5)
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-5)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
