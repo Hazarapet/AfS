@@ -56,11 +56,11 @@ def dense_block(nb_layers, tmp_input, nm_filter, k):
 
 
 def model(weights_path=None):
-    k = 24
+    k = 32
     nm_filter = 64
-    compression = 0.5
+    compression = 0.4
     # blocks = [6, 12, 24, 24, 16]
-    blocks = [6, 12, 36, 36]
+    blocks = [6, 24, 42, 36]
 
     input = Input((3, 224, 224))
 
@@ -97,6 +97,9 @@ def model(weights_path=None):
     bridge_act41 = Activation('relu')(bridge_bn41)
 
     bridge_pool41 = GlobalAveragePooling2D()(bridge_act41)
+
+    # dn1 = Dense(512, activation='relu')(bridge_pool41)
+    # dn1 = Dropout(0.3)(dn1)
 
     output = Dense(17, activation='sigmoid')(bridge_pool41)
 

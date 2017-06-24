@@ -14,14 +14,13 @@ from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
 N_EPOCH = 10
-BATCH_SIZE = 24
+BATCH_SIZE = 20
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = False
 
 rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
         'blooming', 'selective_logging', 'blow_down']
-
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
