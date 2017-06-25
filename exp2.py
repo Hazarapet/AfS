@@ -1,15 +1,8 @@
-import os
-import cv2
 import numpy as np
-import theano.tensor as T
-from theano import function
 
-x, y = T.dscalars('x', 'y', dtype='int8')
-z = x + y
+result = list()
 
-f = function([x, y], z)
+result.append(np.ones((2, 17)))
 
-print f(2, 3)
-
-
-
+print np.array(result).shape
+print result
