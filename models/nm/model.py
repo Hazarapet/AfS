@@ -60,7 +60,7 @@ def model(weights_path=None):
     nm_filter = 64
     compression = 0.4
     # blocks = [6, 12, 24, 24, 16]
-    blocks = [6, 12, 12, 6]
+    blocks = [3, 3, 6, 6]
 
     input = Input((3, 128, 128))
 
