@@ -13,7 +13,7 @@ from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
-N_EPOCH = 20
+N_EPOCH = 15
 BATCH_SIZE = 49
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
