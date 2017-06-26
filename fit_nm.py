@@ -14,7 +14,7 @@ from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 50
+BATCH_SIZE = 49
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = False  # TODO somethings wrong with this.It also makes train slower
