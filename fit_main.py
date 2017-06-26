@@ -12,11 +12,11 @@ from utils import common as common_util
 from models.main.model import model as main_model
 
 st_time = time.time()
-N_EPOCH = 105
+N_EPOCH = 20
 BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
-AUGMENT = False
+AUGMENT = True
 
 rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
         'blooming', 'selective_logging', 'blow_down']
@@ -48,7 +48,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = main_model()
+[model, structure] = main_model('models/main/structures/vgg16_weights.h5')
 print model.summary()
 
 adam = Adam(lr=3e-4, decay=1e-4)
@@ -218,7 +218,7 @@ for epoch in range(N_EPOCH):
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-4)
 
-    if epoch == 10:
+    if epoch == 15:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-5)
 

@@ -87,19 +87,27 @@ def model(weights_path=None):
 
     # Dense layers
     _model.add(Flatten())
-
-    _model.add(Dense(512, kernel_regularizer=l2(1e-5)))
-    _model.add(Activation('relu'))
+    _model.add(Dense(4096, activation='relu'))
     _model.add(Dropout(0.5))
-
-    _model.add(Dense(256, kernel_regularizer=l2(1e-5)))
-    _model.add(Activation('relu'))
+    _model.add(Dense(4096, activation='relu'))
     _model.add(Dropout(0.5))
-
-    _model.add(Dense(17, activation='sigmoid'))
+    _model.add(Dense(1000, activation='softmax'))
 
     if weights_path:
         _model.load_weights(weights_path)
+
+        for i in range(5):
+            _model.pop()
+
+        _model.add(Dense(512, kernel_regularizer=l2(1e-5)))
+        _model.add(Activation('relu'))
+        _model.add(Dropout(0.5))
+
+        _model.add(Dense(256, kernel_regularizer=l2(1e-5)))
+        _model.add(Activation('relu'))
+        _model.add(Dropout(0.5))
+
+        _model.add(Dense(17, activation='sigmoid'))
 
     return [_model, 'models/main/structures/']
 
