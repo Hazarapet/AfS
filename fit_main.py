@@ -12,7 +12,7 @@ from utils import common as common_util
 from models.main.model import model as main_model
 
 st_time = time.time()
-N_EPOCH = 25
+N_EPOCH = 28
 BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
@@ -171,8 +171,7 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 v_batch_inputs = common_util.aug(v_batch_inputs, v_inputs)
 
-                # cause 3x|input|
-                v_batch_labels.append(targets)
+                # cause 2x|input|
                 v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
 
