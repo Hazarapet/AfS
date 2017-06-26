@@ -7,7 +7,7 @@ from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 
-def conv_block(input, nm_filter, dp=0.2):
+def conv_block(input, nm_filter, dp=0.35):
     out = BatchNormalization(axis=1)(input)
     out = Activation('relu')(out)
     out = Conv2D(4 * nm_filter, (1, 1), padding='same', use_bias=False)(out)
@@ -56,7 +56,7 @@ def dense_block(nb_layers, tmp_input, nm_filter, k):
 
 
 def model(weights_path=None):
-    k = 64
+    k = 48
     nm_filter = 64
     compression = 0.4
     # blocks = [6, 12, 24, 24, 16]

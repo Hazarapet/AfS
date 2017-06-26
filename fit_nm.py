@@ -13,8 +13,8 @@ from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
-N_EPOCH = 15
-BATCH_SIZE = 32
+N_EPOCH = 20
+BATCH_SIZE = 50
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = False  # TODO somethings wrong with this.It also makes train slower
@@ -206,7 +206,7 @@ for epoch in range(N_EPOCH):
             (time.time() - tr_time) / 60)
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.9:
+        if v_f2 > 0.905:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -223,7 +223,7 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 10:
+    if epoch == 8:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-2)
 
