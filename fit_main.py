@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.main.model import model as main_model
 
 st_time = time.time()
-N_EPOCH = 20
-BATCH_SIZE = 100
+N_EPOCH = 25
+BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = True
@@ -48,7 +48,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = main_model('models/main/structures/vgg16_weights.h5')
+[model, structure] = main_model()
 print model.summary()
 
 adam = Adam(lr=3e-4, decay=1e-4)
@@ -111,8 +111,7 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
 
-                # cause 3x|input|
-                t_batch_labels.append(targets)
+                # cause 2x|input|
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
 

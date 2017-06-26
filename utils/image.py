@@ -1,9 +1,6 @@
 import cv2
 import gdal
 import numpy as np
-from PIL import Image
-from gdalconst import *
-import matplotlib.pyplot as plt
 
 
 def sobel(img):
@@ -72,6 +69,7 @@ def savi(tif):
     L = 0.5
     return (1 + L) * (nir - red)/(nir + red + L)
 
+
 # Iron Oxide Ratio (IOR)
 # This band ratio highlights hydrothermally
 # altered rocks that have been subjected to oxidation of iron-bearing sulphides.
@@ -80,6 +78,7 @@ def ior(tif):
     blue = tif[1]
     return red / blue
 
+
 # Burn Area Index (BAI)
 def bai(tif):
     nir = tif[3]
@@ -87,9 +86,11 @@ def bai(tif):
     L = 0.001
     return 1. / (((0.1 - red) ** 2) + ((0.06 - nir) ** 2) + L)
 
+
 # Leaf Area Index (LAI)
 def lai(tif):
     return 3.618 * evi(tif) - 0.118
+
 
 # Visible Atmospherically Resistant Index (VARI)
 def vari(tif):
@@ -99,6 +100,7 @@ def vari(tif):
     L = 0.001
     return (green - red) / (green + red - blue + L)
 
+
 # Global Environmental Monitoring Index (GEMI)
 def gemi(tif):
     nir = tif[3]
@@ -106,17 +108,20 @@ def gemi(tif):
     eta = 2 * (((nir ** 2) - (red ** 2)) + 1.5 * nir + 0.5 * red)/(nir + red + 0.5)
     return eta * (1 - 0.25 * eta) - (red - 0.125)/(1 - red)
 
+
 # Green Difference Vegetation Index (GDVI)
 def gndvi(tif):
     nir = tif[3]
     green = tif[1]
     return (nir - green) / (nir + green)
 
+
 # Green Ratio Vegetation Index (GRVI)
 def grvi(tif):
     nir = tif[3]
     green = tif[1]
     return nir / green
+
 
 # Simple Ratio (SR)
 def sr(tif):

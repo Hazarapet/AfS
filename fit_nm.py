@@ -17,7 +17,7 @@ N_EPOCH = 10
 BATCH_SIZE = 160
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
-AUGMENT = False  # TODO somethings wrong with this.It also makes train slower
+AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
 
 rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
         'blooming', 'selective_logging', 'blow_down']
@@ -120,8 +120,7 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
 
-                # cause 3x|input|
-                t_batch_labels.append(targets)
+                # cause 2x|input|
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
 
