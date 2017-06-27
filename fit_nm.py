@@ -13,14 +13,14 @@ from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
-N_EPOCH = 10
-BATCH_SIZE = 160
-IMAGE_WIDTH = 128
-IMAGE_HEIGHT = 128
+N_EPOCH = 30
+BATCH_SIZE = 32
+IMAGE_WIDTH = 224
+IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
 
 rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
-        'blooming', 'selective_logging', 'blow_down']
+        'blooming', 'selective_logging', 'blow_down', 'cultivation', 'road', 'habitation', 'water']
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -48,17 +48,17 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-# [model, structure] = densenet121_model(
-#     img_rows=IMAGE_WIDTH,
-#     img_cols=IMAGE_HEIGHT,
-#     color_type=3,
-#     dropout_rate=0.35)
+[model, structure] = densenet121_model(
+    img_rows=IMAGE_WIDTH,
+    img_cols=IMAGE_HEIGHT,
+    color_type=3,
+    dropout_rate=0.35)
 
-[model, structure] = nm_model('models/nm/structures/tr_l:0.1046-tr_a:0.9588-tr_f2:0.8941-val_l:0.1244-val_a:0.9535-val_f2:0.8787-time:26-06-2017-16:04:28-dur:42.68.h5')
+# [model, structure] = nm_model()
 
 print model.summary()
 
-sgd = SGD(lr=1e-2, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=0.1),
 #               optimizer=sgd,
@@ -222,9 +222,9 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 8:
+    if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-2)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()

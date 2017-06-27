@@ -12,6 +12,7 @@ BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 
+
 def aug(array, input):
     rt90 = np.rot90(input, 1, axes=(1, 2))
     array.append(rt90)
@@ -87,8 +88,8 @@ def result_single_tif(X, path, do_agg=True):
 
 
 def result_single_jpg(X, path, do_agg=True):
-    weights_path = 'models/main/structures/tr_l:0.0943-tr_a:0.9655-tr_f2:0.9116-val_l:0.1057-val_a:0.9613-val_f2:0.9005-time:24-06-2017-18:21:26-dur:67.032.h5'
-    model_structure = 'models/main/structures/tr_l:0.0943-tr_a:0.9655-tr_f2:0.9116-val_l:0.1057-val_a:0.9613-val_f2:0.9005-time:24-06-2017-18:21:26-dur:67.032.json'
+    weights_path = 'models/main/structures/tr_l:0.1189-tr_a:0.9543-tr_f2:0.8844-val_l:0.1297-val_a:0.9524-val_f2:0.8775-time:27-06-2017-15:04:36-dur:116.21.h5'
+    model_structure = 'models/main/structures/tr_l:0.1189-tr_a:0.9543-tr_f2:0.8844-val_l:0.1297-val_a:0.9524-val_f2:0.8775-time:27-06-2017-15:04:36-dur:116.21.json'
 
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))
