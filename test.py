@@ -40,7 +40,9 @@ for r in result:
     r = list(np.array(r).transpose() > my_thres)
     result_b.append(r)
 
-for sp in np.split(np.array(result_b), 3):
+result_b = np.array(result_b)
+
+for sp in np.split(result_b, 3):
     r = common.ensemble(sp)
     t = [inv_label_map[i] for i, j in enumerate(r) if j]
     tags.append(' '.join(t))

@@ -14,8 +14,8 @@ IMAGE_HEIGHT = 128
 
 
 def aug(array, input):
-    rt90 = np.rot90(input, 1, axes=(1, 2))
-    array.append(rt90)
+    # rt90 = np.rot90(input, 1, axes=(1, 2))
+    # array.append(rt90)
 
     # flip h
     flip_h = np.flip(input, 2)
