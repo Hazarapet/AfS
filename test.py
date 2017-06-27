@@ -5,6 +5,7 @@ import json
 import numpy as np
 import pandas as pd
 import predict
+import utils.common as common
 
 st_time = time.time()
 
@@ -34,8 +35,13 @@ df_test = pd.DataFrame([[p.replace('.jpg', ''), p] for p in X_test])
 df_test.columns = ['image_name', 'tags']
 
 tags = []
+result_b = []
 for r in result:
     r = list(r > my_thres)
+    result_b.append(r)
+
+for sp in np.split(np.array(result_b), 3):
+    r = common.ensemble(sp)
     t = [inv_label_map[i] for i, j in enumerate(r) if j]
     tags.append(' '.join(t))
 
