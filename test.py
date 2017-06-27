@@ -42,7 +42,7 @@ for r in result:
 
 result_b = np.array(result_b)
 
-for sp in np.split(result_b, 3):
+for sp in np.split(result_b, result_b.shape[0] / 3):
     r = common.ensemble(sp)
     t = [inv_label_map[i] for i, j in enumerate(r) if j]
     tags.append(' '.join(t))
