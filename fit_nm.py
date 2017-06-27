@@ -14,7 +14,7 @@ from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
 N_EPOCH = 30
-BATCH_SIZE = 32
+BATCH_SIZE = 24
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
@@ -127,8 +127,8 @@ for epoch in range(N_EPOCH):
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
         t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
 
+        # TODO check this part
         for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
-            # collecting for plotting
             t_i = np.stack(min_b[:, 0])  # inputs
             t_l = np.stack(min_b[:, 1])  # labels
 
@@ -180,8 +180,7 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 v_batch_inputs = common_util.aug(v_batch_inputs, v_inputs)
 
-                # cause 3x|input|
-                v_batch_labels.append(targets)
+                # cause 2x|input|
                 v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
 

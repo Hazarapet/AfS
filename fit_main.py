@@ -12,14 +12,14 @@ from utils import common as common_util
 from models.main.model import model as main_model
 
 st_time = time.time()
-N_EPOCH = 10
-BATCH_SIZE = 80
+N_EPOCH = 25
+BATCH_SIZE = 100
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = True
 
 rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
-        'blooming', 'selective_logging', 'blow_down']
+        'blooming', 'selective_logging', 'blow_down', 'cultivation', 'road', 'habitation', 'water']
 
 t_loss_graph = np.array([])
 t_acc_graph = np.array([])
@@ -48,12 +48,16 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = main_model('models/main/structures/tr_l:0.0877-tr_a:0.9663-tr_f2:0.9133-val_l:0.1083-val_a:0.9604-val_f2:0.8936-time:27-06-2017-12:54:23-dur:127.364.h5')
+[model, structure] = main_model()
 print model.summary()
 
-adam = Adam(lr=3e-5, decay=1e-4)
+adam = Adam(lr=3e-4, decay=1e-4)
 
 # sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
+
+# model.compile(loss=components.f2_binary_cross_entropy(l=0.01),
+#               optimizer=adam,
+#               metrics=[common_util.f2_score, 'accuracy'])
 
 model.compile(loss='binary_crossentropy',
               optimizer=adam,
@@ -212,17 +216,17 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 7:
-        lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
-
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
+        model.optimizer.lr.set_value(1e-4)
+
+    if epoch == 17:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(3e-5)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-6)
+        model.optimizer.lr.set_value(1e-5)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
