@@ -103,8 +103,17 @@ def optimise_f2_thresholds(y, p, verbose=True, resolution=100):
     return score
 
   x = [0.2] * 17
+  x[0] = 0.11
+  x[1] = 0.29
+  x[2] = 0.35
+  x[3] = 0.12
+  x[4] = 0.16
+  x[5] = 0.04
+  x[6] = 0.25
+  x[7] = 0.36
+  x[8] = 0.32
 
-  for i in range(17):
+  for i in range(8, 17):
     best_i2 = 0
     best_score = 0
     for i2 in range(resolution):
