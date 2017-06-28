@@ -13,7 +13,7 @@ from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
-N_EPOCH = 30
+N_EPOCH = 40
 BATCH_SIZE = 24
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
@@ -52,7 +52,7 @@ print 'model loading...'
     img_rows=IMAGE_WIDTH,
     img_cols=IMAGE_HEIGHT,
     color_type=3,
-    dropout_rate=0.35)
+    dropout_rate=0.4)
 
 # [model, structure] = nm_model()
 
