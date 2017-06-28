@@ -14,7 +14,7 @@ from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 30
+BATCH_SIZE = 27
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
@@ -23,10 +23,8 @@ rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
         'blooming', 'selective_logging', 'blow_down', 'cultivation', 'road', 'habitation', 'water']
 
 t_loss_graph = np.array([])
-t_acc_graph = np.array([])
 t_f2_graph = np.array([])
 v_loss_graph = np.array([])
-v_acc_graph = np.array([])
 v_f2_graph = np.array([])
 
 X = []
@@ -62,11 +60,11 @@ sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=0.1),
 #               optimizer=sgd,
-#               metrics=[common_util.f2_score, 'accuracy'])
+#               metrics=[common_util.f2_score])
 
 model.compile(loss='binary_crossentropy',
               optimizer=sgd,
-              metrics=[common_util.f2_score, 'accuracy'])
+              metrics=[common_util.f2_score])
 
 print model.inputs
 print "training..."
@@ -75,11 +73,9 @@ for epoch in range(N_EPOCH):
     tr_time = time.time()
 
     t_loss_graph_ep = []
-    t_acc_graph_ep = []
     t_f2_graph_ep = []
 
     v_loss_graph_ep = []
-    v_acc_graph_ep = []
     v_f2_graph_ep = []
 
     print "Epoch: {}".format(epoch)
@@ -134,15 +130,13 @@ for epoch in range(N_EPOCH):
 
             trained_batch += len(t_l)
 
-            [t_loss, t_f2, t_acc] = model.train_on_batch(t_i, t_l)
+            [t_loss, t_f2] = model.train_on_batch(t_i, t_l)
             t_loss_graph_ep = np.append(t_loss_graph_ep, [t_loss])
-            t_acc_graph_ep = np.append(t_acc_graph_ep, [t_acc])
             t_f2_graph_ep = np.append(t_f2_graph_ep, [t_f2])
 
-            print "examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}".format(trained_batch,
+            print "examples: {}/{}, loss: {:.5f}, f2: {:.5f}".format(trained_batch,
                    len(train),
                    float(t_loss),
-                   float(t_acc),
                    float(t_f2))
 
     # ===== Validation =====
@@ -187,18 +181,16 @@ for epoch in range(N_EPOCH):
         v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
         v_batch_labels = np.array(v_batch_labels).astype(np.uint8)
 
-        [v_loss, v_f2, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
+        [v_loss, v_f2] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
 
         val_batch += len(min_batch)
 
         v_loss_graph_ep = np.append(v_loss_graph_ep, [v_loss])
-        v_acc_graph_ep = np.append(v_acc_graph_ep, [v_acc])
         v_f2_graph_ep = np.append(v_f2_graph_ep, [v_f2])
 
-        print "Val Examples: {}/{}, loss: {:.5f}, acc: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
+        print "Val Examples: {}/{}, loss: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
             len(val),
             float(v_loss),
-            float(v_acc),
             float(v_f2),
             float(model.optimizer.lr.get_value()),
             (time.time() - tr_time) / 60)
@@ -208,10 +200,8 @@ for epoch in range(N_EPOCH):
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
-                             '-tr_a:' + str(round(np.max(t_acc_graph), 4)) + \
                              '-tr_f2:' + str(round(np.max(t_f2_graph), 4)) + \
                              '-val_l:' + str(round(v_loss, 4)) + \
-                             '-val_a:' + str(round(np.max(v_acc_graph), 4)) + \
                              '-val_f2:' + str(round(np.max(v_f2_graph), 4)) + \
                              '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
             # saving the weights
@@ -234,11 +224,9 @@ for epoch in range(N_EPOCH):
         model.optimizer.lr.set_value(1e-4)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
-    t_acc_graph = np.append(t_acc_graph, [np.mean(t_acc_graph_ep)])
     t_f2_graph = np.append(t_f2_graph, [np.mean(t_f2_graph_ep)])
 
     v_loss_graph = np.append(v_loss_graph, [np.mean(v_loss_graph_ep)])
-    v_acc_graph = np.append(v_acc_graph, [np.mean(v_acc_graph_ep)])
     v_f2_graph = np.append(v_f2_graph, [np.mean(v_f2_graph_ep)])
 
 
@@ -246,10 +234,8 @@ for epoch in range(N_EPOCH):
 timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
 model_filename = structure + \
                  'tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
-                 '-tr_a:' + str(round(np.max(t_acc_graph), 4)) + \
                  '-tr_f2:' + str(round(np.max(t_f2_graph), 4)) + \
                  '-val_l:' + str(round(np.min(v_loss_graph), 4)) + \
-                 '-val_a:' + str(round(np.max(v_acc_graph), 4)) + \
                  '-val_f2:' + str(round(np.max(v_f2_graph), 4)) + \
                  '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
 
@@ -262,10 +248,10 @@ with open(model_filename + '.json', 'w') as outfile:
 
 # --------------------------------------
 # --------- Plotting Curves -----------
-plots.plot_curve(values=[t_loss_graph, t_acc_graph, t_f2_graph], labels=['Train Loss', 'Train Acc', 'Train F2'], file_name=model_filename + '_train.jpg')
-plots.plot_curve(values=[v_loss_graph, v_acc_graph, v_f2_graph], labels=['Val Loss', 'Val Acc', 'Val F2'], file_name=model_filename + '_val.jpg')
+plots.plot_curve(values=[t_loss_graph, t_f2_graph], labels=['Train Loss', 'Train F2'], file_name=model_filename + '_train.jpg')
+plots.plot_curve(values=[v_loss_graph, v_f2_graph], labels=['Val Loss', 'Val F2'], file_name=model_filename + '_val.jpg')
 
-print 'Loss and Accuracy plots are done!'
+print 'Loss and F2 plots are done!'
 
 print('\n{:.2f}m Runtime'.format((time.time() - st_time) / 60))
 print '====== End ======'
