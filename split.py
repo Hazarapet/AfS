@@ -10,12 +10,12 @@ np.random.shuffle(df_train.values)
 index = int(len(df_train.values) * 0.95)
 train, val = df_train.values[:index], df_train.values[index:]
 
-df_tr = pd.DataFrame([[f, t] for f, t in df_train.values[:index]])
+df_tr = pd.DataFrame([[f, t] for f, t in train])
 df_tr.columns = ['image_name', 'tags']
 
 df_tr.to_csv('train_split.csv', index=False)
 
-df_val = pd.DataFrame([[f, t] for f, t in df_train.values[index:]])
+df_val = pd.DataFrame([[f, t] for f, t in val])
 df_val.columns = ['image_name', 'tags']
 
 df_val.to_csv('val_split.csv', index=False)

@@ -13,8 +13,8 @@ from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
-N_EPOCH = 40
-BATCH_SIZE = 24
+N_EPOCH = 20
+BATCH_SIZE = 30
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
@@ -48,13 +48,13 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = densenet121_model(
-    img_rows=IMAGE_WIDTH,
-    img_cols=IMAGE_HEIGHT,
-    color_type=3,
-    dropout_rate=0.4)
+# [model, structure] = densenet121_model(
+#     img_rows=IMAGE_WIDTH,
+#     img_cols=IMAGE_HEIGHT,
+#     color_type=3,
+#     dropout_rate=0.4)
 
-# [model, structure] = nm_model()
+[model, structure] = nm_model()
 
 print model.summary()
 
@@ -105,10 +105,10 @@ for epoch in range(N_EPOCH):
 
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float16)
-            img[:, :, 0] -= 103.939
-            img[:, :, 1] -= 116.779
-            img[:, :, 2] -= 123.68
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            # img[:, :, 0] -= 103.939
+            # img[:, :, 1] -= 116.779
+            # img[:, :, 2] -= 123.68
             img = img.transpose((2, 0, 1))
 
             inputs = img
@@ -124,7 +124,7 @@ for epoch in range(N_EPOCH):
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
 
-        t_batch_inputs = np.array(t_batch_inputs).astype(np.float16)
+        t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
         t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
 
         # TODO check this part
@@ -165,10 +165,10 @@ for epoch in range(N_EPOCH):
 
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float16)
-            img[:, :, 0] -= 103.939
-            img[:, :, 1] -= 116.779
-            img[:, :, 2] -= 123.68
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            # img[:, :, 0] -= 103.939
+            # img[:, :, 1] -= 116.779
+            # img[:, :, 2] -= 123.68
             img = img.transpose((2, 0, 1))
 
             v_inputs = img
@@ -184,7 +184,7 @@ for epoch in range(N_EPOCH):
                 v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
 
-        v_batch_inputs = np.array(v_batch_inputs).astype(np.float16)
+        v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
         v_batch_labels = np.array(v_batch_labels).astype(np.uint8)
 
         [v_loss, v_f2, v_acc] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
