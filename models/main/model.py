@@ -88,11 +88,11 @@ def model(weights_path=None):
     # Dense layers
     _model.add(Flatten())
 
-    _model.add(Dense(1024, kernel_regularizer=l2(1e-5)))
+    _model.add(Dense(512, kernel_regularizer=l2(1e-5)))
     _model.add(Activation('relu'))
     _model.add(Dropout(0.1))
 
-    _model.add(Dense(1024, kernel_regularizer=l2(1e-5)))
+    _model.add(Dense(512, kernel_regularizer=l2(1e-5)))
     _model.add(Activation('relu'))
     _model.add(Dropout(0.1))
 
