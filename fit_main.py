@@ -13,7 +13,7 @@ from models.main.model import model as main_model
 
 st_time = time.time()
 N_EPOCH = 30
-BATCH_SIZE = 90
+BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = True
