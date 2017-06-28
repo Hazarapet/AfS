@@ -86,7 +86,7 @@ def ensemble(array):
     for cl in range(array.shape[1]):
         cn = list(array[:, cl]).count(1)
         all_cn = array.shape[0]
-        if cn > all_cn / 2:
+        if cn > all_cn / 2.:
             new_array.append(1)
         else:
             new_array.append(0)
