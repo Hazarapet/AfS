@@ -14,7 +14,7 @@ from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 27
+BATCH_SIZE = 26
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
@@ -46,25 +46,19 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-# [model, structure] = densenet121_model(
-#     img_rows=IMAGE_WIDTH,
-#     img_cols=IMAGE_HEIGHT,
-#     color_type=3,
-#     dropout_rate=0.4)
-
 [model, structure] = nm_model()
 
 print model.summary()
 
 sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
-# model.compile(loss=components.f2_binary_cross_entropy(l=0.1),
-#               optimizer=sgd,
-#               metrics=[common_util.f2_score])
-
-model.compile(loss='binary_crossentropy',
+model.compile(loss=components.f2_binary_cross_entropy(l=0.01),
               optimizer=sgd,
               metrics=[common_util.f2_score])
+
+# model.compile(loss='binary_crossentropy',
+#               optimizer=sgd,
+#               metrics=[common_util.f2_score])
 
 print model.inputs
 print "training..."
@@ -102,9 +96,6 @@ for epoch in range(N_EPOCH):
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
             img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
-            # img[:, :, 0] -= 103.939
-            # img[:, :, 1] -= 116.779
-            # img[:, :, 2] -= 123.68
             img = img.transpose((2, 0, 1))
 
             inputs = img
@@ -160,9 +151,6 @@ for epoch in range(N_EPOCH):
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
             img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
-            # img[:, :, 0] -= 103.939
-            # img[:, :, 1] -= 116.779
-            # img[:, :, 2] -= 123.68
             img = img.transpose((2, 0, 1))
 
             v_inputs = img

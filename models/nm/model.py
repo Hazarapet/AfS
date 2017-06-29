@@ -1,54 +1,69 @@
+import h5py
+import numpy as np
 from keras.models import Model
 from keras.layers import Input, concatenate
-from keras.layers.core import Flatten, Dense, Dropout, Activation
+from keras.layers.core import Dense, Dropout, Activation
+from keras.layers.noise import GaussianDropout, GaussianNoise
 from keras.layers.convolutional import Conv2D, ZeroPadding2D
 from keras.layers.pooling import MaxPooling2D, AveragePooling2D, GlobalAveragePooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 
-def conv_block(input, nm_filter, dp=0.35):
-    out = BatchNormalization(axis=1)(input)
-    out = Activation('relu')(out)
-    out = Conv2D(4 * nm_filter, (1, 1), padding='same', use_bias=False)(out)
+def conv_block(input, nm_filter, dense_block_index, conv_block_index, dp=0.5, reg=.0):
+    prefix = 'dense_block_' + str(dense_block_index) + '_conv_block_' + str(conv_block_index)
+
+    out = BatchNormalization(axis=1, name=prefix + '_bn1')(input)
+    out = Activation('relu', name=prefix + '_relu1')(out)
+    out = Conv2D(4 * nm_filter, (1, 1), padding='same', kernel_regularizer=l2(reg), use_bias=False, name=prefix + '_conv1')(out)
 
     if dp:
-        out = Dropout(dp)(out)
+        out = Dropout(dp, name=prefix + '_dp1')(out)
 
-    out = BatchNormalization(axis=1)(out)
-    out = Activation('relu')(out)
-    out = Conv2D(nm_filter, (3, 3), padding='same', use_bias=False)(out)
+    out = BatchNormalization(axis=1, name=prefix + '_bn2')(out)
+    out = Activation('relu', name=prefix + '_relu2')(out)
+    out = Conv2D(nm_filter, (3, 3), padding='same', kernel_regularizer=l2(reg), use_bias=False, name=prefix + '_conv2')(out)
 
     if dp:
-        out = Dropout(dp)(out)
+        out = Dropout(dp, name=prefix + '_dp2')(out)
 
     return out
 
 
-def transition_block(input, nm_filter):
-    out = BatchNormalization(axis=1)(input)
-    out = Activation('relu')(out)
-    out = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False)(out)
+def transition_block(input, nm_filter, block_index, noise=.0):
+    prefix = 'transition_block_' + str(block_index)
 
-    out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(out)
+    out = BatchNormalization(axis=1, name=prefix + '_bn1')(input)
+    out = Activation('relu', name=prefix + '_relu1')(out)
+    out = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
 
-    return out
+    out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_avgpool1')(out)
 
-
-def transition_bridge_block(input, nm_filter):
-    out = BatchNormalization(axis=1)(input)
-    out = Activation('relu')(out)
-    out = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False)(out)
-
-    out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2))(out)
+    if noise:
+        out = GaussianNoise(noise, name=prefix + '_gn_noise1')(out)
 
     return out
 
 
-def dense_block(nb_layers, tmp_input, nm_filter, k):
+def transition_bridge_block(input, nm_filter, block_index, noise=.0):
+    prefix = 'transition_bridge_block_' + str(block_index)
+
+    out = BatchNormalization(axis=1, name=prefix + '_bn1')(input)
+    out = Activation('relu', name=prefix + '_relu1')(out)
+    out = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
+
+    out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_avgpool1')(out)
+
+    if noise:
+        out = GaussianNoise(noise, name=prefix + '_gn_noise1')(out)
+
+    return out
+
+
+def dense_block(nb_layers, tmp_input, nm_filter, k, block_index):
     for i in range(nb_layers):
-        conv = conv_block(tmp_input, k)
-        tmp_input = concatenate([tmp_input, conv], axis=1)
+        conv = conv_block(input=tmp_input, nm_filter=k, dense_block_index=block_index, conv_block_index=i, dp=.5, reg=1e-5)
+        tmp_input = concatenate([tmp_input, conv], axis=1, name='dense_block_' + str(block_index) + '_concat_' + str(i))
 
         nm_filter += k
 
@@ -78,25 +93,25 @@ def model(weights_path=None):
 
     for i, block in enumerate(blocks):
         # prev_input = tmp_input
-        tmp_input, nm_filter = dense_block(nb_layers=block, tmp_input=tmp_input, nm_filter=nm_filter, k=k)
+        tmp_input, nm_filter = dense_block(nb_layers=block, tmp_input=tmp_input, nm_filter=nm_filter, k=k, block_index=i)
 
         nm_filter = int(nm_filter * compression)
 
         if i < len(blocks) - 1:
             # TODO Every Dense block takes as input [transition_output, prev_dense_block_input]
-            tmp_input = transition_block(tmp_input, nm_filter)
+            tmp_input = transition_block(input=tmp_input, nm_filter=nm_filter, block_index=i, noise=0.001)
             # tmp_bridge_input = transition_bridge_block(prev_input, nm_filter)
             #
             # tmp_input = concatenate([tmp_input, tmp_bridge_input], axis=1)
 
     # -----------------------------------------------------
     # --------------------- Bridge ------------------------
-    bridge_bn41 = BatchNormalization(axis=1)(tmp_input)
-    bridge_act41 = Activation('relu')(bridge_bn41)
+    bridge_bn41 = BatchNormalization(axis=1, name='bridge_bn1')(tmp_input)
+    bridge_act41 = Activation('relu', name='bridge_relu1')(bridge_bn41)
 
-    bridge_pool41 = GlobalAveragePooling2D()(bridge_act41)
+    bridge_pool41 = GlobalAveragePooling2D(name='bridge_globalavgpool1')(bridge_act41)
 
-    output = Dense(17, activation='sigmoid')(bridge_pool41)
+    output = Dense(17, activation='sigmoid', name='bridge_sigmoid1')(bridge_pool41)
 
     _model = Model(inputs=input, outputs=output)
 
@@ -104,3 +119,24 @@ def model(weights_path=None):
         _model.load_weights(weights_path)
 
     return [_model, 'models/nm/structures/']
+
+
+def load_weights(_model, weights_path):
+    f = h5py.File(weights_path, "r")
+
+    weights = {k: v for k, v in zip(f.keys(), f.values())}
+
+    for layer in _model.layers:
+        if layer.name in weights:
+            w = weights[layer.name]
+            ar = []
+            for v in w.values():
+                for vv in v.values():
+                    ar.append(vv[()])
+
+            ar = np.array(ar).astype(np.float32)
+            layer.set_weights(ar)
+
+            print 'layer "' + layer.name + '" weights are loaded'
+
+    return _model

@@ -12,8 +12,8 @@ from utils import common as common_util
 from models.main.model import model as main_model
 
 st_time = time.time()
-N_EPOCH = 30
-BATCH_SIZE = 70
+N_EPOCH = 10
+BATCH_SIZE = 80
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = True
@@ -50,7 +50,7 @@ print 'model loading...'
 
 print model.summary()
 
-adam = Adam(lr=3e-4, decay=1e-4)
+adam = Adam(lr=5e-4, decay=1e-4)
 
 # sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
@@ -95,27 +95,12 @@ for epoch in range(N_EPOCH):
                 if t in rare:
                     exists = True
 
-            rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+            img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
-            ndvi = UtilImage.ndvi(rgbn)
-            ndwi = UtilImage.ndwi(rgbn)
-            ior = UtilImage.ior(rgbn)
-            bai = UtilImage.bai(rgbn)
-            gemi = UtilImage.gemi(rgbn)
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            img = img.transpose((2, 0, 1))
 
-            # resize
-            red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-
-            # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
-            inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai, gemi]
+            inputs = img
 
             t_batch_inputs.append(inputs)
             t_batch_labels.append(targets)
@@ -165,27 +150,12 @@ for epoch in range(N_EPOCH):
                 if t in rare:
                     exists = True
 
-            rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
+            img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
-            ndvi = UtilImage.ndvi(rgbn)
-            ndwi = UtilImage.ndwi(rgbn)
-            ior = UtilImage.ior(rgbn)
-            bai = UtilImage.bai(rgbn)
-            gemi = UtilImage.gemi(rgbn)
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            img = img.transpose((2, 0, 1))
 
-            # resize
-            red = cv2.resize(rgbn[0], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            green = cv2.resize(rgbn[1], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            blue = cv2.resize(rgbn[2], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            nir = cv2.resize(rgbn[3], (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ndvi = cv2.resize(ndvi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ndwi = cv2.resize(ndwi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            ior = cv2.resize(ior, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            bai = cv2.resize(bai, (IMAGE_WIDTH, IMAGE_HEIGHT))
-            gemi = cv2.resize(gemi, (IMAGE_WIDTH, IMAGE_HEIGHT))
-
-            # red, green, blue, nir, ndvi, ndwi, ior, bai, gemi, grvi, vari, gndvi, sr, savi, lai
-            v_inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai, gemi]
+            v_inputs = img
 
             v_batch_inputs.append(v_inputs)
             v_batch_labels.append(targets)
