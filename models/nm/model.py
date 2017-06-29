@@ -62,7 +62,7 @@ def transition_bridge_block(input, nm_filter, block_index, noise=.0):
 
 def dense_block(nb_layers, tmp_input, nm_filter, k, block_index):
     for i in range(nb_layers):
-        conv = conv_block(input=tmp_input, nm_filter=k, dense_block_index=block_index, conv_block_index=i, dp=.5, reg=1e-5)
+        conv = conv_block(input=tmp_input, nm_filter=k, dense_block_index=block_index, conv_block_index=i, dp=.3)
         tmp_input = concatenate([tmp_input, conv], axis=1, name='dense_block_' + str(block_index) + '_concat_' + str(i))
 
         nm_filter += k
@@ -74,7 +74,7 @@ def model(weights_path=None):
     k = 32
     nm_filter = 64
     compression = 0.5
-    blocks = [6, 12, 24, 16]
+    blocks = [3, 6, 10, 8]
 
     input = Input((3, 224, 224))
 
@@ -99,7 +99,7 @@ def model(weights_path=None):
 
         if i < len(blocks) - 1:
             # TODO Every Dense block takes as input [transition_output, prev_dense_block_input]
-            tmp_input = transition_block(input=tmp_input, nm_filter=nm_filter, block_index=i, noise=0.001)
+            tmp_input = transition_block(input=tmp_input, nm_filter=nm_filter, block_index=i)
             # tmp_bridge_input = transition_bridge_block(prev_input, nm_filter)
             #
             # tmp_input = concatenate([tmp_input, tmp_bridge_input], axis=1)
