@@ -13,8 +13,8 @@ from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
-N_EPOCH = 20
-BATCH_SIZE = 40
+N_EPOCH = 30
+BATCH_SIZE = 50
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
@@ -50,7 +50,7 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=1e-2, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
 model.compile(loss=components.f2_binary_cross_entropy(l=0.01),
               optimizer=sgd,
@@ -199,13 +199,13 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 7:
+    if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-2)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-3)
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
