@@ -10,19 +10,19 @@ from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 
-def conv_block(input, nm_filter, dense_block_index, conv_block_index, dp=0.5, reg=.0):
+def conv_block(input, nm_filter, dense_block_index, conv_block_index, dp=0.5):
     prefix = 'dense_block_' + str(dense_block_index) + '_conv_block_' + str(conv_block_index)
 
     out = BatchNormalization(axis=1, name=prefix + '_bn1')(input)
     out = Activation('relu', name=prefix + '_relu1')(out)
-    out = Conv2D(4 * nm_filter, (1, 1), padding='same', kernel_regularizer=l2(reg), use_bias=False, name=prefix + '_conv1')(out)
+    out = Conv2D(4 * nm_filter, (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
 
     if dp:
         out = Dropout(dp, name=prefix + '_dp1')(out)
 
     out = BatchNormalization(axis=1, name=prefix + '_bn2')(out)
     out = Activation('relu', name=prefix + '_relu2')(out)
-    out = Conv2D(nm_filter, (3, 3), padding='same', kernel_regularizer=l2(reg), use_bias=False, name=prefix + '_conv2')(out)
+    out = Conv2D(nm_filter, (3, 3), padding='same', use_bias=False, name=prefix + '_conv2')(out)
 
     if dp:
         out = Dropout(dp, name=prefix + '_dp2')(out)
@@ -71,10 +71,10 @@ def dense_block(nb_layers, tmp_input, nm_filter, k, block_index):
 
 
 def model(weights_path=None):
-    k = 32
+    k = 12
     nm_filter = 64
     compression = 0.5
-    blocks = [3, 6, 10, 8]
+    blocks = [6, 12, 24, 16]
 
     input = Input((3, 224, 224))
 
