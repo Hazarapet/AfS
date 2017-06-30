@@ -14,7 +14,7 @@ from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 59
+BATCH_SIZE = 62
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
@@ -46,7 +46,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = nm_model('models/nm/structures/tr_l:0.1497-tr_f2:0.8732-val_l:0.1781-val_f2:0.8526-time:30-06-2017-18:08:55-dur:264.634.h5')
+[model, structure] = nm_model()
 
 print model.summary()
 
