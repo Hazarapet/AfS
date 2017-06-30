@@ -14,7 +14,7 @@ from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 60
+BATCH_SIZE = 59
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
@@ -46,11 +46,11 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = nm_model()
+[model, structure] = nm_model('models/nm/structures/tr_l:0.1497-tr_f2:0.8732-val_l:0.1781-val_f2:0.8526-time:30-06-2017-18:08:55-dur:264.634.h5')
 
 print model.summary()
 
-sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-2, momentum=.9, decay=1e-4)
 
 model.compile(loss=components.f2_binary_cross_entropy(l=0.01),
               optimizer=sgd,
@@ -199,13 +199,13 @@ for epoch in range(N_EPOCH):
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
 
-    if epoch == 10:
+    if epoch == 7:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-2)
+        model.optimizer.lr.set_value(1e-3)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-4)
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
