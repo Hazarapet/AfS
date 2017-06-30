@@ -37,7 +37,7 @@ def transition_block(input, nm_filter, block_index, noise=.0):
     out = Activation('relu', name=prefix + '_relu1')(out)
     out = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
 
-    out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_avgpool1')(out)
+    out = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_maxpool1')(out)
 
     if noise:
         out = GaussianNoise(noise, name=prefix + '_gn_noise1')(out)
@@ -52,7 +52,7 @@ def transition_bridge_block(input, nm_filter, block_index, noise=.0):
     out = Activation('relu', name=prefix + '_relu1')(out)
     out = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
 
-    out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_avgpool1')(out)
+    out = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_maxpool1')(out)
 
     if noise:
         out = GaussianNoise(noise, name=prefix + '_gn_noise1')(out)
@@ -71,10 +71,10 @@ def dense_block(nb_layers, tmp_input, nm_filter, k, block_index):
 
 
 def model(weights_path=None):
-    k = 12
+    k = 32
     nm_filter = 64
     compression = 0.5
-    blocks = [6, 12, 24, 16]
+    blocks = [3, 6, 12, 10]
 
     input = Input((3, 224, 224))
 
