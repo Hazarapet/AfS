@@ -5,12 +5,12 @@ from keras.layers import Input, concatenate
 from keras.layers.core import Dense, Dropout, Activation
 from keras.layers.noise import GaussianDropout, GaussianNoise
 from keras.layers.convolutional import Conv2D, ZeroPadding2D
-from keras.layers.pooling import MaxPooling2D, AveragePooling2D, GlobalAveragePooling2D
+from keras.layers.pooling import MaxPooling2D, AveragePooling2D, GlobalAveragePooling2D, GlobalMaxPooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
 
-def conv_block(input, nm_filter, dense_block_index, conv_block_index, dp=0.5):
+def conv_block(input, nm_filter, dense_block_index, conv_block_index, dp=0.3):
     prefix = 'dense_block_' + str(dense_block_index) + '_conv_block_' + str(conv_block_index)
 
     out = BatchNormalization(axis=1, name=prefix + '_bn1')(input)
@@ -52,7 +52,7 @@ def transition_bridge_block(input, nm_filter, block_index, noise=.0):
     out = Activation('relu', name=prefix + '_relu1')(out)
     out = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
 
-    out = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_maxpool1')(out)
+    out = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_max_pool1')(out)
 
     if noise:
         out = GaussianNoise(noise, name=prefix + '_gn_noise1')(out)
@@ -62,7 +62,7 @@ def transition_bridge_block(input, nm_filter, block_index, noise=.0):
 
 def dense_block(nb_layers, tmp_input, nm_filter, k, block_index):
     for i in range(nb_layers):
-        conv = conv_block(input=tmp_input, nm_filter=k, dense_block_index=block_index, conv_block_index=i, dp=.3)
+        conv = conv_block(input=tmp_input, nm_filter=k, dense_block_index=block_index, conv_block_index=i, dp=.33)
         tmp_input = concatenate([tmp_input, conv], axis=1, name='dense_block_' + str(block_index) + '_concat_' + str(i))
 
         nm_filter += k
@@ -74,7 +74,7 @@ def model(weights_path=None):
     k = 32
     nm_filter = 64
     compression = 0.5
-    blocks = [3, 6, 12, 10]
+    blocks = [6, 8, 16, 12]
 
     input = Input((3, 224, 224))
 
@@ -109,7 +109,7 @@ def model(weights_path=None):
     bridge_bn41 = BatchNormalization(axis=1, name='bridge_bn1')(tmp_input)
     bridge_act41 = Activation('relu', name='bridge_relu1')(bridge_bn41)
 
-    bridge_pool41 = GlobalAveragePooling2D(name='bridge_globalavgpool1')(bridge_act41)
+    bridge_pool41 = GlobalMaxPooling2D(name='bridge_global_max_pool1')(bridge_act41)
 
     output = Dense(17, activation='sigmoid', name='bridge_sigmoid1')(bridge_pool41)
 
