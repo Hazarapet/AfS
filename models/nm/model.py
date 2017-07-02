@@ -2,7 +2,7 @@ import h5py
 import numpy as np
 from keras.models import Model
 from keras.layers import Input, concatenate
-from keras.layers.core import Dense, Dropout, Activation
+from keras.layers.core import Flatten, Dense, Dropout, Activation
 from keras.layers.noise import GaussianDropout, GaussianNoise
 from keras.layers.convolutional import Conv2D, ZeroPadding2D
 from keras.layers.pooling import MaxPooling2D, AveragePooling2D, GlobalAveragePooling2D, GlobalMaxPooling2D
@@ -74,7 +74,7 @@ def model(weights_path=None):
     k = 32
     nm_filter = 64
     compression = 0.5
-    blocks = [6, 8, 16, 12]
+    blocks = [6, 12, 16, 12]
 
     input = Input((3, 224, 224))
 
@@ -106,12 +106,14 @@ def model(weights_path=None):
 
     # -----------------------------------------------------
     # --------------------- Bridge ------------------------
-    bridge_bn41 = BatchNormalization(axis=1, name='bridge_bn1')(tmp_input)
-    bridge_act41 = Activation('relu', name='bridge_relu1')(bridge_bn41)
+    bridge = BatchNormalization(axis=1, name='bridge_bn1')(tmp_input)
+    bridge = Activation('relu', name='bridge_relu1')(bridge)
 
-    bridge_pool41 = GlobalMaxPooling2D(name='bridge_global_max_pool1')(bridge_act41)
+    bridge = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='bridge_max_pool1')(bridge)
 
-    output = Dense(17, activation='sigmoid', name='bridge_sigmoid1')(bridge_pool41)
+    bridge = Flatten(name='bridge_flatten')(bridge)
+
+    output = Dense(17, activation='sigmoid', name='bridge_sigmoid1')(bridge)
 
     _model = Model(inputs=input, outputs=output)
 
