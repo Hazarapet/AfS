@@ -37,7 +37,7 @@ def transition_block(input, nm_filter, block_index, noise=.0):
     out = Activation('relu', name=prefix + '_relu1')(out)
     out = Conv2D(nm_filter, (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
 
-    out = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_maxpool1')(out)
+    out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_avg_pool1')(out)
 
     if noise:
         out = GaussianNoise(noise, name=prefix + '_gn_noise1')(out)
@@ -52,7 +52,7 @@ def transition_bridge_block(input, nm_filter, block_index, noise=.0):
     out = Activation('relu', name=prefix + '_relu1')(out)
     out = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
 
-    out = MaxPooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_max_pool1')(out)
+    out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_avg_pool1')(out)
 
     if noise:
         out = GaussianNoise(noise, name=prefix + '_gn_noise1')(out)
@@ -74,7 +74,7 @@ def model(weights_path=None):
     k = 32
     nm_filter = 64
     compression = 0.5
-    blocks = [6, 12, 16, 12]
+    blocks = [6, 12, 24, 16]
 
     input = Input((3, 224, 224))
 
@@ -109,9 +109,10 @@ def model(weights_path=None):
     bridge = BatchNormalization(axis=1, name='bridge_bn1')(tmp_input)
     bridge = Activation('relu', name='bridge_relu1')(bridge)
 
-    bridge = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='bridge_max_pool1')(bridge)
+    bridge = GlobalAveragePooling2D(name='bridge_global_avg1')(bridge)
+    # bridge = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='bridge_max_pool1')(bridge)
 
-    bridge = Flatten(name='bridge_flatten')(bridge)
+    # bridge = Flatten(name='bridge_flatten')(bridge)
 
     output = Dense(17, activation='sigmoid', name='bridge_sigmoid1')(bridge)
 
