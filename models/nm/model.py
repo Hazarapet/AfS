@@ -71,16 +71,16 @@ def dense_block(nb_layers, tmp_input, nm_filter, k, block_index):
 
 
 def model(weights_path=None):
-    k = 32
+    k = 12
     nm_filter = 64
     compression = 0.5
-    blocks = [6, 12, 24, 16]
+    blocks = [12, 24, 42, 32]
 
     input = Input((3, 224, 224))
 
     # ------------------------------------------------------
     start_conv = ZeroPadding2D((3, 3), name='gateway_padding3x3')(input)
-    start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), name='gateway_conv', use_bias=False)(start_conv)
+    start_conv = Conv2D(nm_filter, (7, 7), strides=(1, 1), name='gateway_conv', use_bias=False)(start_conv)
     start_conv = BatchNormalization(axis=1, name='gateway_bn')(start_conv)
     start_conv = Activation('relu', name='gateway_act')(start_conv)
 
@@ -92,7 +92,6 @@ def model(weights_path=None):
     tmp_input = start_conv
 
     for i, block in enumerate(blocks):
-        # prev_input = tmp_input
         tmp_input, nm_filter = dense_block(nb_layers=block, tmp_input=tmp_input, nm_filter=nm_filter, k=k, block_index=i)
 
         nm_filter = int(nm_filter * compression)
@@ -100,9 +99,9 @@ def model(weights_path=None):
         if i < len(blocks) - 1:
             # TODO Every Dense block takes as input [transition_output, prev_dense_block_input]
             tmp_input = transition_block(input=tmp_input, nm_filter=nm_filter, block_index=i)
-            # tmp_bridge_input = transition_bridge_block(prev_input, nm_filter)
-            #
-            # tmp_input = concatenate([tmp_input, tmp_bridge_input], axis=1)
+            tmp_bridge_input = transition_bridge_block(input=tmp_input, nm_filter=nm_filter, block_index=i)
+
+            tmp_input = concatenate([tmp_input, tmp_bridge_input], axis=1)
 
     # -----------------------------------------------------
     # --------------------- Bridge ------------------------
