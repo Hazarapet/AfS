@@ -80,7 +80,7 @@ def model(weights_path=None):
 
     # ------------------------------------------------------
     start_conv = ZeroPadding2D((3, 3), name='gateway_padding3x3')(input)
-    start_conv = Conv2D(nm_filter, (7, 7), strides=(1, 1), name='gateway_conv', use_bias=False)(start_conv)
+    start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), name='gateway_conv', use_bias=False)(start_conv)
     start_conv = BatchNormalization(axis=1, name='gateway_bn')(start_conv)
     start_conv = Activation('relu', name='gateway_act')(start_conv)
 
