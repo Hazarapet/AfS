@@ -14,7 +14,7 @@ from models.nm.densenet121 import densenet121_model
 
 st_time = time.time()
 N_EPOCH = 30
-BATCH_SIZE = 16
+BATCH_SIZE = 44
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
@@ -52,7 +52,7 @@ print model.summary()
 
 sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
-model.compile(loss=components.f2_binary_cross_entropy(l=1e-3),
+model.compile(loss=components.f2_binary_cross_entropy(l=0),
               optimizer=sgd,
               metrics=[common_util.f2_score])
 

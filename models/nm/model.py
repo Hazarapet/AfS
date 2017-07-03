@@ -62,7 +62,7 @@ def transition_bridge_block(input, nm_filter, block_index, noise=.0):
 
 def dense_block(nb_layers, tmp_input, nm_filter, k, block_index):
     for i in range(nb_layers):
-        conv = conv_block(input=tmp_input, nm_filter=k, dense_block_index=block_index, conv_block_index=i, dp=.5)
+        conv = conv_block(input=tmp_input, nm_filter=k, dense_block_index=block_index, conv_block_index=i, dp=.33)
         tmp_input = concatenate([tmp_input, conv], axis=1, name='dense_block_' + str(block_index) + '_concat_' + str(i))
 
         nm_filter += k
@@ -71,10 +71,10 @@ def dense_block(nb_layers, tmp_input, nm_filter, k, block_index):
 
 
 def model(weights_path=None):
-    k = 12
+    k = 42
     nm_filter = 64
-    compression = 0.5
-    blocks = [12, 24, 38, 26]
+    compression = 0.35
+    blocks = [3, 6, 12, 9]
 
     input = Input((3, 224, 224))
 
@@ -92,17 +92,17 @@ def model(weights_path=None):
     tmp_input = start_conv
 
     for i, block in enumerate(blocks):
-        prev_input = tmp_input
+        # prev_input = tmp_input
         tmp_input, nm_filter = dense_block(nb_layers=block, tmp_input=tmp_input, nm_filter=nm_filter, k=k, block_index=i)
 
         nm_filter = int(nm_filter * compression)
 
         if i < len(blocks) - 1:
             # TODO Every Dense block takes as input [transition_output, prev_dense_block_input]
-            tmp_input = transition_block(input=tmp_input, nm_filter=nm_filter, block_index=i, noise=0.001)
-            tmp_bridge_input = transition_bridge_block(input=prev_input, nm_filter=nm_filter, block_index=i, noise=0.01)
+            tmp_input = transition_block(input=tmp_input, nm_filter=nm_filter, block_index=i)
+            # tmp_bridge_input = transition_bridge_block(input=prev_input, nm_filter=nm_filter, block_index=i, noise=0.01)
 
-            tmp_input = concatenate([tmp_input, tmp_bridge_input], axis=1)
+            # tmp_input = concatenate([tmp_input, tmp_bridge_input], axis=1)
 
     # -----------------------------------------------------
     # --------------------- Bridge ------------------------
@@ -113,6 +113,8 @@ def model(weights_path=None):
     # bridge = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='bridge_max_pool1')(bridge)
 
     # bridge = Flatten(name='bridge_flatten')(bridge)
+
+    bridge = Dropout(0.5, name='bridge_dp1')(bridge)
 
     output = Dense(17, activation='sigmoid', name='bridge_sigmoid1')(bridge)
 
