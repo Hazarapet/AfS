@@ -16,7 +16,7 @@ from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
 N_EPOCH = 30
-BATCH_SIZE = 80
+BATCH_SIZE = 90
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
@@ -52,7 +52,7 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=1e-2, momentum=.9, decay=1e-4)
+sgd = SGD(lr=3e-3, momentum=.9, decay=1e-4)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=0),
 #               optimizer=sgd,
@@ -109,7 +109,8 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
 
-                # cause 2x|input|
+                # cause 3x|input|
+                t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
 
@@ -164,7 +165,8 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 v_batch_inputs = common_util.aug(v_batch_inputs, v_inputs)
 
-                # cause 2x|input|
+                # cause 3x|input|
+                v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
 
