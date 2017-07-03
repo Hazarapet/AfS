@@ -69,7 +69,7 @@ def model(weights_path=None):
     k = 64
     nm_filter = 64
     compression = 0.5
-    blocks = [3, 6]
+    blocks = [6, 12]
 
     _input = Input((3, 224, 224))
     _resnet_50 = ResNet50(weights=None, include_top=False, input_tensor=_input, input_shape=(3, 224, 224))
