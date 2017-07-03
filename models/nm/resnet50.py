@@ -20,12 +20,12 @@ def model(weights_path=None):
         layer.trainable = False
 
     x = _m.output
-    # x = Dense(512, name='my_dense_1')(x)
-    # # x = BatchNormalization(axis=1, name='my_bn_1')(x)
-    # x = Activation('relu', name='my_act_1')(x)
-    #
-    # x = Dense(17, name='my_dense_2')(x)
-    # x = Activation('sigmoid', name='my_output')(x)
+    x = Dense(512, name='my_dense_1')(x)
+    # x = BatchNormalization(axis=1, name='my_bn_1')(x)
+    x = Activation('relu', name='my_act_1')(x)
+
+    x = Dense(17, name='my_dense_2')(x)
+    x = Activation('sigmoid', name='my_output')(x)
 
     _model = Model(inputs=_m.input, outputs=x)
 
