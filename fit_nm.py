@@ -12,10 +12,11 @@ from utils import common as common_util
 from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
 from models.nm.resnet50 import model as resnet_model
+from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
 N_EPOCH = 30
-BATCH_SIZE = 140
+BATCH_SIZE = 80
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
@@ -47,7 +48,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = resnet_model()
+[model, structure] = mixnet_model()
 
 print model.summary()
 

@@ -21,13 +21,16 @@ def model(weights_path=None):
 
     x = _m.output
     x = Flatten(name='my_flatten_1')(x)
-    # x = Dense(512, name='my_dense_1')(x)
+    x = Dense(1024, name='my_dense_1')(x)
     x = BatchNormalization(name='my_bn_1')(x)
-    # x = Activation('relu', name='my_act_1')(x)
+    x = Activation('relu', name='my_act_1')(x)
 
     x = Dense(17, name='my_dense_2')(x)
     x = Activation('sigmoid', name='my_output')(x)
 
     _model = Model(inputs=_m.input, outputs=x)
+
+    if weights_path:
+        _model.load_weights(weights_path)
 
     return [_model, 'models/nm/structures/']
