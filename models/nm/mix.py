@@ -106,7 +106,11 @@ def model(weights_path=None):
 
     mini_dense = Dropout(0.5, name='bridge_dp1')(bridge)
 
-    _output = concatenate([mini_dense, resnet_50])
+    _concat = concatenate([mini_dense, resnet_50])
+
+    _output = Dense(1024, name='my_dense_1')(_concat)
+    _output = BatchNormalization(name='my_bn_1')(_output)
+    _output = Activation('relu', name='my_act_1')(_output)
 
     _model = Model(inputs=_input, outputs=_output)
 
