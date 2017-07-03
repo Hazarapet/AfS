@@ -11,9 +11,10 @@ from utils import image as UtilImage
 from utils import common as common_util
 from models.nm.model import model as nm_model
 from models.nm.densenet121 import densenet121_model
+from models.nm.resnet50 import model as resnet_model
 
 st_time = time.time()
-N_EPOCH = 30
+N_EPOCH = 20
 BATCH_SIZE = 44
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
@@ -46,19 +47,19 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = nm_model()
+[model, structure] = resnet_model()
 
 print model.summary()
 
-sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-2, momentum=.9, decay=1e-4)
 
-model.compile(loss=components.f2_binary_cross_entropy(l=0),
-              optimizer=sgd,
-              metrics=[common_util.f2_score])
-
-# model.compile(loss='binary_crossentropy',
+# model.compile(loss=components.f2_binary_cross_entropy(l=0),
 #               optimizer=sgd,
 #               metrics=[common_util.f2_score])
+
+model.compile(loss='binary_crossentropy',
+              optimizer=sgd,
+              metrics=[common_util.f2_score])
 
 print model.inputs
 print "training..."
@@ -201,15 +202,15 @@ for epoch in range(N_EPOCH):
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-2)
+        model.optimizer.lr.set_value(1e-3)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-4)
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-5)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_f2_graph = np.append(t_f2_graph, [np.mean(t_f2_graph_ep)])
