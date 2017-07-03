@@ -10,10 +10,10 @@ from keras.layers.pooling import MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 from keras.regularizers import l2
 
-K.set_image_data_format('channels_first')
 
 def model(weights_path=None):
-    _m = ResNet50(weights='imagenet', include_top=False)
+    _m = ResNet50(weights=None, include_top=False)
+    _m.load_weights('models/nm/structures/resnet50_weights_th_dim_ordering_th_kernels_notop.h5')
 
     for layer in _m.layers:
         layer.trainable = False
