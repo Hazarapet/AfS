@@ -48,7 +48,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = mixnet_model()
+[model, structure] = resnet_model()
 
 print model.summary()
 
