@@ -9,13 +9,13 @@ from utils import image as UtilImage
 from keras.models import model_from_json
 
 BATCH_SIZE = 100
-IMAGE_WIDTH = 128
-IMAGE_HEIGHT = 128
+IMAGE_WIDTH = 224
+IMAGE_HEIGHT = 224
 
 
 def aug(array, input):
-    # rt90 = np.rot90(input, 1, axes=(1, 2))
-    # array.append(rt90)
+    rt90 = np.rot90(input, 1, axes=(1, 2))
+    array.append(rt90)
 
     # flip h
     flip_h = np.flip(input, 2)
@@ -88,8 +88,8 @@ def result_single_tif(X, path, do_agg=True):
 
 
 def result_single_jpg(X, path, do_agg=True):
-    weights_path = 'models/main/structures/tr_l:0.0933-tr_a:0.9658-tr_f2:0.9257-val_l:0.1375-val_a:0.9492-val_f2:0.892-time:27-06-2017-21:59:54-dur:293.069.h5'
-    model_structure = 'models/main/structures/tr_l:0.0933-tr_a:0.9658-tr_f2:0.9257-val_l:0.1375-val_a:0.9492-val_f2:0.892-time:27-06-2017-21:59:54-dur:293.069.json'
+    weights_path = 'models/nm/structures/tr_l:0.1339-tr_f2:0.8899-val_l:0.1387-val_f2:0.8868-time:04-07-2017-13:50:07-dur:345.134.h5'
+    model_structure = 'models/nm/structures/tr_l:0.1339-tr_f2:0.8899-val_l:0.1387-val_f2:0.8868-time:04-07-2017-13:50:07-dur:345.134.json'
 
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))
@@ -106,10 +106,10 @@ def result_single_jpg(X, path, do_agg=True):
 
             img = cv2.imread(path.format(f[0]))
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float16)
-            img[:, :, 0] -= 103.939
-            img[:, :, 1] -= 116.779
-            img[:, :, 2] -= 123.68
+            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            # img[:, :, 0] -= 103.939
+            # img[:, :, 1] -= 116.779
+            # img[:, :, 2] -= 123.68
             img = img.transpose((2, 0, 1))
 
             inputs = img
@@ -117,7 +117,7 @@ def result_single_jpg(X, path, do_agg=True):
             test_batch_inputs.append(inputs)
             test_batch_inputs = aug(test_batch_inputs, inputs)
 
-            test_batch_inputs = np.array(test_batch_inputs).astype(np.float16)
+            test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
             p_group_test = main_model.predict_on_batch(test_batch_inputs)
 

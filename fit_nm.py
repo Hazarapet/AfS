@@ -15,8 +15,8 @@ from models.nm.resnet50 import model as resnet_model
 from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
-N_EPOCH = 30
-BATCH_SIZE = 90
+N_EPOCH = 20
+BATCH_SIZE = 40
 IMAGE_WIDTH = 224
 IMAGE_HEIGHT = 224
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
@@ -52,7 +52,7 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=3e-3, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-2, momentum=.9, decay=1e-4)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=0),
 #               optimizer=sgd,
@@ -213,7 +213,7 @@ for epoch in range(N_EPOCH):
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
+        model.optimizer.lr.set_value(3e-5)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_f2_graph = np.append(t_f2_graph, [np.mean(t_f2_graph_ep)])

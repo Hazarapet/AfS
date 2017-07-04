@@ -16,17 +16,23 @@ def model(weights_path=None):
     _m = ResNet50(weights=None, include_top=False, input_tensor=_input, input_shape=(3, 224, 224))
     _m.load_weights('models/nm/structures/resnet50_weights_th_dim_ordering_th_kernels_notop.h5')
 
-    for layer in _m.layers:
-        layer.trainable = False
+    # for layer in _m.layers:
+    #     layer.trainable = False
 
     x = _m.output
     x = Flatten(name='my_flatten_1')(x)
+
     x = Dense(1024, name='my_dense_1')(x)
     x = BatchNormalization(name='my_bn_1')(x)
     x = Activation('relu', name='my_act_1')(x)
     x = Dropout(0.3, name='my_dp_1')(x)
 
-    x = Dense(17, name='my_dense_2')(x)
+    # x = Dense(1024, name='my_dense_2')(x)
+    # x = BatchNormalization(name='my_bn_2')(x)
+    # x = Activation('relu', name='my_act_2')(x)
+    # x = Dropout(0.3, name='my_dp_2')(x)
+
+    x = Dense(17, name='my_output_dense')(x)
     x = Activation('sigmoid', name='my_output')(x)
 
     _model = Model(inputs=_m.input, outputs=x)

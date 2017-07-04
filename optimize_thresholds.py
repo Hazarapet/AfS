@@ -20,7 +20,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 count = 0
 
 result = predict.result_single_jpg(df_val['image_name'].values[:1000], 'resource/train-jpg/{}.jpg')
-thres = [0.17, 0.22, 0.19, 0.26, 0.25, 0.12, 0.23, 0.23, 0.17, 0.17, 0.25, 0.27, 0.34, 0.07, 0.16, 0.16, 0.24]
+thres = [0.11, 0.29, 0.35, 0.12, 0.16, 0.04, 0.25, 0.36, 0.32, 0.18, 0.2, 0.45, 0.12, 0.07, 0.14, 0.23, 0.25]
 
 y = []
 for tags in df_val['tags'].values[:1000]:
