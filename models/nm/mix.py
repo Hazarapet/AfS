@@ -60,7 +60,7 @@ def transition_connect_block(input, nm_filter, block_index, str_name=''):
 
     out = BatchNormalization(axis=1, name=prefix + '_bn1')(input)
     out = Activation('relu', name=prefix + '_relu1')(out)
-    out = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
+    out = Conv2D(int(nm_filter * 0.4), (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
 
     return out
 
@@ -142,9 +142,16 @@ def model(weights_path=None):
     bridge = Flatten(name='bridge_flatten')(bridge)
 
     _resnet50_output = Flatten(name='my_resnet_flatten')(_resnet50_freeze.output)
-    _vgg16_output = Flatten(name='my_vgg_flatten')(_vgg16_freeze.output)
+    _resnet50_output = Dense(512, name='my_output_dense_2')(_resnet50_output)
+    _resnet50_output = BatchNormalization(name='bridge_bn1')(_resnet50_output)
+    _resnet50_output = Activation('relu', name='bridge_relu1')(_resnet50_output)
 
-    _concat = concatenate([bridge, _resnet50_output, _vgg16_output])
+    _vgg16_output = Flatten(name='my_vgg_flatten')(_vgg16_freeze.output)
+    _vgg16_output = Dense(512, name='my_output_dense_2')(_vgg16_output)
+    _vgg16_output = BatchNormalization(name='bridge_bn1')(_vgg16_output)
+    _vgg16_output = Activation('relu', name='bridge_relu1')(_vgg16_output)
+
+    _concat = concatenate([bridge, _vgg16_output, _resnet50_output])
 
     _output = Dropout(0.5, name='my_dp_1')(_concat)
 
