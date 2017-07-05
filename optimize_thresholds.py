@@ -22,6 +22,9 @@ count = 0
 result = predict.result_single_jpg(df_val['image_name'].values[:1000], 'resource/train-jpg/{}.jpg')
 thres = [0.11, 0.29, 0.35, 0.12, 0.16, 0.04, 0.25, 0.36, 0.32, 0.18, 0.2, 0.45, 0.12, 0.07, 0.14, 0.23, 0.25]
 
+# best threshold
+thres1 = [0.27, 0.21, 0.56, 0.08, 0.43, 0.62, 0.3, 0.59, 0.38, 0.08, 0.19, 0.19, 0.44, 0.33, 0.16, 0.19, 0.51]
+
 y = []
 for tags in df_val['tags'].values[:1000]:
     targets = np.zeros(17)

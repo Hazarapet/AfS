@@ -66,6 +66,10 @@ def parallel_shuffle(x, y, shuffle=True):
     return [x, y]
 
 
+def agg(array):
+    return np.mean(array, axis=0)
+
+
 def aug(array, input):
     rt90 = np.rot90(input, 1, axes=(1, 2))
     array.append(rt90)
@@ -86,7 +90,7 @@ def ensemble(array):
     for cl in range(array.shape[1]):
         cn = list(array[:, cl]).count(1)
         all_cn = array.shape[0]
-        if cn > all_cn / 2.:
+        if cn >= all_cn / 2.:
             new_array.append(1)
         else:
             new_array.append(0)

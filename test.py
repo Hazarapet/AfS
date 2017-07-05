@@ -25,6 +25,7 @@ X_test = os.listdir('resource/test-jpg')
 result = predict.result_single_jpg(X_test, 'resource/test-jpg/{}', do_agg=False)
 # Heng CherKeng's example
 thres = [0.05, 0.17, 0.05, 0.25, 0.32, 0.06, 0.1, 0.27, 0.28, 0.21, 0.09, 0.18, 0.16, 0.03, 0.2, 0.13, 0.04]
+thres1 = [0.27, 0.21, 0.56, 0.08, 0.43, 0.62, 0.3, 0.59, 0.38, 0.08, 0.19, 0.19, 0.44, 0.33, 0.16, 0.19, 0.51]
 
 with open('best_f2_threshold.json') as data_file:
     my_thres = json.load(data_file)
