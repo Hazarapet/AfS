@@ -20,7 +20,7 @@ BATCH_SIZE = 24
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
 
-AUGMENT = False  # TODO somethings wrong with this.It also makes train slower
+AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
 
 rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
         'blooming', 'selective_logging', 'blow_down', 'cultivation', 'road', 'habitation', 'water']
@@ -53,7 +53,7 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=3e-2, momentum=.9, decay=1e-4)
+sgd = SGD(lr=6e-2, momentum=.9, decay=1e-4)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=0),
 #               optimizer=sgd,

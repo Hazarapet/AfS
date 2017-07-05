@@ -60,7 +60,7 @@ def transition_connect_block(input, nm_filter, block_index, str_name=''):
 
     out = BatchNormalization(axis=1, name=prefix + '_bn1')(input)
     out = Activation('relu', name=prefix + '_relu1')(out)
-    out = Conv2D(int(nm_filter * 0.4), (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
+    out = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
 
     return out
 
