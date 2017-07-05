@@ -76,10 +76,10 @@ def dense_block(nb_layers, tmp_input, nm_filter, k, block_index):
 
 
 def model(weights_path=None):
-    k = 64
+    k = 42
     nm_filter = 64
     compression = 0.5
-    blocks = [6, 6, 12, 9]
+    blocks = [3, 6, 12, 9]
 
     # TODO 64, 32, 16, 8
     _resnet50_outputs = ['activation_10', 'activation_22', 'activation_40', 'activation_49']
@@ -146,7 +146,9 @@ def model(weights_path=None):
 
     _concat = concatenate([bridge, _resnet50_output, _vgg16_output])
 
-    _output = Dense(17, name='my_output_dense_2')(_concat)
+    _output = Dropout(0.5, name='my_dp_1')(_concat)
+
+    _output = Dense(17, name='my_output_dense_2')(_output)
     _output = Activation('sigmoid', name='output')(_output)
 
     _model = Model(inputs=[_input_128, _input_256, _input_257], outputs=_output)
