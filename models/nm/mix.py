@@ -48,7 +48,7 @@ def transition_bridge_block(input, nm_filter, block_index):
 
     out = BatchNormalization(axis=1, name=prefix + '_bn1')(input)
     out = Activation('relu', name=prefix + '_relu1')(out)
-    out = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
+    out = Conv2D(int(nm_filter * 0.3), (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
 
     out = AveragePooling2D(pool_size=(2, 2), strides=(2, 2), name=prefix + '_avg_pool1')(out)
 
@@ -142,14 +142,14 @@ def model(weights_path=None):
     bridge = Flatten(name='bridge_flatten')(bridge)
 
     _resnet50_output = Flatten(name='my_resnet_flatten')(_resnet50_freeze.output)
-    _resnet50_output = Dense(1024, name='my_resnet_dense_1')(_resnet50_output)
-    _resnet50_output = BatchNormalization(name='my_resnet_bn1')(_resnet50_output)
-    _resnet50_output = Activation('relu', name='my_resnet_relu1')(_resnet50_output)
+    # _resnet50_output = Dense(1024, name='my_resnet_dense_1')(_resnet50_output)
+    # _resnet50_output = BatchNormalization(name='my_resnet_bn1')(_resnet50_output)
+    # _resnet50_output = Activation('relu', name='my_resnet_relu1')(_resnet50_output)
 
     _vgg16_output = Flatten(name='my_vgg_flatten')(_vgg16_freeze.output)
-    _vgg16_output = Dense(1024, name='my_vgg_dense_1')(_vgg16_output)
-    _vgg16_output = BatchNormalization(name='my_vgg_bn1')(_vgg16_output)
-    _vgg16_output = Activation('relu', name='my_vgg_relu1')(_vgg16_output)
+    # _vgg16_output = Dense(1024, name='my_vgg_dense_1')(_vgg16_output)
+    # _vgg16_output = BatchNormalization(name='my_vgg_bn1')(_vgg16_output)
+    # _vgg16_output = Activation('relu', name='my_vgg_relu1')(_vgg16_output)
 
     _concat = concatenate([bridge, _vgg16_output, _resnet50_output])
 
