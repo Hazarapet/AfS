@@ -35,7 +35,7 @@ def f2_score(y_true, y_pred, threshold_shift=.3):
     return (beta_squared + 1) * (precision * recall) / (beta_squared * precision + recall + K.epsilon())
 
 
-def mean_pred(y_true, y_pred):
+def mean_pred(y_pred):
     return K.mean(y_pred)
 
 

@@ -6,8 +6,8 @@ from keras.layers.normalization import BatchNormalization
 
 
 def model(weights_path=None):
-    _input = Input((3, 224, 224))
-    _m = VGG16(weights=None, include_top=False, input_tensor=_input, input_shape=(3, 224, 224))
+    _input = Input((3, 128, 128))
+    _m = VGG16(weights=None, include_top=False, input_tensor=_input, input_shape=(3, 128, 128))
     _m.load_weights('models/main/structures/vgg16_weights_th_dim_ordering_th_kernels_notop.h5')
 
     for layer in _m.layers:
@@ -16,7 +16,7 @@ def model(weights_path=None):
     x = _m.output
     x = Flatten(name='my_flatten_1')(x)
 
-    x = Dense(1024, name='my_dense_1')(x)
+    x = Dense(512, name='my_dense_1')(x)
     x = BatchNormalization(name='my_bn_1')(x)
     x = Activation('relu', name='my_act_1')(x)
     x = Dropout(0.5, name='my_dp_1')(x)

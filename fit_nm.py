@@ -15,11 +15,12 @@ from models.nm.resnet50 import model as resnet_model
 from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
-N_EPOCH = 20
-BATCH_SIZE = 40
-IMAGE_WIDTH = 224
-IMAGE_HEIGHT = 224
-AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
+N_EPOCH = 30
+BATCH_SIZE = 42
+IMAGE_WIDTH = None
+IMAGE_HEIGHT = None
+
+AUGMENT = False  # TODO somethings wrong with this.It also makes train slower
 
 rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
         'blooming', 'selective_logging', 'blow_down', 'cultivation', 'road', 'habitation', 'water']
@@ -48,11 +49,11 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = resnet_model()
+[model, structure] = mixnet_model()
 
 print model.summary()
 
-sgd = SGD(lr=1e-2, momentum=.9, decay=1e-4)
+sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=0),
 #               optimizer=sgd,
@@ -82,7 +83,10 @@ for epoch in range(N_EPOCH):
 
     for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
 
-        t_batch_inputs = []
+        t_batch_inputs128 = []
+        t_batch_inputs256 = []
+        t_batch_inputs257 = []
+
         t_batch_labels = []
 
         # now we should load min_batch's images and collect them
@@ -97,32 +101,58 @@ for epoch in range(N_EPOCH):
 
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
-            img = img.transpose((2, 0, 1))
+            img128 = cv2.resize(img, (128, 128)).astype(np.float32)
+            img128 = img128.transpose((2, 0, 1))
 
-            inputs = img
+            inputs128 = img128
 
-            t_batch_inputs.append(inputs)
+            img256 = cv2.resize(img, (256, 256)).astype(np.float32)
+            img256 = img256.transpose((2, 0, 1))
+
+            inputs256 = img256
+
+            img257 = cv2.resize(img, (257, 257)).astype(np.float32)
+            img257 = img257.transpose((2, 0, 1))
+
+            inputs257 = img257
+
+            t_batch_inputs128.append(inputs128)
+            t_batch_inputs256.append(inputs256)
+            t_batch_inputs257.append(inputs257)
+
             t_batch_labels.append(targets)
 
             if AUGMENT and exists:
                 # --- augmentation ---
-                t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
+                t_batch_inputs128 = common_util.aug(t_batch_inputs128, inputs128)
+                t_batch_inputs256 = common_util.aug(t_batch_inputs256, inputs256)
+                t_batch_inputs257 = common_util.aug(t_batch_inputs257, inputs257)
 
                 # cause 3x|input|
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
 
-        t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
+        t_batch_inputs128 = np.array(t_batch_inputs128).astype(np.float32)
+        t_batch_inputs256 = np.array(t_batch_inputs256).astype(np.float32)
+        t_batch_inputs257 = np.array(t_batch_inputs257).astype(np.float32)
+
         t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
 
-        # TODO check this part
-        for min_b in common_util.iterate_minibatches(zip(t_batch_inputs, t_batch_labels), batchsize=BATCH_SIZE):
-            t_i = np.stack(min_b[:, 0])  # inputs
-            t_l = np.stack(min_b[:, 1])  # labels
+        rn = [[i] for i in range(t_batch_labels.shape[0])]
+
+        for min_b in common_util.iterate_minibatches(zip(rn, t_batch_labels), batchsize=BATCH_SIZE):
+            indices = np.stack(min_b[:, 0])  # inputs
+            indices = indices.reshape(indices.shape[0])  # inputs
+            t_i = [t_batch_inputs128[indices], t_batch_inputs256[indices], t_batch_inputs257[indices]]
+            t_l = np.stack(min_b[:, 1])     # labels
 
             trained_batch += len(t_l)
+
+            # print indices.shape
+            # print t_batch_inputs128.shape, t_batch_inputs256.shape, t_batch_inputs257.shape
+            # print t_batch_inputs128[indices].shape, t_batch_inputs256[indices].shape, t_batch_inputs257[indices].shape
+            # print indices
 
             [t_loss, t_f2] = model.train_on_batch(t_i, t_l)
             t_loss_graph_ep = np.append(t_loss_graph_ep, [t_loss])
@@ -138,7 +168,10 @@ for epoch in range(N_EPOCH):
     np.random.shuffle(val)
     val_batch = 0
     for min_batch in common_util.iterate_minibatches(val, batchsize=1024):
-        v_batch_inputs = []
+        v_batch_inputs128 = []
+        v_batch_inputs256 = []
+        v_batch_inputs257 = []
+
         v_batch_labels = []
 
         # now we should load min_batch's images and collect them
@@ -153,25 +186,46 @@ for epoch in range(N_EPOCH):
 
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
-            img = img.transpose((2, 0, 1))
+            img128 = cv2.resize(img, (128, 128)).astype(np.float32)
+            img128 = img128.transpose((2, 0, 1))
 
-            v_inputs = img
+            v_inputs128 = img128
 
-            v_batch_inputs.append(v_inputs)
+            img256 = cv2.resize(img, (256, 256)).astype(np.float32)
+            img256 = img256.transpose((2, 0, 1))
+
+            v_inputs256 = img256
+
+            img257 = cv2.resize(img, (257, 257)).astype(np.float32)
+            img257 = img257.transpose((2, 0, 1))
+
+            v_inputs257 = img257
+
+            v_batch_inputs128.append(v_inputs128)
+            v_batch_inputs256.append(v_inputs256)
+            v_batch_inputs257.append(v_inputs257)
+
             v_batch_labels.append(targets)
 
             if AUGMENT and exists:
                 # --- augmentation ---
-                v_batch_inputs = common_util.aug(v_batch_inputs, v_inputs)
+                v_batch_inputs128 = common_util.aug(v_batch_inputs128, v_inputs128)
+                v_batch_inputs256 = common_util.aug(v_batch_inputs256, v_inputs256)
+                v_batch_inputs257 = common_util.aug(v_batch_inputs257, v_inputs257)
 
                 # cause 3x|input|
                 v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
 
-        v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
+        v_batch_inputs128 = np.array(v_batch_inputs128).astype(np.float32)
+        v_batch_inputs256 = np.array(v_batch_inputs256).astype(np.float32)
+        v_batch_inputs257 = np.array(v_batch_inputs257).astype(np.float32)
+
         v_batch_labels = np.array(v_batch_labels).astype(np.uint8)
+
+        # TODO to have (bs, 3, width, height)
+        v_batch_inputs = [v_batch_inputs128, v_batch_inputs256, v_batch_inputs257]
 
         [v_loss, v_f2] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
 
@@ -205,15 +259,15 @@ for epoch in range(N_EPOCH):
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-3)
+        model.optimizer.lr.set_value(1e-2)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-3)
 
     if epoch == 30:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-5)
+        model.optimizer.lr.set_value(3e-4)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_f2_graph = np.append(t_f2_graph, [np.mean(t_f2_graph_ep)])

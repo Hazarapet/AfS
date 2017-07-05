@@ -1,8 +1,8 @@
-import h5py
+import sys
 import numpy as np
 from keras.models import Model
-from keras import backend as K
 from keras.layers import Input, concatenate
+from keras.applications.vgg16 import VGG16
 from keras.applications.resnet50 import ResNet50
 from keras.layers.core import Flatten, Dense, Dropout, Activation
 from keras.layers.convolutional import Conv2D, ZeroPadding2D
@@ -55,6 +55,16 @@ def transition_bridge_block(input, nm_filter, block_index):
     return out
 
 
+def transition_connect_block(input, nm_filter, block_index, str_name=''):
+    prefix = 'transition_connect_block_' + str(block_index) + '_' + str_name
+
+    out = BatchNormalization(axis=1, name=prefix + '_bn1')(input)
+    out = Activation('relu', name=prefix + '_relu1')(out)
+    out = Conv2D(int(nm_filter * 0.5), (1, 1), padding='same', use_bias=False, name=prefix + '_conv1')(out)
+
+    return out
+
+
 def dense_block(nb_layers, tmp_input, nm_filter, k, block_index):
     for i in range(nb_layers):
         conv = conv_block(input=tmp_input, nm_filter=k, dense_block_index=block_index, conv_block_index=i, dp=.33)
@@ -69,34 +79,61 @@ def model(weights_path=None):
     k = 64
     nm_filter = 64
     compression = 0.5
-    blocks = [6, 12]
+    blocks = [6, 6, 12, 9]
 
-    _input = Input((3, 224, 224))
-    _resnet_50 = ResNet50(weights=None, include_top=False, input_tensor=_input, input_shape=(3, 224, 224))
-    _resnet_50.load_weights('models/nm/structures/resnet50_weights_th_dim_ordering_th_kernels_notop.h5')
+    # TODO 64, 32, 16, 8
+    _resnet50_outputs = ['activation_10', 'activation_22', 'activation_40', 'activation_49']
+    _vgg16_outputs = ['block2_conv2', 'block3_conv3', 'block4_conv3', 'block5_conv3']
 
-    for layer in _resnet_50.layers:
+    _input_128 = Input((3, 128, 128))
+    _input_257 = Input((3, 257, 257))
+    _input_256 = Input((3, 256, 256))
+
+    # -----------------------------------------------------
+    # ----------------- ResNet50 Freeze -------------------
+    _resnet50_freeze = ResNet50(weights=None, include_top=False, input_tensor=_input_257, input_shape=(3, 257, 257))
+    _resnet50_freeze.load_weights('models/nm/structures/resnet50_weights_th_dim_ordering_th_kernels_notop.h5')
+
+    for layer in _resnet50_freeze.layers:
         layer.trainable = False
 
-    resnet_50 = _resnet_50.output
-    resnet_50 = Flatten(name='my_flatten_1')(resnet_50)
+    # -----------------------------------------------------
+    # ------------------ Vgg16 Freeze ---------------------
+    _vgg16_freeze = VGG16(weights=None, include_top=False, input_tensor=_input_128, input_shape=(3, 128, 128))
+    _vgg16_freeze.load_weights('models/main/structures/vgg16_weights_th_dim_ordering_th_kernels_notop.h5')
+
+    for layer in _vgg16_freeze.layers:
+        layer.trainable = False
 
     # ------------------------------------------------------
+    # ------------------------------------------------------
+    # ------------------------------------------------------
+    start_conv = ZeroPadding2D((3, 3), name='gateway_padding3x3')(_input_256)
+    start_conv = Conv2D(nm_filter, (7, 7), strides=(2, 2), name='gateway_conv', use_bias=False)(start_conv)
+    start_conv = BatchNormalization(axis=1, name='gateway_bn')(start_conv)
+    start_conv = Activation('relu', name='gateway_act')(start_conv)
+
+    start_conv = ZeroPadding2D((1, 1), name='gateway_padding1x1')(start_conv)
+    start_conv = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='gateway_max_pool')(start_conv)
+
+    # ------------------------------------------------------
+    # ---------------------- 64x64 -------------------------
     # ------------------ Conv Block 1 ----------------------
-    tmp_input = resnet_50.get_layer('activation_22').output
+    tmp_input = start_conv
 
     for i, block in enumerate(blocks):
-        # prev_input = tmp_input
+        if i < len(_vgg16_outputs) and i < len(_resnet50_outputs):
+            _vgg16_connect = transition_connect_block(input=_vgg16_freeze.get_layer(_vgg16_outputs[i]).output, nm_filter=nm_filter, block_index=i, str_name='vgg16')
+            _resnet50_connect = transition_connect_block(input=_resnet50_freeze.get_layer(_resnet50_outputs[i]).output, nm_filter=nm_filter, block_index=i, str_name='resnet50')
+
+            tmp_input = concatenate([tmp_input, _vgg16_connect, _resnet50_connect], axis=1)
+
         tmp_input, nm_filter = dense_block(nb_layers=block, tmp_input=tmp_input, nm_filter=nm_filter, k=k, block_index=i)
 
         nm_filter = int(nm_filter * compression)
 
         if i < len(blocks) - 1:
-            # TODO Every Dense block takes as input [transition_output, prev_dense_block_input]
             tmp_input = transition_block(input=tmp_input, nm_filter=nm_filter, block_index=i)
-            # tmp_bridge_input = transition_bridge_block(input=prev_input, nm_filter=nm_filter, block_index=i, noise=0.01)
-
-            # tmp_input = concatenate([tmp_input, tmp_bridge_input], axis=1)
 
     # -----------------------------------------------------
     # --------------------- Bridge ------------------------
@@ -104,15 +141,15 @@ def model(weights_path=None):
     bridge = Activation('relu', name='bridge_relu1')(bridge)
     bridge = Flatten(name='bridge_flatten')(bridge)
 
-    mini_dense = Dropout(0.5, name='bridge_dp1')(bridge)
+    _resnet50_output = Flatten(name='my_resnet_flatten')(_resnet50_freeze.output)
+    _vgg16_output = Flatten(name='my_vgg_flatten')(_vgg16_freeze.output)
 
-    _concat = concatenate([mini_dense, resnet_50])
+    _concat = concatenate([bridge, _resnet50_output, _vgg16_output])
 
-    _output = Dense(1024, name='my_dense_1')(_concat)
-    _output = BatchNormalization(name='my_bn_1')(_output)
-    _output = Activation('relu', name='my_act_1')(_output)
+    _output = Dense(17, name='my_output_dense_2')(_concat)
+    _output = Activation('sigmoid', name='output')(_output)
 
-    _model = Model(inputs=_input, outputs=_output)
+    _model = Model(inputs=[_input_128, _input_256, _input_257], outputs=_output)
 
     if weights_path:
         _model.load_weights(weights_path)

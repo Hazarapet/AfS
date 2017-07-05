@@ -10,10 +10,11 @@ from keras.optimizers import SGD, Adam
 from utils import image as UtilImage
 from utils import common as common_util
 from models.main.model import model as main_model
+from models.main.vgg16 import model as vgg16_model
 
 st_time = time.time()
-N_EPOCH = 10
-BATCH_SIZE = 80
+N_EPOCH = 20
+BATCH_SIZE = 600
 IMAGE_WIDTH = 128
 IMAGE_HEIGHT = 128
 AUGMENT = True
@@ -46,11 +47,11 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = main_model()
+[model, structure] = vgg16_model()
 
 print model.summary()
 
-adam = Adam(lr=5e-4, decay=1e-4)
+adam = Adam(lr=1e-2, decay=1e-4)
 
 # sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
@@ -109,7 +110,8 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
 
-                # cause 2x|input|
+                # cause 3x|input|
+                t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
 
@@ -164,7 +166,8 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 v_batch_inputs = common_util.aug(v_batch_inputs, v_inputs)
 
-                # cause 2x|input|
+                # cause 3x|input|
+                v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
 
@@ -186,7 +189,7 @@ for epoch in range(N_EPOCH):
             (time.time() - tr_time) / 60)
 
         # if model has reach to good results, we save that model
-        if v_f2 > 0.91:
+        if v_f2 > 0.905:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -203,15 +206,15 @@ for epoch in range(N_EPOCH):
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
+        model.optimizer.lr.set_value(1e-3)
 
     if epoch == 17:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-5)
+        model.optimizer.lr.set_value(3e-4)
 
     if epoch == 20:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-5)
+        model.optimizer.lr.set_value(1e-4)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_f2_graph = np.append(t_f2_graph, [np.mean(t_f2_graph_ep)])
