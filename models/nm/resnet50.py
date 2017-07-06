@@ -3,6 +3,7 @@ import numpy as np
 from keras.models import Model
 from keras.layers import Input, concatenate
 from keras.applications.resnet50 import ResNet50
+from keras.layers.normalization import BatchNormalization
 from keras.layers.core import Flatten, Dense, Dropout, Activation
 
 
@@ -26,10 +27,10 @@ def model(weights_path=None):
     # x = Activation('relu', name='my_act_1')(x)
     # x = Dropout(0.3, name='my_dp_1')(x)
 
-    # x = Dense(1024, name='my_dense_2')(x)
-    # x = BatchNormalization(name='my_bn_2')(x)
-    # x = Activation('relu', name='my_act_2')(x)
-    x = Dropout(0.3, name='my_dp_2')(x)
+    x = Dense(1024, name='my_dense_2')(x)
+    x = BatchNormalization(name='my_bn_2')(x)
+    x = Activation('relu', name='my_act_2')(x)
+    x = Dropout(0.4, name='my_dp_2')(x)
 
     x = Dense(17, name='my_output_dense')(x)
     x = Activation('sigmoid', name='my_output')(x)

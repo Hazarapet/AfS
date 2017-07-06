@@ -53,9 +53,9 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=3e-3, momentum=.9, decay=1e-4)
+sgd = SGD(lr=6e-3, momentum=.9, decay=1e-4)
 
-model.compile(loss=components.f2_binary_cross_entropy(l=1e-3),
+model.compile(loss=components.f2_binary_cross_entropy(l=1e-4),
               optimizer=sgd,
               metrics=[common_util.f2_score])
 
@@ -259,15 +259,8 @@ for epoch in range(N_EPOCH):
         v_loss_graph_ep = np.append(v_loss_graph_ep, [v_loss])
         v_f2_graph_ep = np.append(v_f2_graph_ep, [v_f2])
 
-        print "Val Examples: {}/{}, loss: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
-            len(val),
-            float(v_loss),
-            float(v_f2),
-            float(model.optimizer.lr.get_value()),
-            (time.time() - tr_time) / 60)
-
         # if model has reach to good results, we save that model
-        if v_f2 > 0.905:
+        if v_f2 > 0.91:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
                              '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
@@ -281,6 +274,13 @@ for epoch in range(N_EPOCH):
             with open(model_filename + '.json', 'w') as outfile:
                 json_string = model.to_json()
                 json.dump(json_string, outfile)
+
+    print "Val Examples: {}/{}, loss: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
+       len(val),
+       float(np.mean(v_loss_graph_ep)),
+       float(np.mean(v_f2_graph_ep)),
+       float(model.optimizer.lr.get_value()),
+       (time.time() - tr_time) / 60)
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
