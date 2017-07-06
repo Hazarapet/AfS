@@ -13,7 +13,7 @@ def model(weights_path=None):
 
     # 175 layers
     for i, layer in enumerate(_m.layers):
-        if i > 140:
+        if i > 150:
             break
 
         layer.trainable = False
@@ -29,7 +29,7 @@ def model(weights_path=None):
     # x = Dense(1024, name='my_dense_2')(x)
     # x = BatchNormalization(name='my_bn_2')(x)
     # x = Activation('relu', name='my_act_2')(x)
-    x = Dropout(0.4, name='my_dp_2')(x)
+    x = Dropout(0.3, name='my_dp_2')(x)
 
     x = Dense(17, name='my_output_dense')(x)
     x = Activation('sigmoid', name='my_output')(x)

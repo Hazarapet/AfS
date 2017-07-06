@@ -71,6 +71,7 @@ def agg(array):
 
 
 def aug(array, input):
+    # rotate 90
     rt90 = np.rot90(input, 1, axes=(1, 2))
     array.append(rt90)
 
@@ -81,6 +82,14 @@ def aug(array, input):
     # flip v
     flip_v = np.flip(input, 1)
     array.append(flip_v)
+
+    # rotate 90, flip v
+    rot90_flip_v = np.rot90(flip_v, 1, axes=(1, 2))
+    array.append(rot90_flip_v)
+
+    # rotate 90, flip h
+    rot90_flip_h = np.rot90(flip_h, 1, axes=(1, 2))
+    array.append(rot90_flip_h)
 
     return array
 

@@ -136,7 +136,9 @@ for epoch in range(N_EPOCH):
                 # t_batch_inputs256 = common_util.aug(t_batch_inputs256, inputs256)
                 # t_batch_inputs257 = common_util.aug(t_batch_inputs257, inputs257)
 
-                # cause 3x|input|
+                # cause 5x|input|
+                t_batch_labels.append(targets)
+                t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
                 t_batch_labels.append(targets)
@@ -203,7 +205,7 @@ for epoch in range(N_EPOCH):
             #
             # v_inputs128 = img128
 
-            img224 = cv2.resize(img, (256, 256)).astype(np.float32)
+            img224 = cv2.resize(img, (224, 224)).astype(np.float32)
             img224 = img224.transpose((2, 0, 1))
 
             v_inputs224 = img224
@@ -232,7 +234,9 @@ for epoch in range(N_EPOCH):
                 # v_batch_inputs256 = common_util.aug(v_batch_inputs256, v_inputs256)
                 # v_batch_inputs257 = common_util.aug(v_batch_inputs257, v_inputs257)
 
-                # cause 3x|input|
+                # cause 5x|input|
+                v_batch_labels.append(targets)
+                v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
                 v_batch_labels.append(targets)
                 v_batch_labels.append(targets)

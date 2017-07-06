@@ -1,24 +1,43 @@
+import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 
-def iterate_minibatches(inputs, batchsize=10):
+def aug(array, input):
+    rt90 = np.rot90(input, 1, axes=(1, 2))
+    array.append(rt90)
 
-    for start_idx in range(0, len(inputs) - batchsize + 1, batchsize):
-        excerpt = slice(start_idx, start_idx + batchsize)
-        yield np.array(inputs)[excerpt]
+    # flip h
+    flip_h = np.flip(input, 2)
+    array.append(flip_h)
 
-    if len(inputs) % batchsize != 0:
-        yield np.array(inputs)[- (len(inputs) % batchsize):]
+    # flip v
+    flip_v = np.flip(input, 1)
+    array.append(flip_v)
 
-t_batch_labels = np.array([[0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]])
-rn = np.zeros((t_batch_labels.shape[0], 1))
-rnn = np.arange(t_batch_labels.shape[0])
-rnnn = [[i] for i in range(t_batch_labels.shape[0])]
+    return array
 
-arr = iterate_minibatches(zip(rnnn, t_batch_labels), batchsize=2)
 
-print rn
-print rnn
-print rnnn
-for a in arr:
-    print a
+img = cv2.imread('resource/train-jpg/{}.jpg'.format('train_30101'))
+img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+flip_h = np.flip(img, 1)
+flip_v = np.flip(img, 0)
+rt90 = np.rot90(img, 1, axes=(0, 1))
+rt90_flip_h = np.rot90(flip_h, 1, axes=(0, 1))
+rt90_flip_v = np.rot90(flip_v, 1, axes=(0, 1))
+
+plt.figure('flip_h')
+plt.imshow(flip_h)
+plt.figure('flip_v')
+plt.imshow(flip_v)
+plt.figure('rt90')
+plt.imshow(rt90)
+plt.figure('rt90_flip_h')
+plt.imshow(rt90_flip_h)
+plt.figure('rt90_flip_v')
+plt.imshow(rt90_flip_v)
+plt.figure('original')
+plt.imshow(img)
+plt.show()
+
