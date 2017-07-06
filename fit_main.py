@@ -192,10 +192,10 @@ for epoch in range(N_EPOCH):
         if v_f2 > 0.905:
             timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
             model_filename = structure + 'good-epoch:' + str(epoch) + \
-                             '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
-                             '-tr_f2:' + str(round(np.max(t_f2_graph), 4)) + \
+                             '-tr_l:' + str(round(np.min(t_loss_graph_ep), 4)) + \
+                             '-tr_f2:' + str(round(np.max(t_f2_graph_ep), 4)) + \
                              '-val_l:' + str(round(v_loss, 4)) + \
-                             '-val_f2:' + str(round(np.max(v_f2_graph), 4)) + \
+                             '-val_f2:' + str(round(np.max(v_f2_graph_ep), 4)) + \
                              '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
             # saving the weights
             model.save_weights(model_filename + '.h5')

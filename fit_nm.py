@@ -259,21 +259,21 @@ for epoch in range(N_EPOCH):
         v_loss_graph_ep = np.append(v_loss_graph_ep, [v_loss])
         v_f2_graph_ep = np.append(v_f2_graph_ep, [v_f2])
 
-        # if model has reach to good results, we save that model
-        if v_f2 > 0.91:
-            timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
-            model_filename = structure + 'good-epoch:' + str(epoch) + \
-                             '-tr_l:' + str(round(np.min(t_loss_graph), 4)) + \
-                             '-tr_f2:' + str(round(np.max(t_f2_graph), 4)) + \
-                             '-val_l:' + str(round(v_loss, 4)) + \
-                             '-val_f2:' + str(round(np.max(v_f2_graph), 4)) + \
-                             '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
-            # saving the weights
-            model.save_weights(model_filename + '.h5')
+    # if model has reach to good results, we save that model
+    if np.mean(v_f2_graph_ep) > 0.915:
+        timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
+        model_filename = structure + 'good-epoch:' + str(epoch) + \
+                         '-tr_l:' + str(round(np.min(t_loss_graph_ep), 4)) + \
+                         '-tr_f2:' + str(round(np.max(t_f2_graph_ep), 4)) + \
+                         '-val_l:' + str(round(np.mean(v_loss_graph_ep), 4)) + \
+                         '-val_f2:' + str(round(np.max(v_f2_graph_ep), 4)) + \
+                         '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
+        # saving the weights
+        model.save_weights(model_filename + '.h5')
 
-            with open(model_filename + '.json', 'w') as outfile:
-                json_string = model.to_json()
-                json.dump(json_string, outfile)
+        with open(model_filename + '.json', 'w') as outfile:
+            json_string = model.to_json()
+            json.dump(json_string, outfile)
 
     print "Val Examples: {}/{}, loss: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
        len(val),
