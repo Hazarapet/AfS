@@ -92,7 +92,7 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            exists = False
+            exists = True  # TODO to augment all examples
             targets = np.zeros(17)
 
             for t in tags.split(' '):
@@ -190,7 +190,7 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            exists = False
+            exists = True  # TODO to augment all examples
             targets = np.zeros(17)
 
             for t in tags.split(' '):
