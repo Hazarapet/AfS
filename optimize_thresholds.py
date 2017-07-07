@@ -17,13 +17,15 @@ labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
 label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
 
-count = 0
+weights_path = 'models/nm/structures/tr_l:0.0912-tr_f2:0.9101-val_l:0.0969-val_f2:0.9071-time:07-07-2017-07:43:25-dur:600.446.h5'
+model_structure = 'models/nm/structures/tr_l:0.0912-tr_f2:0.9101-val_l:0.0969-val_f2:0.9071-time:07-07-2017-07:43:25-dur:600.446.json'
 
-result = predict.result_single_jpg(df_val['image_name'].values[:1000], 'resource/train-jpg/{}.jpg')
-thres = [0.11, 0.29, 0.35, 0.12, 0.16, 0.04, 0.25, 0.36, 0.32, 0.18, 0.2, 0.45, 0.12, 0.07, 0.14, 0.23, 0.25]
+result = predict.result_single_jpg(X=df_val['image_name'].values[:1000],
+                                   path='resource/train-jpg/{}.jpg',
+                                   weights_path=weights_path,
+                                   model_structure=model_structure)
 
-# best threshold
-thres1 = [0.27, 0.21, 0.56, 0.08, 0.43, 0.62, 0.3, 0.59, 0.38, 0.08, 0.19, 0.19, 0.44, 0.33, 0.16, 0.19, 0.51]
+thres1 = [0.14, 0.15, 0.14, 0.27, 0.1, 0.35, 0.17, 0.32, 0.24, 0.12, 0.08, 0.1, 0.12, 0.13, 0.18, 0.16, 0.31]
 
 y = []
 for tags in df_val['tags'].values[:1000]:
@@ -37,7 +39,7 @@ for tags in df_val['tags'].values[:1000]:
 p = []
 for r in result:
     r = np.array(r).transpose()
-    t = np.array(thres).transpose()
+    t = np.array(thres1).transpose()
     p.append((r > t) * 1.0)
 
 y = np.array(y).astype(np.float32)
@@ -49,9 +51,14 @@ print y.shape, p.shape, result.shape
 # print result
 print 'F2: ', common.f2_score(y, p).eval()
 
-best_f2_threshold = common.optimise_f2_thresholds(y, result)
+best_f2_threshold, best_score = common.optimise_f2_thresholds(y, result)
+
+with open('best_f2_threshold.json', 'r') as outfile:
+    thresis = json.load(outfile)
+    obj = {'score': best_score, 'threshold': best_f2_threshold, 'model': weights_path}
+    thresis.append(obj)
 
 with open('best_f2_threshold.json', 'w') as outfile:
-    json.dump(best_f2_threshold, outfile)
+    json.dump(thresis, outfile)
 
 print '==== End ===='

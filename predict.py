@@ -87,9 +87,7 @@ def result_single_tif(X, path, do_agg=True):
     return result
 
 
-def result_single_jpg(X, path, do_agg=True):
-    weights_path = 'models/nm/structures/tr_l:0.1162-tr_f2:0.9084-val_l:0.133-val_f2:0.8983-time:05-07-2017-00:25:12-dur:459.14.h5'
-    model_structure = 'models/nm/structures/tr_l:0.1162-tr_f2:0.9084-val_l:0.133-val_f2:0.8983-time:05-07-2017-00:25:12-dur:459.14.json'
+def result_single_jpg(X, path, weights_path, model_structure, do_agg=True):
 
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))
@@ -107,9 +105,6 @@ def result_single_jpg(X, path, do_agg=True):
             img = cv2.imread(path.format(f[0]))
 
             img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
-            # img[:, :, 0] -= 103.939
-            # img[:, :, 1] -= 116.779
-            # img[:, :, 2] -= 123.68
             img = img.transpose((2, 0, 1))
 
             inputs = img

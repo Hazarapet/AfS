@@ -25,23 +25,34 @@ X_test = os.listdir('resource/test-jpg')
 
 thres_345_134 = [0.27, 0.21, 0.56, 0.08, 0.43, 0.62, 0.3, 0.59, 0.38, 0.08, 0.19, 0.19, 0.44, 0.33, 0.16, 0.19, 0.51]
 thres_459_14 = [0.19, 0.09, 0.67, 0.29, 0.55, 0.91, 0.16, 0.4, 0.32, 0.1, 0.21, 0.14, 0.28, 0.17, 0.13, 0.11, 0.18]
+thres_600_446 = [0.14, 0.15, 0.14, 0.27, 0.1, 0.35, 0.17, 0.32, 0.24, 0.12, 0.08, 0.1, 0.12, 0.13, 0.18, 0.16, 0.31]
 
 df_test = pd.DataFrame([[p.replace('.jpg', ''), p] for p in X_test])
 df_test.columns = ['image_name', 'tags']
 
-weights_path1 = 'models/nm/structures/tr_l:0.1162-tr_f2:0.9084-val_l:0.133-val_f2:0.8983-time:05-07-2017-00:25:12-dur:459.14.h5'
-model_structure1 = 'models/nm/structures/tr_l:0.1162-tr_f2:0.9084-val_l:0.133-val_f2:0.8983-time:05-07-2017-00:25:12-dur:459.14.json'
+weights_path_459_14 = 'models/nm/structures/tr_l:0.1162-tr_f2:0.9084-val_l:0.133-val_f2:0.8983-time:05-07-2017-00:25:12-dur:459.14.h5'
+model_structure_459_14 = 'models/nm/structures/tr_l:0.1162-tr_f2:0.9084-val_l:0.133-val_f2:0.8983-time:05-07-2017-00:25:12-dur:459.14.json'
 
-weights_path2 = 'models/nm/structures/tr_l:0.1339-tr_f2:0.8899-val_l:0.1387-val_f2:0.8868-time:04-07-2017-13:50:07-dur:345.134.h5'
-model_structure2 = 'models/nm/structures/tr_l:0.1339-tr_f2:0.8899-val_l:0.1387-val_f2:0.8868-time:04-07-2017-13:50:07-dur:345.134.json'
+weights_path_345_134 = 'models/nm/structures/tr_l:0.1339-tr_f2:0.8899-val_l:0.1387-val_f2:0.8868-time:04-07-2017-13:50:07-dur:345.134.h5'
+model_structure_345_134 = 'models/nm/structures/tr_l:0.1339-tr_f2:0.8899-val_l:0.1387-val_f2:0.8868-time:04-07-2017-13:50:07-dur:345.134.json'
+
+weights_path_600_446 = 'models/nm/structures/tr_l:0.0912-tr_f2:0.9101-val_l:0.0969-val_f2:0.9071-time:07-07-2017-07:43:25-dur:600.446.h5'
+model_structure_600_446 = 'models/nm/structures/tr_l:0.0912-tr_f2:0.9101-val_l:0.0969-val_f2:0.9071-time:07-07-2017-07:43:25-dur:600.446.json'
 
 tags = []
-with open(model_structure1, 'r') as model_json1, open(model_structure2, 'r') as model_json2:
-    model1 = model_from_json(json.loads(model_json1.read()))
-    model1.load_weights(weights_path1)
+with open(model_structure_459_14, 'r') as model_json_459_14, \
+        open(model_structure_345_134, 'r') as model_json_345_134, \
+        open(model_structure_600_446, 'r') as model_json_600_446:
 
-    model2 = model_from_json(json.loads(model_json2.read()))
-    model2.load_weights(weights_path2)
+    # model_459_14 = model_from_json(json.loads(model_json_459_14.read()))
+    # model_459_14.load_weights(weights_path_459_14)
+    #
+    # model_345_134 = model_from_json(json.loads(model_json_345_134.read()))
+    # model_345_134.load_weights(weights_path_345_134)
+
+    model_600_446 = model_from_json(json.loads(model_json_600_446.read()))
+    model_600_446.load_weights(weights_path_600_446)
+
     print 'models are loaded!'
 
     # loading the data
@@ -64,11 +75,15 @@ with open(model_structure1, 'r') as model_json1, open(model_structure2, 'r') as 
 
         test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 
-        predict1 = model1.predict_on_batch(test_batch_inputs)
-        result1 = common.agg(predict1)
-        result = list(np.array(result1).transpose() > thres_459_14)
+        predict_600_446 = model_600_446.predict_on_batch(test_batch_inputs)
+        result_600_446 = common.agg(predict_600_446)
+        result = list(np.array(result_600_446).transpose() > thres_600_446)
 
-        # predict2 = model2.predict_on_batch(test_batch_inputs)
+        # predict1 = model_459_14.predict_on_batch(test_batch_inputs)
+        # result1 = common.agg(predict1)
+        # result = list(np.array(result1).transpose() > thres_459_14)
+
+        # predict2 = model_345_134.predict_on_batch(test_batch_inputs)
         # result2 = common.agg(predict2)
         # result2 = list(np.array(result2).transpose() > thres_345_134)
 

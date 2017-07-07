@@ -116,7 +116,7 @@ def optimise_f2_thresholds(y, p, verbose=True, resolution=100):
     return score
 
   x = [0.2] * 17
-
+  best_sc = 0
   for i in range(17):
     best_i2 = 0
     best_score = 0
@@ -131,4 +131,6 @@ def optimise_f2_thresholds(y, p, verbose=True, resolution=100):
     if verbose:
       print(i, best_i2, best_score)
 
-  return x
+    best_sc = best_score
+
+  return x, best_sc.tolist()

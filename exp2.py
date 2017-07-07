@@ -1,3 +1,4 @@
+import json
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,6 +27,11 @@ import matplotlib.pyplot as plt
 # plt.imshow(img)
 # plt.show()
 
-ar = [1.2, 12, 55, 11, 0.2]
-print np.mean(ar)
+with open('best_f2_threshold.json', 'r') as outfile:
+    thresis = json.load(outfile)
+    obj = {'score': 0.33, 'threshold': [1, 32, 3, 5], 'model': ''}
+    thresis.append(obj)
+
+with open('best_f2_threshold.json', 'w') as outfile:
+    json.dump(thresis, outfile)
 
