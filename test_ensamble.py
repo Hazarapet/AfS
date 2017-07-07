@@ -39,19 +39,30 @@ model_structure_345_134 = 'models/nm/structures/tr_l:0.1339-tr_f2:0.8899-val_l:0
 weights_path_600_446 = 'models/nm/structures/tr_l:0.0912-tr_f2:0.9101-val_l:0.0969-val_f2:0.9071-time:07-07-2017-07:43:25-dur:600.446.h5'
 model_structure_600_446 = 'models/nm/structures/tr_l:0.0912-tr_f2:0.9101-val_l:0.0969-val_f2:0.9071-time:07-07-2017-07:43:25-dur:600.446.json'
 
+weights_path_183_383 = 'models/nm/structures/good-epoch:16-tr_l:0.1471-tr_f2:0.8849-val_l:0.1186-val_f2:0.891-time:06-07-2017-21:29:59-dur:183.383.h5'
+model_structure_183_383 = 'models/nm/structures/good-epoch:16-tr_l:0.1471-tr_f2:0.8849-val_l:0.1186-val_f2:0.891-time:06-07-2017-21:29:59-dur:183.383.json'
+
 tags = []
 with open(model_structure_459_14, 'r') as model_json_459_14, \
         open(model_structure_345_134, 'r') as model_json_345_134, \
+        open(model_structure_183_383, 'r') as model_json_183_383, \
         open(model_structure_600_446, 'r') as model_json_600_446:
 
-    # model_459_14 = model_from_json(json.loads(model_json_459_14.read()))
-    # model_459_14.load_weights(weights_path_459_14)
-    #
-    # model_345_134 = model_from_json(json.loads(model_json_345_134.read()))
-    # model_345_134.load_weights(weights_path_345_134)
+    # 224x224
+    model_459_14 = model_from_json(json.loads(model_json_459_14.read()))
+    model_459_14.load_weights(weights_path_459_14)
 
+    # 224x224
+    model_345_134 = model_from_json(json.loads(model_json_345_134.read()))
+    model_345_134.load_weights(weights_path_345_134)
+
+    # 224x224
     model_600_446 = model_from_json(json.loads(model_json_600_446.read()))
     model_600_446.load_weights(weights_path_600_446)
+
+    # 224x224
+    model_183_383 = model_from_json(json.loads(model_json_183_383.read()))
+    model_183_383.load_weights(weights_path_183_383)
 
     print 'models are loaded!'
 
@@ -77,17 +88,22 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
 
         predict_600_446 = model_600_446.predict_on_batch(test_batch_inputs)
         result_600_446 = common.agg(predict_600_446)
-        result = list(np.array(result_600_446).transpose() > thres_600_446)
+        result_600_446 = list(np.array(result_600_446).transpose() > thres_600_446)
 
-        # predict1 = model_459_14.predict_on_batch(test_batch_inputs)
-        # result1 = common.agg(predict1)
-        # result = list(np.array(result1).transpose() > thres_459_14)
+        predict_459_14 = model_459_14.predict_on_batch(test_batch_inputs)
+        result_459_14 = common.agg(predict_459_14)
+        result_459_14 = list(np.array(result_459_14).transpose() > thres_459_14)
 
-        # predict2 = model_345_134.predict_on_batch(test_batch_inputs)
-        # result2 = common.agg(predict2)
-        # result2 = list(np.array(result2).transpose() > thres_345_134)
+        #
+        predict_345_134 = model_345_134.predict_on_batch(test_batch_inputs)
+        result_345_134 = common.agg(predict_345_134)
+        result_345_134 = list(np.array(result_345_134).transpose() > thres_345_134)
 
-        # result = common.ensemble(np.array([result1, result2]))
+        predict_183_383 = model_183_383.predict_on_batch(test_batch_inputs)
+        result_183_383 = common.agg(predict_183_383)
+        result_183_383 = list(np.array(result_183_383).transpose() > thres_459_14)
+
+        result = common.ensemble(np.array([result_600_446, result_459_14, result_345_134, result_183_383]))
 
         # print result1
         # print result2
