@@ -27,11 +27,7 @@ import matplotlib.pyplot as plt
 # plt.imshow(img)
 # plt.show()
 
-with open('best_f2_threshold.json', 'r') as outfile:
-    thresis = json.load(outfile)
-    obj = {'score': 0.33, 'threshold': [1, 32, 3, 5], 'model': ''}
-    thresis.append(obj)
+ar = np.array([np.ones(64), np.ones((63, 3, 7, 7))])
 
-with open('best_f2_threshold.json', 'w') as outfile:
-    json.dump(thresis, outfile)
+print ar[1].shape
 

@@ -10,12 +10,12 @@ from keras.optimizers import Adam, SGD
 from utils import image as UtilImage
 from utils import common as common_util
 from models.nm.model import model as nm_model
-from models.nm.densenet121 import densenet121_model
+from models.nm.densenet121 import DenseNet
 from models.nm.resnet50 import model as resnet_model
 from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
-N_EPOCH = 30
+N_EPOCH = 20
 BATCH_SIZE = 120
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
@@ -46,22 +46,24 @@ labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
 label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
 
-train, val = df_tr.values, df_val.values
+# TODO Whole db for training
+train, val = df_train.values, df_val.values
 
 print 'model loading...'
-[model, structure] = resnet_model()
+[model, structure] = DenseNet(reduction=0.5, weights_path='models/nm/structures/densenet121_weights_th.h5')
 
 print model.summary()
 
-sgd = SGD(lr=6e-3, momentum=.9, decay=1e-4)
+sys.exit()
+sgd = SGD(lr=1e-2, momentum=.9, decay=1e-6, nesterov=True)
 
-model.compile(loss=components.f2_binary_cross_entropy(l=1e-4),
-              optimizer=sgd,
-              metrics=[common_util.f2_score])
-
-# model.compile(loss='binary_crossentropy',
+# model.compile(loss=components.f2_binary_cross_entropy(l=1e-4),
 #               optimizer=sgd,
 #               metrics=[common_util.f2_score])
+
+model.compile(loss='binary_crossentropy',
+              optimizer=sgd,
+              metrics=[common_util.f2_score])
 
 print model.inputs
 print "training..."

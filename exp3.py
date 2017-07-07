@@ -1,36 +1,44 @@
 import sys
+import h5py
 import numpy as np
 import pandas as pd
-from utils import common as common_util
-import h5py
 
-df_train = pd.read_csv('train_v2.csv')
 
-df_tr = pd.read_csv('train_split.csv')
-df_val = pd.read_csv('val_split.csv')
+def load_weights(_model, weights_path):
+    f = h5py.File(weights_path, "r")
 
-flatten = lambda l: [item for sublist in l for item in sublist]
-labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
+    weights = {k: v for k, v in zip(f.keys(), f.values())}
+    layer_name = 'conv1'
+    # for l in weights:
+    #     print l, weights[l].items()
+    # for layer in _model.layers:
+    for w in weights:
+        # w = weights[layer_name]
+        ar = []
+        for v in weights[w].values():
+            print '------', v.shape, np.array(v[()]).shape
+            # for vv in v.values():
+            # ar.append(np.array(v[()]))
 
-label_map = {l: i for i, l in enumerate(labels)}
-inv_label_map = {i: l for l, i in label_map.items()}
+        # ar = np.array(ar).astype(np.float32)
+        # layer.set_weights(ar)
 
-train, val = df_tr.values, df_val.values
+        # print ar.shape
+        # print ar
+        print 'layer "' + w + '" weights are loaded'
 
-print labels
-print label_map
+    return _model
 
-for min_batch in common_util.iterate_minibatches(train[:40], batchsize=40):
 
-    t_batch_inputs = []
-    t_batch_labels = []
+if __name__ == '__main__':
 
-    # now we should load min_batch's images and collect them
-    for f, tags in min_batch:
-        targets = np.zeros(17)
+    # load_weights(None, weights_path='models/nm/structures/resnet50_weights_th_dim_ordering_th_kernels_notop.h5')
+    print 'conv1----------------------------------------------------------------------------------------------------'
+    print 'conv1----------------------------------------------------------------------------------------------------'
+    print 'conv1----------------------------------------------------------------------------------------------------'
+    load_weights(None, weights_path='models/nm/structures/densenet121_weights_th.h5')
 
-        for t in tags.split(' '):
-            targets[label_map[t]] = 1
 
-        print tags, targets
+
+
 
