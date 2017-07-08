@@ -26,6 +26,7 @@ X_test = os.listdir('resource/test-jpg')
 thres_345_134 = [0.27, 0.21, 0.56, 0.08, 0.43, 0.62, 0.3, 0.59, 0.38, 0.08, 0.19, 0.19, 0.44, 0.33, 0.16, 0.19, 0.51]
 thres_459_14 = [0.19, 0.09, 0.67, 0.29, 0.55, 0.91, 0.16, 0.4, 0.32, 0.1, 0.21, 0.14, 0.28, 0.17, 0.13, 0.11, 0.18]
 thres_600_446 = [0.14, 0.15, 0.14, 0.27, 0.1, 0.35, 0.17, 0.32, 0.24, 0.12, 0.08, 0.1, 0.12, 0.13, 0.18, 0.16, 0.31]
+thres_473_778 = [0.15, 0.17, 0.44, 0.14, 0.41, 0.63, 0.2, 0.18, 0.28, 0.27, 0.34, 0.2, 0.2, 0.09, 0.23, 0.2, 0.32]
 
 df_test = pd.DataFrame([[p.replace('.jpg', ''), p] for p in X_test])
 df_test.columns = ['image_name', 'tags']
@@ -96,7 +97,7 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
 
         predict_473_778 = model_473_778.predict_on_batch(test_batch_inputs)
         result_473_778 = common.agg(predict_473_778)
-        result_473_778 = list(np.array(result_473_778).transpose() > thres_345_134)
+        result_473_778 = list(np.array(result_473_778).transpose() > thres_473_778)
 
         result = common.ensemble(np.array([result_600_446, result_459_14, result_473_778]))
 
