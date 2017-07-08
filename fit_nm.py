@@ -94,7 +94,7 @@ for epoch in range(N_EPOCH):
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
             exists = True  # TODO to augment all examples
-            targets = np.zeros(17)
+            targets = np.zeros(1000)
 
             for t in tags.split(' '):
                 targets[label_map[t]] = 1
