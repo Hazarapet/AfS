@@ -54,7 +54,7 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=1e-2, momentum=.9, decay=1e-6, nesterov=True)
+sgd = SGD(lr=6e-3, momentum=.9, decay=1e-6, nesterov=True)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=1e-4),
 #               optimizer=sgd,
