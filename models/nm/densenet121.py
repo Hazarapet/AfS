@@ -41,7 +41,7 @@ def DenseNet(nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.0, drop
     x = ZeroPadding2D((3, 3), name='conv1_zeropadding')(img_input)
     x = Conv2D(nb_filter, (7, 7), strides=(2, 2), name='conv1', use_bias=False)(x)
     x = BatchNormalization(epsilon=eps, axis=concat_axis, name='conv1_bn')(x)
-    x = Scale(axis=concat_axis, name='conv1_scale')(x)
+    # x = Scale(axis=concat_axis, name='conv1_scale')(x)
     x = Activation('relu', name='relu1')(x)
     x = ZeroPadding2D((1, 1), name='pool1_zeropadding')(x)
     x = MaxPooling2D(pool_size=(3, 3), strides=(2, 2), name='pool1')(x)
@@ -59,7 +59,7 @@ def DenseNet(nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.0, drop
     x, nb_filter = dense_block(x, final_stage, nb_layers[-1], nb_filter, growth_rate, dropout_rate=dropout_rate)
 
     x = BatchNormalization(epsilon=eps, axis=concat_axis, name='conv'+str(final_stage)+'_blk_bn')(x)
-    x = Scale(axis=concat_axis, name='conv'+str(final_stage)+'_blk_scale')(x)
+    # x = Scale(axis=concat_axis, name='conv'+str(final_stage)+'_blk_scale')(x)
     x = Activation('relu', name='relu'+str(final_stage)+'_blk')(x)
     x = GlobalAveragePooling2D(name='pool'+str(final_stage))(x)
 
@@ -96,7 +96,7 @@ def conv_block(x, stage, branch, nb_filter, dropout_rate=None):
     # 1x1 Convolution (Bottleneck layer)
     inter_channel = nb_filter * 4
     x = BatchNormalization(epsilon=eps, axis=concat_axis, name=conv_name_base+'_x1_bn')(x)
-    x = Scale(axis=concat_axis, name=conv_name_base+'_x1_scale')(x)
+    # x = Scale(axis=concat_axis, name=conv_name_base+'_x1_scale')(x)
     x = Activation('relu', name=relu_name_base+'_x1')(x)
     x = Conv2D(inter_channel, (1, 1), name=conv_name_base+'_x1', use_bias=False)(x)
 
@@ -105,7 +105,7 @@ def conv_block(x, stage, branch, nb_filter, dropout_rate=None):
 
     # 3x3 Convolution
     x = BatchNormalization(epsilon=eps, axis=concat_axis, name=conv_name_base+'_x2_bn')(x)
-    x = Scale(axis=concat_axis, name=conv_name_base+'_x2_scale')(x)
+    # x = Scale(axis=concat_axis, name=conv_name_base+'_x2_scale')(x)
     x = Activation('relu', name=relu_name_base+'_x2')(x)
     x = ZeroPadding2D((1, 1), name=conv_name_base+'_x2_zeropadding')(x)
     x = Conv2D(nb_filter, (3, 3), name=conv_name_base+'_x2', use_bias=False)(x)
@@ -132,7 +132,7 @@ def transition_block(x, stage, nb_filter, compression=1.0, dropout_rate=None):
     pool_name_base = 'pool' + str(stage)
 
     x = BatchNormalization(epsilon=eps, axis=concat_axis, name=conv_name_base+'_bn')(x)
-    x = Scale(axis=concat_axis, name=conv_name_base+'_scale')(x)
+    # x = Scale(axis=concat_axis, name=conv_name_base+'_scale')(x)
     x = Activation('relu', name=relu_name_base)(x)
     x = Conv2D(int(nb_filter * compression), (1, 1), name=conv_name_base, use_bias=False)(x)
 
