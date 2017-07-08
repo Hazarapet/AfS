@@ -68,14 +68,14 @@ def DenseNet(nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.0, drop
 
     model = Model(img_input, x, name='densenet')
 
-    # if weights_path is not None:
-    #     model = load_weights(_model=model, weights_path=weights_path)
-    #
-    #     for i, layer in enumerate(model.layers):
-    #         if i > 500:
-    #             break
-    #
-    #         layer.trainable = False
+    if weights_path is not None:
+        model = load_weights(_model=model, weights_path=weights_path)
+
+        for i, layer in enumerate(model.layers):
+            if i > 500:
+                break
+
+            layer.trainable = False
 
     return [model, 'models/nm/structures/']
 

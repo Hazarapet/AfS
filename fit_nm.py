@@ -16,7 +16,7 @@ from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
 N_EPOCH = 30
-BATCH_SIZE = 10
+BATCH_SIZE = 120
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
 
@@ -50,7 +50,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = DenseNet(reduction=0.5)
+[model, structure] = DenseNet(reduction=0.5, weights_path='models/nm/structures/densenet121_weights_th.h5')
 
 print model.summary()
 
