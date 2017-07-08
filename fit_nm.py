@@ -16,7 +16,7 @@ from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
 N_EPOCH = 30
-BATCH_SIZE = 80
+BATCH_SIZE = 24
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
 
@@ -54,7 +54,7 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=6e-2, momentum=.9, decay=1e-6, nesterov=True)
+sgd = SGD(lr=1e-2, momentum=.9, decay=1e-6, nesterov=True)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=1e-4),
 #               optimizer=sgd,

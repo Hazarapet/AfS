@@ -70,30 +70,12 @@ def DenseNet(nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.0, drop
 
     if weights_path is not None:
         model = load_weights(_model=model, weights_path=weights_path)
-
-        for i, layer in enumerate(model.layers):
-            if i > 300:
-                break
-
-            layer.trainable = False
-
-        model.layers.pop()
-        model.layers.pop()
-
-        x = Dense(512, name='fc6_added_1')(model.layers[-1].output)
-        x = BatchNormalization(epsilon=eps, axis=concat_axis, name='conv' + str(final_stage) + '_added_bn_1')(x)
-        x = Activation('relu', name='added_relu_1')(x)
-        x = Dropout(0.4)(x)
-
-        x = Dense(512, name='fc6_added_2')(x)
-        x = BatchNormalization(epsilon=eps, axis=concat_axis, name='conv' + str(final_stage) + '_added_bn_2')(x)
-        x = Activation('relu', name='added_relu_2')(x)
-        x = Dropout(0.4)(x)
-
-        x = Dense(classes, name='fc6_output')(x)
-        x = Activation('sigmoid', name='output')(x)
-
-        model = Model(img_input, x, name='densenet')
+        #
+        # for i, layer in enumerate(model.layers):
+        #     if i > 300:
+        #         break
+        #
+        #     layer.trainable = False
 
     return [model, 'models/nm/structures/']
 
