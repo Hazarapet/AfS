@@ -80,7 +80,7 @@ def DenseNet(nb_dense_block=4, growth_rate=32, nb_filter=64, reduction=0.0, drop
         model.layers.pop()
         model.layers.pop()
 
-        x = Dense(1024, name='fc6_added_1')(model.layers[-1].output)
+        x = Dense(512, name='fc6_added_1')(model.layers[-1].output)
         x = BatchNormalization(epsilon=eps, axis=concat_axis, name='conv' + str(final_stage) + '_added_bn_1')(x)
         x = Activation('relu', name='added_relu_1')(x)
         x = Dropout(0.4)(x)
