@@ -15,7 +15,7 @@ from models.nm.resnet50 import model as resnet_model
 from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
-N_EPOCH = 20
+N_EPOCH = 30
 BATCH_SIZE = 120
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
@@ -47,14 +47,13 @@ label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
 
 # TODO Whole db for training
-train, val = df_train.values, df_val.values
+train, val = df_tr.values, df_val.values
 
 print 'model loading...'
 [model, structure] = DenseNet(reduction=0.5, weights_path='models/nm/structures/densenet121_weights_th.h5')
 
 print model.summary()
 
-sys.exit()
 sgd = SGD(lr=1e-2, momentum=.9, decay=1e-6, nesterov=True)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=1e-4),

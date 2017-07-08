@@ -36,12 +36,16 @@ model_structure_459_14 = 'models/nm/structures/tr_l:0.1162-tr_f2:0.9084-val_l:0.
 weights_path_345_134 = 'models/nm/structures/tr_l:0.1339-tr_f2:0.8899-val_l:0.1387-val_f2:0.8868-time:04-07-2017-13:50:07-dur:345.134.h5'
 model_structure_345_134 = 'models/nm/structures/tr_l:0.1339-tr_f2:0.8899-val_l:0.1387-val_f2:0.8868-time:04-07-2017-13:50:07-dur:345.134.json'
 
+weights_path_473_778 = 'models/nm/structures/tr_l:0.0876-tr_f2:0.9138-val_l:0.0785-val_f2:0.9242-time:07-07-2017-21:57:54-dur:473.778.h5'
+model_structure_473_778 = 'models/nm/structures/tr_l:0.0876-tr_f2:0.9138-val_l:0.0785-val_f2:0.9242-time:07-07-2017-21:57:54-dur:473.778.json'
+
 weights_path_600_446 = 'models/nm/structures/tr_l:0.0912-tr_f2:0.9101-val_l:0.0969-val_f2:0.9071-time:07-07-2017-07:43:25-dur:600.446.h5'
 model_structure_600_446 = 'models/nm/structures/tr_l:0.0912-tr_f2:0.9101-val_l:0.0969-val_f2:0.9071-time:07-07-2017-07:43:25-dur:600.446.json'
 
 tags = []
 with open(model_structure_459_14, 'r') as model_json_459_14, \
         open(model_structure_345_134, 'r') as model_json_345_134, \
+        open(model_structure_473_778, 'r') as model_json_473_778, \
         open(model_structure_600_446, 'r') as model_json_600_446:
 
     # 224x224
@@ -55,6 +59,10 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
     # 224x224
     model_600_446 = model_from_json(json.loads(model_json_600_446.read()))
     model_600_446.load_weights(weights_path_600_446)
+
+    # 224x224
+    model_473_778 = model_from_json(json.loads(model_json_473_778.read()))
+    model_473_778.load_weights(weights_path_473_778)
 
     print 'models are loaded!'
 
@@ -86,11 +94,11 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
         result_459_14 = common.agg(predict_459_14)
         result_459_14 = list(np.array(result_459_14).transpose() > thres_459_14)
 
-        predict_345_134 = model_345_134.predict_on_batch(test_batch_inputs)
-        result_345_134 = common.agg(predict_345_134)
-        result_345_134 = list(np.array(result_345_134).transpose() > thres_345_134)
+        predict_473_778 = model_473_778.predict_on_batch(test_batch_inputs)
+        result_473_778 = common.agg(predict_473_778)
+        result_473_778 = list(np.array(result_473_778).transpose() > thres_345_134)
 
-        result = common.ensemble(np.array([result_600_446, result_459_14, result_345_134]))
+        result = common.ensemble(np.array([result_600_446, result_459_14, result_473_778]))
 
         # print result1
         # print result2
