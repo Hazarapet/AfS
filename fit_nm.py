@@ -50,7 +50,7 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = DenseNet(reduction=0.5, weights_path='models/nm/structures/densenet121_weights_th.h5')
+[model, structure] = DenseNet(reduction=0.5)
 
 print model.summary()
 
@@ -94,7 +94,7 @@ for epoch in range(N_EPOCH):
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
             exists = True  # TODO to augment all examples
-            targets = np.zeros(1000)
+            targets = np.zeros(17)
 
             for t in tags.split(' '):
                 targets[label_map[t]] = 1
