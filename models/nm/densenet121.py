@@ -176,7 +176,7 @@ def load_weights(_model, weights_path):
     weights = {k: v for k, v in zip(f.keys(), f.values())}
 
     for i, layer in enumerate(_model.layers):
-        if 'scale' in layer.name or 'pool' in layer.name or 'relu' in layer.name or 'blk':
+        if 'scale' in layer.name or 'pool' in layer.name or 'relu':
             continue
         # print layer.name, np.array(layer.get_weights()).shape, np.array(layer.get_weights()).ndim
         # w = weights[layer.name]
