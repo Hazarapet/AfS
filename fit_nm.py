@@ -170,8 +170,9 @@ for epoch in range(N_EPOCH):
             t_loss_graph_ep = np.append(t_loss_graph_ep, [t_loss])
             t_f2_graph_ep = np.append(t_f2_graph_ep, [t_f2])
 
-            print "examples: {}/{}, loss: {:.5f}, f2: {:.5f}".format(trained_batch,
+            print "examples: {}/{}/{}, loss: {:.5f}, f2: {:.5f}".format(trained_batch,
                    len(train) * AUGMENT_SCALE,
+                   len(train),
                    float(t_loss),
                    float(t_f2))
 
@@ -272,8 +273,9 @@ for epoch in range(N_EPOCH):
             json_string = model.to_json()
             json.dump(json_string, outfile)
 
-    print "Val Examples: {}/{}, loss: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
+    print "Val Examples: {}/{}/{}, loss: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
        len(val) * AUGMENT_SCALE,
+       len(val),
        float(np.mean(v_loss_graph_ep)),
        float(np.mean(v_f2_graph_ep)),
        float(model.optimizer.lr.get_value()),
