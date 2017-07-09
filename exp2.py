@@ -4,8 +4,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# img = cv2.imread('resource/train-jpg/{}.jpg'.format('train_30101'))
-# img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+img = cv2.imread('resource/train-jpg/{}.jpg'.format('train_13101'))
+img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+rn1 = np.random.randint(0, 32)
+rn2 = np.random.randint(img.shape[0] - 32, img.shape[0])
+
+print 'image shape: ', img.shape, rn1, rn2
+
+crop_img = cv2.resize(img[rn1:rn2, rn1:rn2], (256, 256))  # Crop from x, y, w, h -> 100, 200, 300, 400
+# NOTE: its img[y: y + h, x: x + w] and *not* img[x: x + w, y: y + h]
+# cv2.imshow("cropped", crop_img)
+# cv2.waitKey(0)
 #
 # flip_h = np.flip(img, 1)
 # flip_v = np.flip(img, 0)
@@ -23,11 +32,9 @@ import matplotlib.pyplot as plt
 # plt.imshow(rt90_flip_h)
 # plt.figure('rt90_flip_v')
 # plt.imshow(rt90_flip_v)
-# plt.figure('original')
-# plt.imshow(img)
-# plt.show()
-
-ar = np.array([np.ones(64), np.ones((63, 3, 7, 7))])
-
-print ar[1].shape
+plt.figure('cropped')
+plt.imshow(crop_img)
+plt.figure('original')
+plt.imshow(img)
+plt.show()
 

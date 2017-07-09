@@ -16,9 +16,10 @@ from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
 N_EPOCH = 30
-BATCH_SIZE = 24
+BATCH_SIZE = 48
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
+AUGMENT_SCALE = 9
 
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
 
@@ -50,7 +51,8 @@ inv_label_map = {i: l for l, i in label_map.items()}
 train, val = df_tr.values, df_val.values
 
 print 'model loading...'
-[model, structure] = DenseNet(reduction=0.5, weights_path='models/nm/structures/densenet121_weights_th.h5')
+# [model, structure] = DenseNet(reduction=0.5, weights_path='models/nm/structures/densenet121_weights_th.h5')
+[model, structure] = resnet_model()
 
 print model.summary()
 
@@ -85,8 +87,8 @@ for epoch in range(N_EPOCH):
     for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
 
         # t_batch_inputs128 = []
-        t_batch_inputs224 = []
-        # t_batch_inputs256 = []
+        # t_batch_inputs224 = []
+        t_batch_inputs256 = []
         # t_batch_inputs257 = []
 
         t_batch_labels = []
@@ -108,15 +110,15 @@ for epoch in range(N_EPOCH):
             #
             # inputs128 = img128
 
-            img224 = cv2.resize(img, (224, 224)).astype(np.float32)
-            img224 = img224.transpose((2, 0, 1))
-
-            inputs224 = img224
-
-            # img256 = cv2.resize(img, (256, 256)).astype(np.float32)
-            # img256 = img256.transpose((2, 0, 1))
+            # img224 = cv2.resize(img, (224, 224)).astype(np.float32)
+            # img224 = img224.transpose((2, 0, 1))
             #
-            # inputs256 = img256
+            # inputs224 = img224
+
+            img256 = cv2.resize(img, (256, 256)).astype(np.float32)
+            img256 = img256.transpose((2, 0, 1))
+
+            inputs256 = img256
             #
             # img257 = cv2.resize(img, (257, 257)).astype(np.float32)
             # img257 = img257.transpose((2, 0, 1))
@@ -124,8 +126,8 @@ for epoch in range(N_EPOCH):
             # inputs257 = img257
 
             # t_batch_inputs128.append(inputs128)
-            t_batch_inputs224.append(inputs224)
-            # t_batch_inputs256.append(inputs256)
+            # t_batch_inputs224.append(inputs224)
+            t_batch_inputs256.append(inputs256)
             # t_batch_inputs257.append(inputs257)
 
             t_batch_labels.append(targets)
@@ -133,20 +135,17 @@ for epoch in range(N_EPOCH):
             if AUGMENT and exists:
                 # --- augmentation ---
                 # t_batch_inputs128 = common_util.aug(t_batch_inputs128, inputs128)
-                t_batch_inputs224 = common_util.aug(t_batch_inputs224, inputs224)
-                # t_batch_inputs256 = common_util.aug(t_batch_inputs256, inputs256)
+                # t_batch_inputs224 = common_util.aug(t_batch_inputs224, inputs224)
+                t_batch_inputs256 = common_util.aug(t_batch_inputs256, inputs256)
                 # t_batch_inputs257 = common_util.aug(t_batch_inputs257, inputs257)
 
-                # cause 5x|input|
-                t_batch_labels.append(targets)
-                t_batch_labels.append(targets)
-                t_batch_labels.append(targets)
-                t_batch_labels.append(targets)
-                t_batch_labels.append(targets)
+                # cause 9x|input|
+                for i in range(AUGMENT_SCALE):
+                    t_batch_labels.append(targets)
 
         # t_batch_inputs128 = np.array(t_batch_inputs128).astype(np.float32)
-        t_batch_inputs224 = np.array(t_batch_inputs224).astype(np.float32)
-        # t_batch_inputs256 = np.array(t_batch_inputs256).astype(np.float32)
+        # t_batch_inputs224 = np.array(t_batch_inputs224).astype(np.float32)
+        t_batch_inputs256 = np.array(t_batch_inputs256).astype(np.float32)
         # t_batch_inputs257 = np.array(t_batch_inputs257).astype(np.float32)
 
         t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
@@ -157,7 +156,7 @@ for epoch in range(N_EPOCH):
             indices = np.stack(min_b[:, 0])  # inputs
             indices = indices.reshape(indices.shape[0])  # inputs
             # t_i = [t_batch_inputs256[indices], t_batch_inputs257[indices]]  # TODO 128 is removed
-            t_i = t_batch_inputs224[indices]
+            t_i = t_batch_inputs256[indices]
             t_l = np.stack(min_b[:, 1])     # labels
 
             trained_batch += len(t_l)
@@ -172,7 +171,7 @@ for epoch in range(N_EPOCH):
             t_f2_graph_ep = np.append(t_f2_graph_ep, [t_f2])
 
             print "examples: {}/{}, loss: {:.5f}, f2: {:.5f}".format(trained_batch,
-                   len(train),
+                   len(train) * AUGMENT_SCALE,
                    float(t_loss),
                    float(t_f2))
 
@@ -183,8 +182,8 @@ for epoch in range(N_EPOCH):
     for min_batch in common_util.iterate_minibatches(val, batchsize=128):
 
         # v_batch_inputs128 = []
-        v_batch_inputs224 = []
-        # v_batch_inputs256 = []
+        # v_batch_inputs224 = []
+        v_batch_inputs256 = []
         # v_batch_inputs257 = []
 
         v_batch_labels = []
@@ -206,15 +205,15 @@ for epoch in range(N_EPOCH):
             #
             # v_inputs128 = img128
 
-            img224 = cv2.resize(img, (224, 224)).astype(np.float32)
-            img224 = img224.transpose((2, 0, 1))
-
-            v_inputs224 = img224
-
-            # img256 = cv2.resize(img, (256, 256)).astype(np.float32)
-            # img256 = img256.transpose((2, 0, 1))
+            # img224 = cv2.resize(img, (224, 224)).astype(np.float32)
+            # img224 = img224.transpose((2, 0, 1))
             #
-            # v_inputs256 = img256
+            # v_inputs224 = img224
+            #
+            img256 = cv2.resize(img, (256, 256)).astype(np.float32)
+            img256 = img256.transpose((2, 0, 1))
+
+            v_inputs256 = img256
             #
             # img257 = cv2.resize(img, (257, 257)).astype(np.float32)
             # img257 = img257.transpose((2, 0, 1))
@@ -222,8 +221,8 @@ for epoch in range(N_EPOCH):
             # v_inputs257 = img257
 
             # v_batch_inputs128.append(v_inputs128)
-            v_batch_inputs224.append(v_inputs224)
-            # v_batch_inputs256.append(v_inputs256)
+            # v_batch_inputs224.append(v_inputs224)
+            v_batch_inputs256.append(v_inputs256)
             # v_batch_inputs257.append(v_inputs257)
 
             v_batch_labels.append(targets)
@@ -231,27 +230,24 @@ for epoch in range(N_EPOCH):
             if AUGMENT and exists:
                 # --- augmentation ---
                 # v_batch_inputs128 = common_util.aug(v_batch_inputs128, v_inputs128)
-                v_batch_inputs224 = common_util.aug(v_batch_inputs224, v_inputs224)
-                # v_batch_inputs256 = common_util.aug(v_batch_inputs256, v_inputs256)
+                # v_batch_inputs224 = common_util.aug(v_batch_inputs224, v_inputs224)
+                v_batch_inputs256 = common_util.aug(v_batch_inputs256, v_inputs256)
                 # v_batch_inputs257 = common_util.aug(v_batch_inputs257, v_inputs257)
 
-                # cause 5x|input|
-                v_batch_labels.append(targets)
-                v_batch_labels.append(targets)
-                v_batch_labels.append(targets)
-                v_batch_labels.append(targets)
-                v_batch_labels.append(targets)
+                # cause 9x|input|
+                for i in range(AUGMENT_SCALE):
+                    v_batch_labels.append(targets)
 
         # v_batch_inputs128 = np.array(v_batch_inputs128).astype(np.float32)
-        v_batch_inputs224 = np.array(v_batch_inputs224).astype(np.float32)
-        # v_batch_inputs256 = np.array(v_batch_inputs256).astype(np.float32)
+        # v_batch_inputs224 = np.array(v_batch_inputs224).astype(np.float32)
+        v_batch_inputs256 = np.array(v_batch_inputs256).astype(np.float32)
         # v_batch_inputs257 = np.array(v_batch_inputs257).astype(np.float32)
 
         v_batch_labels = np.array(v_batch_labels).astype(np.uint8)
 
         # TODO to have (bs, 3, width, height): 128 is removed
         # v_batch_inputs = [v_batch_inputs256, v_batch_inputs257]
-        v_batch_inputs = v_batch_inputs224
+        v_batch_inputs = v_batch_inputs256
 
         [v_loss, v_f2] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
 
@@ -277,7 +273,7 @@ for epoch in range(N_EPOCH):
             json.dump(json_string, outfile)
 
     print "Val Examples: {}/{}, loss: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
-       len(val),
+       len(val) * AUGMENT_SCALE,
        float(np.mean(v_loss_graph_ep)),
        float(np.mean(v_f2_graph_ep)),
        float(model.optimizer.lr.get_value()),

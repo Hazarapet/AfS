@@ -1,4 +1,5 @@
 import os
+import cv2
 import shutil
 import numpy as np
 import keras.backend as K
@@ -71,6 +72,10 @@ def agg(array):
 
 
 def aug(array, input):
+    # input's shape (cn, w, h)
+    rn1 = np.random.randint(0, 32)
+    rn2 = np.random.randint(input.shape[1] - 32, input.shape[1])
+
     # rotate 90
     rt90 = np.rot90(input, 1, axes=(1, 2))
     array.append(rt90)
@@ -90,6 +95,22 @@ def aug(array, input):
     # rotate 90, flip h
     rot90_flip_h = np.rot90(flip_h, 1, axes=(1, 2))
     array.append(rot90_flip_h)
+
+    # random crop with 32px shift
+    crop = cv2.resize(input[:, rn1:rn2, rn1:rn2], (input.shape[1], input.shape[2]))
+    array.append(crop)
+
+    # crop + rotate 90
+    crop_rt90 = np.rot90(crop, 1, axes=(1, 2))
+    array.append(crop_rt90)
+
+    # crop + flip h
+    crop_flip_h = np.flip(crop, 2)
+    array.append(crop_flip_h)
+
+    # crop + flip v
+    crop_flip_v = np.flip(crop, 1)
+    array.append(crop_flip_v)
 
     return array
 
