@@ -97,7 +97,9 @@ def aug(array, input):
     array.append(rot90_flip_h)
 
     # random crop with 32px shift
-    crop = cv2.resize(input[:, rn1:rn2, rn1:rn2], (input.shape[1], input.shape[2]))
+    crop = input.transpose((1, 2, 0))
+    crop = cv2.resize(crop[rn1:rn2, rn1:rn2], (crop.shape[0], crop.shape[1]))
+    crop = crop.transpose((2, 0, 1))
     array.append(crop)
 
     # crop + rotate 90
