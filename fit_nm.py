@@ -19,7 +19,7 @@ N_EPOCH = 30
 BATCH_SIZE = 32
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
-AUGMENT_SCALE = 9
+AUGMENT_SCALE = 6
 
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
 
@@ -56,15 +56,15 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=1e-2, momentum=.9, decay=1e-6, nesterov=True)
+sgd = SGD(lr=3e-2, momentum=.9, decay=1e-6, nesterov=True)
 
-# model.compile(loss=components.f2_binary_cross_entropy(l=1e-4),
-#               optimizer=sgd,
-#               metrics=[common_util.f2_score])
-
-model.compile(loss='binary_crossentropy',
+model.compile(loss=components.f2_binary_cross_entropy(l=1e-2),
               optimizer=sgd,
               metrics=[common_util.f2_score])
+#
+# model.compile(loss='binary_crossentropy',
+#               optimizer=sgd,
+#               metrics=[common_util.f2_score])
 
 print model.inputs
 print "training..."
@@ -171,7 +171,7 @@ for epoch in range(N_EPOCH):
             t_f2_graph_ep = np.append(t_f2_graph_ep, [t_f2])
 
             print "examples: {}/{}/{}, loss: {:.5f}, f2: {:.5f}".format(trained_batch,
-                   len(train) * AUGMENT_SCALE,
+                   len(train) * (AUGMENT_SCALE + 1),
                    len(train),
                    float(t_loss),
                    float(t_f2))
@@ -274,7 +274,7 @@ for epoch in range(N_EPOCH):
             json.dump(json_string, outfile)
 
     print "Val Examples: {}/{}/{}, loss: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
-       len(val) * AUGMENT_SCALE,
+       len(val) * (AUGMENT_SCALE + 1),
        len(val),
        float(np.mean(v_loss_graph_ep)),
        float(np.mean(v_f2_graph_ep)),
