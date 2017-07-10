@@ -9,11 +9,16 @@ from utils import image as UtilImage
 from keras.models import model_from_json
 
 BATCH_SIZE = 100
-IMAGE_WIDTH = 224
-IMAGE_HEIGHT = 224
+IMAGE_WIDTH = 256
+IMAGE_HEIGHT = 256
 
 
 def aug(array, input):
+    # input's shape (cn, w, h)
+    rn1 = np.random.randint(0, 32)
+    rn2 = np.random.randint(input.shape[1] - 32, input.shape[1])
+
+    # rotate 90
     rt90 = np.rot90(input, 1, axes=(1, 2))
     array.append(rt90)
 
@@ -24,6 +29,30 @@ def aug(array, input):
     # flip v
     flip_v = np.flip(input, 1)
     array.append(flip_v)
+
+    # rotate 90, flip v
+    rot90_flip_v = np.rot90(flip_v, 1, axes=(1, 2))
+    array.append(rot90_flip_v)
+
+    # rotate 90, flip h
+    rot90_flip_h = np.rot90(flip_h, 1, axes=(1, 2))
+    array.append(rot90_flip_h)
+
+    # random crop with 32px shift
+    crop = cv2.resize(input[:, rn1:rn2, rn1:rn2], (input.shape[1], input.shape[2]))
+    array.append(crop)
+
+    # crop + rotate 90
+    crop_rt90 = np.rot90(crop, 1, axes=(1, 2))
+    array.append(crop_rt90)
+
+    # crop + flip h
+    crop_flip_h = np.flip(crop, 2)
+    array.append(crop_flip_h)
+
+    # crop + flip v
+    crop_flip_v = np.flip(crop, 1)
+    array.append(crop_flip_v)
 
     return array
 
@@ -70,7 +99,7 @@ def result_single_tif(X, path, do_agg=True):
             # red, green, blue, nir, ndvi, ndwi, ior, bai
             inputs = [red, green, blue, nir, ndvi, ndwi, ior, bai]
             test_batch_inputs.append(inputs)
-            test_batch_inputs = aug(test_batch_inputs, inputs)
+            test_batch_inputs = aug(test_batch_inputs, np.array(inputs))
 
             test_batch_inputs = np.array(test_batch_inputs).astype(np.float32)
 

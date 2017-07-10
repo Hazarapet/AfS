@@ -88,20 +88,11 @@ def aug(array, input):
     flip_v = np.flip(input, 1)
     array.append(flip_v)
 
-    # rotate 90, flip v
-    rot90_flip_v = np.rot90(flip_v, 1, axes=(1, 2))
-    array.append(rot90_flip_v)
-
-    # rotate 90, flip h
-    rot90_flip_h = np.rot90(flip_h, 1, axes=(1, 2))
-    array.append(rot90_flip_h)
-
     # random crop with 32px shift
     crop = input.transpose((1, 2, 0))
     crop = cv2.resize(crop[rn1:rn2, rn1:rn2], (crop.shape[0], crop.shape[1]))
     crop = crop.transpose((2, 0, 1))
     array.append(crop)
-
 
     return array
 

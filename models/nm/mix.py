@@ -76,10 +76,10 @@ def dense_block(nb_layers, tmp_input, nm_filter, k, block_index):
 
 
 def model(weights_path=None):
-    k = 32
+    k = 12
     nm_filter = 64
     compression = 0.5
-    blocks = [3, 6, 9, 6]
+    blocks = [6, 12, 24, 16]
 
     # TODO 64, 32, 16, 8
     _resnet50_outputs = ['activation_10', 'activation_22', 'activation_40', 'activation_49']
