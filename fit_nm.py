@@ -16,7 +16,7 @@ from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 90
+BATCH_SIZE = 95
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
 AUGMENT_SCALE = 4
@@ -56,7 +56,7 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=3e-2, momentum=.9, decay=1e-6, nesterov=True)
+sgd = SGD(lr=1e-2, momentum=.9, decay=1e-6, nesterov=True)
 
 model.compile(loss=components.f2_binary_cross_entropy(l=1e-3),
               optimizer=sgd,
@@ -281,17 +281,17 @@ for epoch in range(N_EPOCH):
        float(model.optimizer.lr.get_value()),
        (time.time() - tr_time) / 60)
 
+    if epoch == 5:
+        lr = model.optimizer.lr.get_value()
+        model.optimizer.lr.set_value(3e-3)
+
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-3)
 
-    if epoch == 20:
+    if epoch == 15:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-4)
-
-    if epoch == 30:
-        lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(3e-5)
+        model.optimizer.lr.set_value(3e-4)
 
     t_loss_graph = np.append(t_loss_graph, [np.mean(t_loss_graph_ep)])
     t_f2_graph = np.append(t_f2_graph, [np.mean(t_f2_graph_ep)])

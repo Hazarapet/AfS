@@ -14,7 +14,7 @@ def model(weights_path=None):
 
     # 175 layers
     for i, layer in enumerate(_m.layers):
-        if i > 120:
+        if i > 130:
             break
 
         layer.trainable = False
@@ -22,7 +22,7 @@ def model(weights_path=None):
     x = _m.output
     x = Flatten(name='my_flatten_1')(x)
 
-    # x = Dense(512, name='my_dense_1')(x)
+    # x = Dense(256, name='my_dense_1')(x)
     # x = BatchNormalization(name='my_bn_1')(x)
     # x = Activation('relu', name='my_act_1')(x)
     # x = Dropout(0.33, name='my_dp_1')(x)
