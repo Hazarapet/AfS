@@ -73,8 +73,8 @@ def agg(array):
 
 def aug(array, input):
     # input's shape (cn, w, h)
-    rn1 = np.random.randint(0, 42)
-    rn2 = np.random.randint(input.shape[1] - 32, input.shape[1])
+    rn1 = np.random.randint(0, 30)
+    rn2 = np.random.randint(input.shape[1] - 30, input.shape[1])
 
     # rotate 90
     rt90 = np.rot90(input, 1, axes=(1, 2))
@@ -89,6 +89,7 @@ def aug(array, input):
     array.append(flip_v)
 
     # random crop with 32px shift
+    # TODO Kind of overfiting technique
     crop = input.transpose((1, 2, 0))
     crop = cv2.resize(crop[rn1:rn2, rn1:rn2], (crop.shape[0], crop.shape[1]))
     crop = crop.transpose((2, 0, 1))

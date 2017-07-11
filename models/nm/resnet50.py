@@ -1,7 +1,7 @@
 import sys
-import numpy as np
 from keras.models import Model
-from keras.layers import Input, concatenate
+from keras.regularizers import l2
+from keras.layers import Input
 from keras.applications.resnet50 import ResNet50
 from keras.layers.normalization import BatchNormalization
 from keras.layers.core import Flatten, Dense, Dropout, Activation
@@ -14,7 +14,7 @@ def model(weights_path=None):
 
     # 175 layers
     for i, layer in enumerate(_m.layers):
-        if i > 130:
+        if i > 140:
             break
 
         layer.trainable = False
@@ -22,15 +22,15 @@ def model(weights_path=None):
     x = _m.output
     x = Flatten(name='my_flatten_1')(x)
 
-    # x = Dense(256, name='my_dense_1')(x)
-    # x = BatchNormalization(name='my_bn_1')(x)
-    # x = Activation('relu', name='my_act_1')(x)
-    # x = Dropout(0.33, name='my_dp_1')(x)
+    x = Dense(1024, kernel_regularizer=l2(4e-5), name='my_dense_1')(x)
+    x = BatchNormalization(name='my_bn_1')(x)
+    x = Activation('relu', name='my_act_1')(x)
+    x = Dropout(0.4, name='my_dp_1')(x)
 
-    # x = Dense(512, name='my_dense_2')(x)
-    # x = BatchNormalization(name='my_bn_2')(x)
-    # x = Activation('relu', name='my_act_2')(x)
-    # x = Dropout(0.3, name='my_dp_2')(x)
+    x = Dense(512, kernel_regularizer=l2(2e-5), name='my_dense_2')(x)
+    x = BatchNormalization(name='my_bn_2')(x)
+    x = Activation('relu', name='my_act_2')(x)
+    x = Dropout(0.2, name='my_dp_2')(x)
 
     x = Dense(17, name='my_output_dense')(x)
     x = Activation('sigmoid', name='my_output')(x)

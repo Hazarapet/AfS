@@ -16,7 +16,7 @@ from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 95
+BATCH_SIZE = 100
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
 AUGMENT_SCALE = 4
@@ -56,15 +56,15 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=1e-2, momentum=.9, decay=1e-6, nesterov=True)
+sgd = SGD(lr=6e-2, momentum=.9, decay=1e-6, nesterov=True)
 
-model.compile(loss=components.f2_binary_cross_entropy(l=1e-3),
-              optimizer=sgd,
-              metrics=[common_util.f2_score])
-#
-# model.compile(loss='binary_crossentropy',
+# model.compile(loss=components.f2_binary_cross_entropy(l=1e-1),
 #               optimizer=sgd,
 #               metrics=[common_util.f2_score])
+#
+model.compile(loss='binary_crossentropy',
+              optimizer=sgd,
+              metrics=[common_util.f2_score])
 
 print model.inputs
 print "training..."
@@ -318,8 +318,8 @@ with open(model_filename + '.json', 'w') as outfile:
 
 # --------------------------------------
 # --------- Plotting Curves -----------
-plots.plot_curve(values=[t_loss_graph, t_f2_graph], labels=['Train Loss', 'Train F2'], file_name=model_filename + '_train.jpg')
-plots.plot_curve(values=[v_loss_graph, v_f2_graph], labels=['Val Loss', 'Val F2'], file_name=model_filename + '_val.jpg')
+plots.plot_curve(values=[t_loss_graph, t_f2_graph, v_loss_graph, v_f2_graph], labels=['Train Loss', 'Train F2', 'Val Loss', 'Val F2'], file_name=model_filename + '_plot.jpg')
+# plots.plot_curve(values=[v_loss_graph, v_f2_graph], labels=['Val Loss', 'Val F2'], file_name=model_filename + '_val.jpg')
 
 print 'Loss and F2 plots are done!'
 
