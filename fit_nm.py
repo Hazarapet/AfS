@@ -317,9 +317,9 @@ with open(model_filename + '.json', 'w') as outfile:
     json.dump(json_string, outfile)
 
 # --------------------------------------
-# --------- Plotting Curves -----------
+# --------- Plotting Curves ------------
+# train, val, train, val etc...
 plots.plot_curve(values=[t_loss_graph, v_loss_graph, t_f2_graph, v_f2_graph], labels=['Train Loss', 'Val Loss', 'Train F2', 'Val F2'], file_name=model_filename + '_plot.jpg')
-# plots.plot_curve(values=[v_loss_graph, v_f2_graph], labels=['Val Loss', 'Val F2'], file_name=model_filename + '_val.jpg')
 
 print 'Loss and F2 plots are done!'
 

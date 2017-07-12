@@ -1,29 +1,16 @@
-import keras
+import plots
 import numpy as np
-import keras.backend as K
-from keras import losses
-from utils import components
-from keras.models import Sequential
-from keras.layers import Dense
 
-def reg_binary_cross_entropy(y_true, y_pred):
-    return losses.binary_crossentropy(y_true, y_pred)
+arr = np.random.random(18)
+arr2 = np.random.random(18)
+arr3 = np.random.random(18)
+arr4 = np.random.random(18)
+arr5 = np.random.random(18)
+arr6 = np.random.random(18)
+arr7 = np.random.random(18)
+arr8 = np.random.random(18)
 
-model = Sequential()
-model.add(Dense(4, activation='relu', input_dim=100))
-model.add(Dense(1, activation='sigmoid'))
-
-model.compile(optimizer='adam',
-              loss=reg_binary_cross_entropy,
-              metrics=['accuracy'])
-
-# Generate dummy data
-data = np.random.random((10, 100))
-labels = np.round(np.random.random(10)).astype(np.int8)
-
-print 'training...'
-# Train the model, iterating on the data in batches of 32 samples
-loss = model.fit(data, labels, epochs=2, batch_size=32, verbose=1)
+plots.plot_curve(values=[arr, arr2, arr3, arr4], labels=['Train Loss', 'Val Loss', 'Train F2', 'Val F2'], file_name='_plot.jpg')
 
 
 

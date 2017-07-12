@@ -5,26 +5,30 @@ plt.switch_backend('agg')
 
 def plot_curve(values, labels, file_name):
     fig, ax1 = plt.subplots()
-    ax1.set_xlabel('Steps')
-    ax1.plot(values[0], 'r-', label=labels[0])
-    ax1.set_ylabel('Loss', color='r')
-    ax1.tick_params('y', colors='r')
-    ax1.legend(loc=4)
+    color = next(ax1._get_lines.prop_cycler)['color']
 
-    ax2 = ax1.twinx()
-    ax2.set_xlabel('Steps')
-    ax2.plot(values[1], 'r-', label=labels[1])
-    ax2.set_ylabel('Loss', color='r')
-    ax2.tick_params('y', colors='r')
-    ax2.legend(bbox_to_anchor=(1, 1), loc=5)
+    ax1.set_xlabel('Steps')
+    ax1.plot(values[0], '--', color=color, label=labels[0])
+    ax1.set_ylabel('Loss', color=color)
+    ax1.tick_params('y', colors=color)
+
+    ax1.set_xlabel('Steps')
+    ax1.plot(values[1], '-', color=color, label=labels[1])
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=6)
 
     ax3 = ax1.twinx()
-
+    i = 0
     for y_arr, label in zip(values[2:], labels[2:]):
-        ax3.plot(y_arr, label=label)
+        if i % 2 == 0:
+            color = next(ax1._get_lines.prop_cycler)['color']
+            ax3.plot(y_arr, '--', color=color, label=label)
+        else:
+            ax3.plot(y_arr, '-', color=color, label=label)
+
+        i += 1
 
     plt.grid(color='gray', linestyle='-', linewidth=0.5)
-    plt.legend(bbox_to_anchor=(1, 1), loc=5)
+    plt.legend(bbox_to_anchor=(1.05, 0.2), loc=6)
     plt.savefig(file_name, bbox_inches='tight')
 
 
