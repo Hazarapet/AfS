@@ -98,6 +98,30 @@ def aug(array, input):
     return array
 
 
+def tta(array, input):
+    # rotate 90
+    rt90 = np.rot90(input, 1, axes=(1, 2))
+    array.append(rt90)
+
+    # flip h
+    flip_h = np.flip(input, 2)
+    array.append(flip_h)
+
+    # flip v
+    flip_v = np.flip(input, 1)
+    array.append(flip_v)
+
+    # rotate 90, flip v
+    rot90_flip_v = np.rot90(flip_v, 1, axes=(1, 2))
+    array.append(rot90_flip_v)
+
+    # rotate 90, flip h
+    rot90_flip_h = np.rot90(flip_h, 1, axes=(1, 2))
+    array.append(rot90_flip_h)
+
+    return array
+
+
 def ensemble(array):
     new_array = []
     for cl in range(array.shape[1]):

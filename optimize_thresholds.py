@@ -17,15 +17,15 @@ labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
 label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
 
-weights_path = 'models/nm/structures/tr_l:0.0876-tr_f2:0.9138-val_l:0.0785-val_f2:0.9242-time:07-07-2017-21:57:54-dur:473.778.h5'
-model_structure = 'models/nm/structures/tr_l:0.0876-tr_f2:0.9138-val_l:0.0785-val_f2:0.9242-time:07-07-2017-21:57:54-dur:473.778.json'
+weights_path = 'models/nm/structures/tr_l:0.1016-tr_f2:0.9143-val_l:0.1081-val_f2:0.9094-time:12-07-2017-03:42:50-dur:386.612.h5'
+model_structure = 'models/nm/structures/tr_l:0.1016-tr_f2:0.9143-val_l:0.1081-val_f2:0.9094-time:12-07-2017-03:42:50-dur:386.612.json'
 
 result = predict.result_single_jpg(X=df_val['image_name'].values[:1000],
                                    path='resource/train-jpg/{}.jpg',
                                    weights_path=weights_path,
                                    model_structure=model_structure)
 
-thres1 = [0.14, 0.15, 0.14, 0.27, 0.1, 0.35, 0.17, 0.32, 0.24, 0.12, 0.08, 0.1, 0.12, 0.13, 0.18, 0.16, 0.31]
+thres = [0.1, 0.13, 0.43, 0.21, 0.25, 0.47, 0.14, 0.63, 0.29, 0.19, 0.15, 0.17, 0.24, 0.1, 0.29, 0.13, 0.39]
 
 y = []
 for tags in df_val['tags'].values[:1000]:
@@ -39,7 +39,7 @@ for tags in df_val['tags'].values[:1000]:
 p = []
 for r in result:
     r = np.array(r).transpose()
-    t = np.array(thres1).transpose()
+    t = np.array(thres).transpose()
     p.append((r > t) * 1.0)
 
 y = np.array(y).astype(np.float32)
@@ -51,14 +51,14 @@ print y.shape, p.shape, result.shape
 # print result
 print 'F2: ', common.f2_score(y, p).eval()
 
-best_f2_threshold, best_score = common.optimise_f2_thresholds(y, result)
-
-with open('best_f2_threshold.json', 'r') as outfile:
-    thresis = json.load(outfile)
-    obj = {'score': best_score, 'threshold': best_f2_threshold, 'model': weights_path}
-    thresis.append(obj)
-
-with open('best_f2_threshold.json', 'w') as outfile:
-    json.dump(thresis, outfile)
+# best_f2_threshold, best_score = common.optimise_f2_thresholds(y, result)
+#
+# with open('best_f2_threshold.json', 'r') as outfile:
+#     thresis = json.load(outfile)
+#     obj = {'score': best_score, 'threshold': best_f2_threshold, 'model': weights_path}
+#     thresis.append(obj)
+#
+# with open('best_f2_threshold.json', 'w') as outfile:
+#     json.dump(thresis, outfile)
 
 print '==== End ===='
