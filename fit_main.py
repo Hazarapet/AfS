@@ -100,7 +100,9 @@ for epoch in range(N_EPOCH):
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
             img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
-            img = img / 256.
+            img[:, :, 0] -= 103.939
+            img[:, :, 1] -= 116.779
+            img[:, :, 2] -= 123.68
 
             img = img.transpose((2, 0, 1))
 
@@ -158,7 +160,9 @@ for epoch in range(N_EPOCH):
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
             img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
-            img = img / 256.
+            img[:, :, 0] -= 103.939
+            img[:, :, 1] -= 116.779
+            img[:, :, 2] -= 123.68
 
             img = img.transpose((2, 0, 1))
 
