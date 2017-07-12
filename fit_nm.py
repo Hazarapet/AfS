@@ -16,10 +16,10 @@ from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 100
+BATCH_SIZE = 60
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
-AUGMENT_SCALE = 4
+AUGMENT_SCALE = 5
 
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
 
@@ -52,7 +52,7 @@ train, val = df_tr.values, df_val.values
 
 print 'model loading...'
 # [model, structure] = DenseNet(reduction=0.5, weights_path='models/nm/structures/densenet121_weights_th.h5')
-[model, structure] = resnet_model()
+[model, structure] = mixnet_model()
 
 print model.summary()
 
@@ -89,7 +89,7 @@ for epoch in range(N_EPOCH):
         # t_batch_inputs128 = []
         # t_batch_inputs224 = []
         t_batch_inputs256 = []
-        # t_batch_inputs257 = []
+        t_batch_inputs257 = []
 
         t_batch_labels = []
 
@@ -120,15 +120,15 @@ for epoch in range(N_EPOCH):
 
             inputs256 = img256
             #
-            # img257 = cv2.resize(img, (257, 257)).astype(np.float32)
-            # img257 = img257.transpose((2, 0, 1))
-            #
-            # inputs257 = img257
+            img257 = cv2.resize(img, (257, 257)).astype(np.float32)
+            img257 = img257.transpose((2, 0, 1))
+
+            inputs257 = img257
 
             # t_batch_inputs128.append(inputs128)
             # t_batch_inputs224.append(inputs224)
             t_batch_inputs256.append(inputs256)
-            # t_batch_inputs257.append(inputs257)
+            t_batch_inputs257.append(inputs257)
 
             t_batch_labels.append(targets)
 
@@ -137,7 +137,7 @@ for epoch in range(N_EPOCH):
                 # t_batch_inputs128 = common_util.aug(t_batch_inputs128, inputs128)
                 # t_batch_inputs224 = common_util.aug(t_batch_inputs224, inputs224)
                 t_batch_inputs256 = common_util.aug(t_batch_inputs256, inputs256)
-                # t_batch_inputs257 = common_util.aug(t_batch_inputs257, inputs257)
+                t_batch_inputs257 = common_util.aug(t_batch_inputs257, inputs257)
 
                 # cause 9x|input|
                 for i in range(AUGMENT_SCALE):
@@ -146,7 +146,7 @@ for epoch in range(N_EPOCH):
         # t_batch_inputs128 = np.array(t_batch_inputs128).astype(np.float32)
         # t_batch_inputs224 = np.array(t_batch_inputs224).astype(np.float32)
         t_batch_inputs256 = np.array(t_batch_inputs256).astype(np.float32)
-        # t_batch_inputs257 = np.array(t_batch_inputs257).astype(np.float32)
+        t_batch_inputs257 = np.array(t_batch_inputs257).astype(np.float32)
 
         t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
 
@@ -155,8 +155,8 @@ for epoch in range(N_EPOCH):
         for min_b in common_util.iterate_minibatches(zip(rn, t_batch_labels), batchsize=BATCH_SIZE):
             indices = np.stack(min_b[:, 0])  # inputs
             indices = indices.reshape(indices.shape[0])  # inputs
-            # t_i = [t_batch_inputs256[indices], t_batch_inputs257[indices]]  # TODO 128 is removed
-            t_i = t_batch_inputs256[indices]
+            t_i = [t_batch_inputs256[indices], t_batch_inputs257[indices]]  # TODO 128 is removed
+            # t_i = t_batch_inputs256[indices]
             t_l = np.stack(min_b[:, 1])     # labels
 
             trained_batch += len(t_l)
@@ -185,7 +185,7 @@ for epoch in range(N_EPOCH):
         # v_batch_inputs128 = []
         # v_batch_inputs224 = []
         v_batch_inputs256 = []
-        # v_batch_inputs257 = []
+        v_batch_inputs257 = []
 
         v_batch_labels = []
 
@@ -216,15 +216,15 @@ for epoch in range(N_EPOCH):
 
             v_inputs256 = img256
             #
-            # img257 = cv2.resize(img, (257, 257)).astype(np.float32)
-            # img257 = img257.transpose((2, 0, 1))
-            #
-            # v_inputs257 = img257
+            img257 = cv2.resize(img, (257, 257)).astype(np.float32)
+            img257 = img257.transpose((2, 0, 1))
+
+            v_inputs257 = img257
 
             # v_batch_inputs128.append(v_inputs128)
             # v_batch_inputs224.append(v_inputs224)
             v_batch_inputs256.append(v_inputs256)
-            # v_batch_inputs257.append(v_inputs257)
+            v_batch_inputs257.append(v_inputs257)
 
             v_batch_labels.append(targets)
 
@@ -233,22 +233,22 @@ for epoch in range(N_EPOCH):
                 # v_batch_inputs128 = common_util.aug(v_batch_inputs128, v_inputs128)
                 # v_batch_inputs224 = common_util.aug(v_batch_inputs224, v_inputs224)
                 v_batch_inputs256 = common_util.aug(v_batch_inputs256, v_inputs256)
-                # v_batch_inputs257 = common_util.aug(v_batch_inputs257, v_inputs257)
+                v_batch_inputs257 = common_util.aug(v_batch_inputs257, v_inputs257)
 
-                # cause 9x|input|
+                # cause 5x|input|
                 for i in range(AUGMENT_SCALE):
                     v_batch_labels.append(targets)
 
         # v_batch_inputs128 = np.array(v_batch_inputs128).astype(np.float32)
         # v_batch_inputs224 = np.array(v_batch_inputs224).astype(np.float32)
         v_batch_inputs256 = np.array(v_batch_inputs256).astype(np.float32)
-        # v_batch_inputs257 = np.array(v_batch_inputs257).astype(np.float32)
+        v_batch_inputs257 = np.array(v_batch_inputs257).astype(np.float32)
 
         v_batch_labels = np.array(v_batch_labels).astype(np.uint8)
 
         # TODO to have (bs, 3, width, height): 128 is removed
-        # v_batch_inputs = [v_batch_inputs256, v_batch_inputs257]
-        v_batch_inputs = v_batch_inputs256
+        v_batch_inputs = [v_batch_inputs256, v_batch_inputs257]
+        # v_batch_inputs = v_batch_inputs256
 
         [v_loss, v_f2] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
 
@@ -258,7 +258,7 @@ for epoch in range(N_EPOCH):
         v_f2_graph_ep = np.append(v_f2_graph_ep, [v_f2])
 
     # if model has reach to good results, we save that model
-    if np.mean(v_f2_graph_ep) > 0.915:
+    if np.mean(v_f2_graph_ep) > 0.916:
         timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
         model_filename = structure + 'good-epoch:' + str(epoch) + \
                          '-tr_l:' + str(round(np.min(t_loss_graph_ep), 4)) + \
