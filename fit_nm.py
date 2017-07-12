@@ -89,7 +89,7 @@ for epoch in range(N_EPOCH):
         # t_batch_inputs128 = []
         # t_batch_inputs224 = []
         t_batch_inputs256 = []
-        t_batch_inputs257 = []
+        # t_batch_inputs257 = []
 
         t_batch_labels = []
 
@@ -121,15 +121,15 @@ for epoch in range(N_EPOCH):
 
             inputs256 = img256
             #
-            img257 = cv2.resize(img, (257, 257)).astype(np.float32)
-            img257 = img257.transpose((2, 0, 1))
-
-            inputs257 = img257
+            # img257 = cv2.resize(img, (257, 257)).astype(np.float32)
+            # img257 = img257.transpose((2, 0, 1))
+            #
+            # inputs257 = img257
 
             # t_batch_inputs128.append(inputs128)
             # t_batch_inputs224.append(inputs224)
             t_batch_inputs256.append(inputs256)
-            t_batch_inputs257.append(inputs257)
+            # t_batch_inputs257.append(inputs257)
 
             t_batch_labels.append(targets)
 
@@ -138,16 +138,16 @@ for epoch in range(N_EPOCH):
                 # t_batch_inputs128 = common_util.aug(t_batch_inputs128, inputs128)
                 # t_batch_inputs224 = common_util.aug(t_batch_inputs224, inputs224)
                 t_batch_inputs256 = common_util.aug(t_batch_inputs256, inputs256)
-                t_batch_inputs257 = common_util.aug(t_batch_inputs257, inputs257)
+                # t_batch_inputs257 = common_util.aug(t_batch_inputs257, inputs257)
 
-                # cause 9x|input|
+                # cause AUGMENT_SCALEx|input|
                 for i in range(AUGMENT_SCALE):
                     t_batch_labels.append(targets)
 
         # t_batch_inputs128 = np.array(t_batch_inputs128).astype(np.float32)
         # t_batch_inputs224 = np.array(t_batch_inputs224).astype(np.float32)
         t_batch_inputs256 = np.array(t_batch_inputs256).astype(np.float32)
-        t_batch_inputs257 = np.array(t_batch_inputs257).astype(np.float32)
+        # t_batch_inputs257 = np.array(t_batch_inputs257).astype(np.float32)
 
         t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
 
@@ -156,8 +156,8 @@ for epoch in range(N_EPOCH):
         for min_b in common_util.iterate_minibatches(zip(rn, t_batch_labels), batchsize=BATCH_SIZE):
             indices = np.stack(min_b[:, 0])  # inputs
             indices = indices.reshape(indices.shape[0])  # inputs
-            t_i = [t_batch_inputs256[indices], t_batch_inputs257[indices]]  # TODO 128 is removed
-            # t_i = t_batch_inputs256[indices]
+            # t_i = [t_batch_inputs256[indices], t_batch_inputs257[indices]]  # TODO 128 is removed
+            t_i = t_batch_inputs256[indices]
             t_l = np.stack(min_b[:, 1])     # labels
 
             trained_batch += len(t_l)
@@ -186,7 +186,7 @@ for epoch in range(N_EPOCH):
         # v_batch_inputs128 = []
         # v_batch_inputs224 = []
         v_batch_inputs256 = []
-        v_batch_inputs257 = []
+        # v_batch_inputs257 = []
 
         v_batch_labels = []
 
@@ -201,6 +201,7 @@ for epoch in range(N_EPOCH):
                     exists = True
 
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
+            img = img / 256.
 
             # img128 = cv2.resize(img, (128, 128)).astype(np.float32)
             # img128 = img128.transpose((2, 0, 1))
@@ -217,15 +218,15 @@ for epoch in range(N_EPOCH):
 
             v_inputs256 = img256
             #
-            img257 = cv2.resize(img, (257, 257)).astype(np.float32)
-            img257 = img257.transpose((2, 0, 1))
-
-            v_inputs257 = img257
+            # img257 = cv2.resize(img, (257, 257)).astype(np.float32)
+            # img257 = img257.transpose((2, 0, 1))
+            #
+            # v_inputs257 = img257
 
             # v_batch_inputs128.append(v_inputs128)
             # v_batch_inputs224.append(v_inputs224)
             v_batch_inputs256.append(v_inputs256)
-            v_batch_inputs257.append(v_inputs257)
+            # v_batch_inputs257.append(v_inputs257)
 
             v_batch_labels.append(targets)
 
@@ -234,22 +235,22 @@ for epoch in range(N_EPOCH):
                 # v_batch_inputs128 = common_util.aug(v_batch_inputs128, v_inputs128)
                 # v_batch_inputs224 = common_util.aug(v_batch_inputs224, v_inputs224)
                 v_batch_inputs256 = common_util.aug(v_batch_inputs256, v_inputs256)
-                v_batch_inputs257 = common_util.aug(v_batch_inputs257, v_inputs257)
+                # v_batch_inputs257 = common_util.aug(v_batch_inputs257, v_inputs257)
 
-                # cause 5x|input|
+                # cause AUGMENT_SCALEx|input|
                 for i in range(AUGMENT_SCALE):
                     v_batch_labels.append(targets)
 
         # v_batch_inputs128 = np.array(v_batch_inputs128).astype(np.float32)
         # v_batch_inputs224 = np.array(v_batch_inputs224).astype(np.float32)
         v_batch_inputs256 = np.array(v_batch_inputs256).astype(np.float32)
-        v_batch_inputs257 = np.array(v_batch_inputs257).astype(np.float32)
+        # v_batch_inputs257 = np.array(v_batch_inputs257).astype(np.float32)
 
         v_batch_labels = np.array(v_batch_labels).astype(np.uint8)
 
         # TODO to have (bs, 3, width, height): 128 is removed
-        v_batch_inputs = [v_batch_inputs256, v_batch_inputs257]
-        # v_batch_inputs = v_batch_inputs256
+        # v_batch_inputs = [v_batch_inputs256, v_batch_inputs257]
+        v_batch_inputs = v_batch_inputs256
 
         [v_loss, v_f2] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
 
