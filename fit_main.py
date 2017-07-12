@@ -52,7 +52,7 @@ print 'model loading...'
 
 print model.summary()
 
-adam = Adam(lr=6e-3, decay=1e-4)
+adam = Adam(lr=6e-2, decay=1e-4)
 
 # sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
