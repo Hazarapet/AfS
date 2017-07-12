@@ -14,7 +14,7 @@ def model(weights_path=None):
 
     # 175 layers
     for i, layer in enumerate(_m.layers):
-        if i > 155:
+        if i > 150:
             break
 
         layer.trainable = False
