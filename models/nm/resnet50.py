@@ -14,15 +14,16 @@ def model(weights_path=None):
 
     # 175 layers
     for i, layer in enumerate(_m.layers):
-        if i > 160:
+        if i > 165:
             break
 
         layer.trainable = False
 
     x = _m.output
     x = Flatten(name='my_flatten_1')(x)
+    x = Dropout(0.5, name='my_dp_flatten')(x)
 
-    x = Dense(512, kernel_regularizer=l2(2e-5), name='my_dense_1')(x)
+    x = Dense(1024, kernel_regularizer=l2(2e-5), name='my_dense_1')(x)
     x = BatchNormalization(name='my_bn_1')(x)
     x = Activation('relu', name='my_act_1')(x)
     x = Dropout(0.5, name='my_dp_1')(x)

@@ -52,11 +52,11 @@ train, val = df_tr.values, df_val.values
 
 print 'model loading...'
 # [model, structure] = DenseNet(reduction=0.5, weights_path='models/nm/structures/densenet121_weights_th.h5')
-[model, structure] = mixnet_model()
+[model, structure] = resnet_model()
 
 print model.summary()
 
-sgd = SGD(lr=1e-1, momentum=.9, decay=1e-6, nesterov=True)
+sgd = SGD(lr=1e-2, momentum=.9, decay=1e-6, nesterov=True)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=1e-1),
 #               optimizer=sgd,
