@@ -25,7 +25,7 @@ result = predict.result_single_jpg(X=df_val['image_name'].values[:1000],
                                    weights_path=weights_path,
                                    model_structure=model_structure)
 
-thres = [0.1, 0.13, 0.43, 0.21, 0.25, 0.47, 0.14, 0.63, 0.29, 0.19, 0.15, 0.17, 0.24, 0.1, 0.29, 0.13, 0.39]
+thres = [0.1, 0.13, 0.43, 0.21, 0.25, 0.47, 0.14, 0.63, 0.29, 0.19, 0.15, 0.17, 0.24, 0.1, 0.29, 0.13, 0.39]  # test
 
 y = []
 for tags in df_val['tags'].values[:1000]:
