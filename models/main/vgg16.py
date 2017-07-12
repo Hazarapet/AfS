@@ -11,6 +11,7 @@ def model(weights_path=None):
     _m = VGG16(weights=None, include_top=False, input_tensor=_input, input_shape=(3, 256, 256))
     _m.load_weights('models/main/structures/vgg16_weights_th_dim_ordering_th_kernels_notop.h5')
 
+    # 19
     for i, layer in enumerate(_m.layers):
         if i > 10:
             break
