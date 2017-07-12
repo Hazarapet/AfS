@@ -14,10 +14,11 @@ from models.main.vgg16 import model as vgg16_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 600
-IMAGE_WIDTH = 128
-IMAGE_HEIGHT = 128
+BATCH_SIZE = 300
+IMAGE_WIDTH = 256
+IMAGE_HEIGHT = 256
 AUGMENT = True
+AUGMENT_SCALE = 5
 
 rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
         'blooming', 'selective_logging', 'blow_down', 'cultivation', 'road', 'habitation', 'water']
@@ -51,17 +52,17 @@ print 'model loading...'
 
 print model.summary()
 
-adam = Adam(lr=1e-2, decay=1e-4)
+adam = Adam(lr=6e-3, decay=1e-4)
 
 # sgd = SGD(lr=1e-1, momentum=.9, decay=1e-4)
 
-model.compile(loss=components.f2_binary_cross_entropy(l=0.01),
-              optimizer=adam,
-              metrics=[common_util.f2_score])
-
-# model.compile(loss='binary_crossentropy',
+# model.compile(loss=components.f2_binary_cross_entropy(l=0.01),
 #               optimizer=adam,
 #               metrics=[common_util.f2_score])
+
+model.compile(loss='binary_crossentropy',
+              optimizer=adam,
+              metrics=[common_util.f2_score])
 
 print model.inputs
 print "training..."
@@ -88,7 +89,7 @@ for epoch in range(N_EPOCH):
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            exists = False
+            exists = True
             targets = np.zeros(17)
 
             for t in tags.split(' '):
@@ -99,6 +100,8 @@ for epoch in range(N_EPOCH):
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
             img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            img = img / 256.
+
             img = img.transpose((2, 0, 1))
 
             inputs = img
@@ -110,10 +113,9 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 t_batch_inputs = common_util.aug(t_batch_inputs, inputs)
 
-                # cause 3x|input|
-                t_batch_labels.append(targets)
-                t_batch_labels.append(targets)
-                t_batch_labels.append(targets)
+                # cause AUGMENT_SCALEx|input|
+                for i in range(AUGMENT_SCALE):
+                    t_batch_labels.append(targets)
 
         t_batch_inputs = np.array(t_batch_inputs).astype(np.float32)
         t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
@@ -129,22 +131,23 @@ for epoch in range(N_EPOCH):
             t_loss_graph_ep = np.append(t_loss_graph_ep, [t_loss])
             t_f2_graph_ep = np.append(t_f2_graph_ep, [t_f2])
 
-            print "examples: {}/{}, loss: {:.5f}, f2: {:.5f}".format(trained_batch,
-                   len(train),
-                   float(t_loss),
-                   float(t_f2))
+            print "examples: {}/{}/{}, loss: {:.5f}, f2: {:.5f}".format(trained_batch,
+                len(train) * (AUGMENT_SCALE + 1),
+                len(train),
+                float(t_loss),
+                float(t_f2))
 
     # ===== Validation =====
     print '----- Validation of epoch: {} -----'.format(epoch)
     np.random.shuffle(val)
     val_batch = 0
-    for min_batch in common_util.iterate_minibatches(val, batchsize=1024):
+    for min_batch in common_util.iterate_minibatches(val, batchsize=128):
         v_batch_inputs = []
         v_batch_labels = []
 
         # now we should load min_batch's images and collect them
         for f, tags in min_batch:
-            exists = False
+            exists = True
             targets = np.zeros(17)
 
             for t in tags.split(' '):
@@ -155,6 +158,8 @@ for epoch in range(N_EPOCH):
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
 
             img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            img = img / 256.
+
             img = img.transpose((2, 0, 1))
 
             v_inputs = img
@@ -166,10 +171,9 @@ for epoch in range(N_EPOCH):
                 # --- augmentation ---
                 v_batch_inputs = common_util.aug(v_batch_inputs, v_inputs)
 
-                # cause 3x|input|
-                v_batch_labels.append(targets)
-                v_batch_labels.append(targets)
-                v_batch_labels.append(targets)
+                # cause AUGMENT_SCALEx|input|
+                for i in range(AUGMENT_SCALE):
+                    v_batch_labels.append(targets)
 
         v_batch_inputs = np.array(v_batch_inputs).astype(np.float32)
         v_batch_labels = np.array(v_batch_labels).astype(np.uint8)
@@ -181,28 +185,29 @@ for epoch in range(N_EPOCH):
         v_loss_graph_ep = np.append(v_loss_graph_ep, [v_loss])
         v_f2_graph_ep = np.append(v_f2_graph_ep, [v_f2])
 
-        print "Val Examples: {}/{}, loss: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
-            len(val),
-            float(v_loss),
-            float(v_f2),
-            float(model.optimizer.lr.get_value()),
-            (time.time() - tr_time) / 60)
+        print "Val Examples: {}/{}/{}, loss: {:.5f}, f2: {:.5f}, l_rate: {:.5f} | {:.1f}m".format(val_batch,
+              len(val) * (AUGMENT_SCALE + 1),
+              len(val),
+              float(np.mean(v_loss_graph_ep)),
+              float(np.mean(v_f2_graph_ep)),
+              float(model.optimizer.lr.get_value()),
+              (time.time() - tr_time) / 60)
 
-        # if model has reach to good results, we save that model
-        if v_f2 > 0.905:
-            timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
-            model_filename = structure + 'good-epoch:' + str(epoch) + \
-                             '-tr_l:' + str(round(np.min(t_loss_graph_ep), 4)) + \
-                             '-tr_f2:' + str(round(np.max(t_f2_graph_ep), 4)) + \
-                             '-val_l:' + str(round(v_loss, 4)) + \
-                             '-val_f2:' + str(round(np.max(v_f2_graph_ep), 4)) + \
-                             '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
-            # saving the weights
-            model.save_weights(model_filename + '.h5')
+    # if model has reach to good results, we save that model
+    if np.mean(v_f2_graph_ep) > 0.915:
+        timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
+        model_filename = structure + 'good-epoch:' + str(epoch) + \
+                         '-tr_l:' + str(round(np.mean(t_loss_graph_ep), 4)) + \
+                         '-tr_f2:' + str(round(np.mean(t_f2_graph_ep), 4)) + \
+                         '-val_l:' + str(round(np.mean(v_loss_graph_ep), 4)) + \
+                         '-val_f2:' + str(round(np.mean(v_f2_graph_ep), 4)) + \
+                         '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
+        # saving the weights
+        model.save_weights(model_filename + '.h5')
 
-            with open(model_filename + '.json', 'w') as outfile:
-                json_string = model.to_json()
-                json.dump(json_string, outfile)
+        with open(model_filename + '.json', 'w') as outfile:
+            json_string = model.to_json()
+            json.dump(json_string, outfile)
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
@@ -240,8 +245,7 @@ with open(model_filename + '.json', 'w') as outfile:
 
 # --------------------------------------
 # --------- Plotting Curves -----------
-plots.plot_curve(values=[t_loss_graph, t_f2_graph], labels=['Train Loss', 'Train F2'], file_name=model_filename + '_train.jpg')
-plots.plot_curve(values=[v_loss_graph, v_f2_graph], labels=['Val Loss', 'Val F2'], file_name=model_filename + '_val.jpg')
+plots.plot_curve(values=[t_loss_graph, v_loss_graph, t_f2_graph, v_f2_graph], labels=['Train Loss', 'Val Loss', 'Train F2', 'Val F2'], file_name=model_filename + '_plot.jpg')
 
 print 'Loss and F2 plots are done!'
 

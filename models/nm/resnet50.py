@@ -1,7 +1,7 @@
 import sys
 from keras.models import Model
-from keras.regularizers import l2
 from keras.layers import Input
+from keras.regularizers import l2
 from keras.applications.resnet50 import ResNet50
 from keras.layers.normalization import BatchNormalization
 from keras.layers.core import Flatten, Dense, Dropout, Activation

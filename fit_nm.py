@@ -16,7 +16,7 @@ from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 30
+BATCH_SIZE = 26
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
 AUGMENT_SCALE = 5
@@ -56,7 +56,7 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=6e-2, momentum=.9, decay=1e-6, nesterov=True)
+sgd = SGD(lr=1e-1, momentum=.9, decay=1e-6, nesterov=True)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=1e-1),
 #               optimizer=sgd,
@@ -104,6 +104,7 @@ for epoch in range(N_EPOCH):
                     exists = True
 
             img = cv2.imread('resource/train-jpg/{}.jpg'.format(f))
+            img = img / 256.
 
             # img128 = cv2.resize(img, (128, 128)).astype(np.float32)
             # img128 = img128.transpose((2, 0, 1))
@@ -261,10 +262,10 @@ for epoch in range(N_EPOCH):
     if np.mean(v_f2_graph_ep) > 0.916:
         timestamp = str(time.strftime("%d-%m-%Y-%H:%M:%S", time.gmtime()))
         model_filename = structure + 'good-epoch:' + str(epoch) + \
-                         '-tr_l:' + str(round(np.min(t_loss_graph_ep), 4)) + \
-                         '-tr_f2:' + str(round(np.max(t_f2_graph_ep), 4)) + \
+                         '-tr_l:' + str(round(np.mean(t_loss_graph_ep), 4)) + \
+                         '-tr_f2:' + str(round(np.mean(t_f2_graph_ep), 4)) + \
                          '-val_l:' + str(round(np.mean(v_loss_graph_ep), 4)) + \
-                         '-val_f2:' + str(round(np.max(v_f2_graph_ep), 4)) + \
+                         '-val_f2:' + str(round(np.mean(v_f2_graph_ep), 4)) + \
                          '-time:' + timestamp + '-dur:' + str(round((time.time() - st_time) / 60, 3))
         # saving the weights
         model.save_weights(model_filename + '.h5')
