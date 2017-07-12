@@ -14,7 +14,7 @@ from models.main.vgg16 import model as vgg16_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 300
+BATCH_SIZE = 100
 IMAGE_WIDTH = 256
 IMAGE_HEIGHT = 256
 AUGMENT = True

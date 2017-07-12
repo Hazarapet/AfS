@@ -13,7 +13,7 @@ def model(weights_path=None):
 
     print len(_m.layers)
     for i, layer in enumerate(_m.layers):
-        if i > 100:
+        if i > 10:
             break
 
         layer.trainable = False
