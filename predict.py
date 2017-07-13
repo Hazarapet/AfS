@@ -114,6 +114,7 @@ def result_single_jpg(X, path, weights_path, model_structure, do_agg=True):
             img = cv2.imread(path.format(f[0]))
 
             img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
+            img = img / 256.
             img = img.transpose((2, 0, 1))
 
             inputs = img

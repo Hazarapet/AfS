@@ -40,7 +40,7 @@ model_structure_459_14 = 'models/nm/structures/tr_l:0.1162-tr_f2:0.9084-val_l:0.
 weights_path_345_134 = 'models/nm/structures/tr_l:0.1339-tr_f2:0.8899-val_l:0.1387-val_f2:0.8868-time:04-07-2017-13:50:07-dur:345.134.h5'
 model_structure_345_134 = 'models/nm/structures/tr_l:0.1339-tr_f2:0.8899-val_l:0.1387-val_f2:0.8868-time:04-07-2017-13:50:07-dur:345.134.json'
 
-# 0.93425 (whole db)
+# 0.93425 (whole db) ~0.921
 weights_path_473_778 = 'models/nm/structures/tr_l:0.0876-tr_f2:0.9138-val_l:0.0785-val_f2:0.9242-time:07-07-2017-21:57:54-dur:473.778.h5'
 model_structure_473_778 = 'models/nm/structures/tr_l:0.0876-tr_f2:0.9138-val_l:0.0785-val_f2:0.9242-time:07-07-2017-21:57:54-dur:473.778.json'
 
