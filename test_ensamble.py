@@ -126,7 +126,8 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
         result_386_612 = common.agg(predict_386_612)
         result = list(np.array(result_386_612).transpose() > thres_386_612)
 
-        result = common.ensemble(np.array([result_600_446, result_459_14, result_473_778, result_386_612]))
+        # Weighing the results
+        result = common.ensemble(np.array([result_600_446, result_459_14, result_473_778, result_473_778, result_386_612, result_386_612, result_386_612]))
 
         # print result1
         # print result2

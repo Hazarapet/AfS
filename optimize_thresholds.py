@@ -1,10 +1,13 @@
 import os
 import sys
 import json
+import time
 import predict
 import numpy as np
 import pandas as pd
 import utils.common as common
+
+st_time = time.time()
 
 # loading the data
 df_val = pd.read_csv('val_split.csv')
@@ -17,11 +20,12 @@ labels = list(set(flatten([l.split(' ') for l in df_train['tags'].values])))
 label_map = {l: i for i, l in enumerate(labels)}
 inv_label_map = {i: l for l, i in label_map.items()}
 
-weights_path = 'models/nm/structures/tr_l:0.1174-tr_f2:0.9148-val_l:0.1245-val_f2:0.9098-time:13-07-2017-08:27:59-dur:630.577.h5'
-model_structure = 'models/nm/structures/tr_l:0.1174-tr_f2:0.9148-val_l:0.1245-val_f2:0.9098-time:13-07-2017-08:27:59-dur:630.577.json'
+weights_path = 'models/nm/structures/tr_l:0.1016-tr_f2:0.9143-val_l:0.1081-val_f2:0.9094-time:12-07-2017-03:42:50-dur:386.612.h5'
+model_structure = 'models/nm/structures/tr_l:0.1016-tr_f2:0.9143-val_l:0.1081-val_f2:0.9094-time:12-07-2017-03:42:50-dur:386.612.json'
 
 result = predict.result_single_jpg(X=df_val['image_name'].values[:1000],
                                    path='resource/train-jpg/{}.jpg',
+                                   size=(256, 256),
                                    weights_path=weights_path,
                                    model_structure=model_structure)
 
@@ -61,4 +65,5 @@ best_f2_threshold, best_score = common.optimise_f2_thresholds(y, result)
 # with open('best_f2_threshold.json', 'w') as outfile:
 #     json.dump(thresis, outfile)
 
+print('\n{:.2f}m Runtime'.format((time.time() - st_time) / 60))
 print '==== End ===='

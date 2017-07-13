@@ -96,7 +96,7 @@ def result_single_tif(X, path, do_agg=True):
     return result
 
 
-def result_single_jpg(X, path, weights_path, model_structure, do_agg=True):
+def result_single_jpg(X, path, weights_path, model_structure, size=(224, 224), is_normed=False, do_agg=True):
 
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))
@@ -113,8 +113,11 @@ def result_single_jpg(X, path, weights_path, model_structure, do_agg=True):
 
             img = cv2.imread(path.format(f[0]))
 
-            img = cv2.resize(img, (IMAGE_WIDTH, IMAGE_HEIGHT)).astype(np.float32)
-            img = img / 256.
+            img = cv2.resize(img, (size[0], size[1])).astype(np.float32)
+
+            if is_normed:
+                img = img / 256.
+
             img = img.transpose((2, 0, 1))
 
             inputs = img
