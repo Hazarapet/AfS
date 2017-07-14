@@ -96,7 +96,7 @@ def result_single_tif(X, path, do_agg=True):
     return result
 
 
-def result_single_jpg(X, path, weights_path, model_structure, size=(224, 224), is_normed=False, do_agg=True):
+def result_single_jpg(X, path, weights_path, model_structure, size=(224, 224), is_normed=False, do_agg=True, verbose=True):
 
     with open(model_structure, 'r') as model_json:
         main_model = model_from_json(json.loads(model_json.read()))
@@ -135,7 +135,8 @@ def result_single_jpg(X, path, weights_path, model_structure, size=(224, 224), i
             else:
                 result = result + p_group_test.tolist()
 
-            print '{}/{} predicted'.format(count, len(X))
+            if verbose:
+                print '{}/{} predicted'.format(count, len(X))
 
     return result
 
