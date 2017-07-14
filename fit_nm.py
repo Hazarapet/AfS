@@ -19,7 +19,7 @@ N_EPOCH = 15
 BATCH_SIZE = 100
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
-AUGMENT_SCALE = 5
+AUGMENT_SCALE = 3
 
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
 
