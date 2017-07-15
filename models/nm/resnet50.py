@@ -13,11 +13,11 @@ def model(weights_path=None):
     _m.load_weights('models/nm/structures/resnet50_weights_th_dim_ordering_th_kernels_notop.h5')
 
     # 175 layers
-    for i, layer in enumerate(_m.layers):
-        if i > 165:
-            break
+    # for i, layer in enumerate(_m.layers):
+        # if i > 165:
+        #     break
 
-        layer.trainable = False
+        # layer.trainable = False
 
     x = _m.output
     x = Flatten(name='my_flatten_1')(x)
