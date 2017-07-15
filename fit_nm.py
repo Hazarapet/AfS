@@ -283,11 +283,11 @@ for epoch in range(N_EPOCH):
        float(model.optimizer.lr.get_value()),
        (time.time() - tr_time) / 60)
 
-    if epoch == 5:
+    if epoch == 4:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-2)
 
-    if epoch == 10:
+    if epoch == 7:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-3)
 
