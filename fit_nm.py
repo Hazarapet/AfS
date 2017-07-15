@@ -16,7 +16,7 @@ from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
 N_EPOCH = 20
-BATCH_SIZE = 30
+BATCH_SIZE = 130
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
 AUGMENT_SCALE = 3
