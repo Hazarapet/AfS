@@ -15,8 +15,8 @@ from models.nm.resnet50 import model as resnet_model
 from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
-N_EPOCH = 15
-BATCH_SIZE = 110
+N_EPOCH = 20
+BATCH_SIZE = 30
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
 AUGMENT_SCALE = 3
