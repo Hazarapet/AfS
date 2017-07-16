@@ -287,7 +287,7 @@ for epoch in range(N_EPOCH):
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-3)
 
-    if epoch == 7:
+    if epoch == 9:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-3)
 
