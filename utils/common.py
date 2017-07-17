@@ -95,6 +95,14 @@ def aug(array, input):
     # crop = crop.transpose((2, 0, 1))
     # array.append(crop)
 
+    # rotate 90, flip v
+    rot90_flip_v = np.rot90(flip_v, 1, axes=(1, 2))
+    array.append(rot90_flip_v)
+
+    # rotate 90, flip h
+    rot90_flip_h = np.rot90(flip_h, 1, axes=(1, 2))
+    array.append(rot90_flip_h)
+
     return array
 
 

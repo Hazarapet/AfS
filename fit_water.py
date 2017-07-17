@@ -13,7 +13,7 @@ from models.water.resnet50 import model as resnet_model
 
 st_time = time.time()
 N_EPOCH = 15
-BATCH_SIZE = 100
+BATCH_SIZE = 128
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
 AUGMENT_SCALE = 5
@@ -82,7 +82,7 @@ for epoch in range(N_EPOCH):
 
     for min_batch in common_util.iterate_minibatches(train, batchsize=BATCH_SIZE):
 
-        t_batch_inputs256 = []
+        t_batch_inputs224 = []
         t_batch_labels = []
 
         # now we should load min_batch's images and collect them
@@ -101,26 +101,26 @@ for epoch in range(N_EPOCH):
             rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
             ndvi = UtilImage.ndvi(rgbn)
 
-            ndvi = cv2.resize(ndvi, (256, 256)).astype(np.float32)
+            ndvi = cv2.resize(ndvi, (224, 224)).astype(np.float32)
 
-            img256 = cv2.resize(img, (256, 256)).astype(np.float32)
-            img256 = img256.transpose((2, 0, 1))
+            img224 = cv2.resize(img, (224, 224)).astype(np.float32)
+            img224 = img224.transpose((2, 0, 1))
 
-            inputs256 = np.append(img256[1:], [ndvi], axis=0)
+            inputs224 = np.append(img224[1:], [ndvi], axis=0)
 
-            t_batch_inputs256.append(inputs256)
+            t_batch_inputs224.append(inputs224)
 
             t_batch_labels.append(targets)
 
             if AUGMENT and exists:
                 # --- augmentation ---
-                t_batch_inputs256 = common_util.aug(t_batch_inputs256, inputs256)
+                t_batch_inputs224 = common_util.aug(t_batch_inputs224, inputs224)
 
                 # cause AUGMENT_SCALEx|input|
                 for i in range(AUGMENT_SCALE):
                     t_batch_labels.append(targets)
 
-        t_batch_inputs256 = np.array(t_batch_inputs256).astype(np.float32)
+        t_batch_inputs224 = np.array(t_batch_inputs224).astype(np.float32)
 
         t_batch_labels = np.array(t_batch_labels).astype(np.uint8)
 
@@ -129,7 +129,7 @@ for epoch in range(N_EPOCH):
         for min_b in common_util.iterate_minibatches(zip(rn, t_batch_labels), batchsize=BATCH_SIZE):
             indices = np.stack(min_b[:, 0])  # inputs
             indices = indices.reshape(indices.shape[0])  # inputs
-            t_i = t_batch_inputs256[indices]
+            t_i = t_batch_inputs224[indices]
             t_l = np.stack(min_b[:, 1])     # labels
 
             trained_batch += len(t_l)
@@ -150,7 +150,7 @@ for epoch in range(N_EPOCH):
     val_batch = 0
     for min_batch in common_util.iterate_minibatches(val, batchsize=128):
 
-        v_batch_inputs256 = []
+        v_batch_inputs224 = []
         v_batch_labels = []
 
         # now we should load min_batch's images and collect them
@@ -169,30 +169,30 @@ for epoch in range(N_EPOCH):
             rgbn = UtilImage.process_tif('resource/train-tif-v2/{}.tif'.format(f))
             ndvi = UtilImage.ndvi(rgbn)
 
-            ndvi = cv2.resize(ndvi, (256, 256)).astype(np.float32)
+            ndvi = cv2.resize(ndvi, (224, 224)).astype(np.float32)
 
-            img256 = cv2.resize(img, (256, 256)).astype(np.float32)
-            img256 = img256.transpose((2, 0, 1))
+            img224 = cv2.resize(img, (224, 224)).astype(np.float32)
+            img224 = img224.transpose((2, 0, 1))
 
-            v_inputs256 = np.append(img256[1:], [ndvi], axis=0)
+            v_inputs224 = np.append(img224[1:], [ndvi], axis=0)
 
-            v_batch_inputs256.append(v_inputs256)
+            v_batch_inputs224.append(v_inputs224)
 
             v_batch_labels.append(targets)
 
             if AUGMENT and exists:
                 # --- augmentation ---
-                v_batch_inputs256 = common_util.aug(v_batch_inputs256, v_inputs256)
+                v_batch_inputs224 = common_util.aug(v_batch_inputs224, v_inputs224)
 
                 # cause AUGMENT_SCALEx|input|
                 for i in range(AUGMENT_SCALE):
                     v_batch_labels.append(targets)
 
-        v_batch_inputs256 = np.array(v_batch_inputs256).astype(np.float32)
+        v_batch_inputs224 = np.array(v_batch_inputs224).astype(np.float32)
 
         v_batch_labels = np.array(v_batch_labels).astype(np.uint8)
 
-        v_batch_inputs = v_batch_inputs256
+        v_batch_inputs = v_batch_inputs224
 
         [v_loss, v_f2] = model.evaluate(v_batch_inputs, v_batch_labels, batch_size=BATCH_SIZE, verbose=0)
 
