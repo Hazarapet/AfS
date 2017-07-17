@@ -8,13 +8,13 @@ from keras.layers.core import Flatten, Dense, Dropout, Activation
 
 
 def model(weights_path=None):
-    _input = Input((3, 224, 224))
-    _m = ResNet50(weights=None, include_top=False, input_tensor=_input, input_shape=(3, 224, 224))
+    _input = Input((3, 168, 168))
+    _m = ResNet50(weights=None, include_top=False, input_tensor=_input, input_shape=(3, 168, 168))
     _m.load_weights('models/nm/structures/resnet50_weights_th_dim_ordering_th_kernels_notop.h5')
 
     # 175 layers
     for i, layer in enumerate(_m.layers):
-        if i > 150:
+        if i > 145:
             break
 
         layer.trainable = False
