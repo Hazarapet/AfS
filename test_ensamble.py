@@ -106,29 +106,29 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
         #
         predict_600_446 = model_600_446.predict_on_batch(test_batch_inputs_224)
         result_600_446 = common.agg(predict_600_446)
-        # result_600_446 = list(np.array(result_600_446).transpose() > thres_600_446)
+        result_600_446 = list(np.array(result_600_446).transpose() > thres_600_446)
 
         predict_459_14 = model_459_14.predict_on_batch(test_batch_inputs_224)
         result_459_14 = common.agg(predict_459_14)
-        # result_459_14 = list(np.array(result_459_14).transpose() > thres_459_14)
+        result_459_14 = list(np.array(result_459_14).transpose() > thres_459_14)
 
         predict_473_778 = model_473_778.predict_on_batch(test_batch_inputs_224)
         result_473_778 = common.agg(predict_473_778)
-        # result_473_778 = list(np.array(result_473_778).transpose() > thres_473_778)
+        result_473_778 = list(np.array(result_473_778).transpose() > thres_473_778)
 
         predict_386_612 = model_386_612.predict_on_batch(test_batch_inputs_256)
         result_386_612 = common.agg(predict_386_612)
-        # result = list(np.array(result_386_612).transpose() > thres_386_612)
+        result_386_612 = list(np.array(result_386_612).transpose() > thres_386_612)
 
-        r_600_446 = 1. * np.array(result_600_446)
-        r_473_778 = 3. * np.array(result_473_778)
-        r_459_14 = 2. * np.array(result_459_14)
-        r_386_612 = 5. * np.array(result_386_612)
+        # r_600_446 = 1. * np.array(result_600_446)
+        # r_473_778 = 3. * np.array(result_473_778)
+        # r_459_14 = 2. * np.array(result_459_14)
+        # r_386_612 = 5. * np.array(result_386_612)
 
-        result = np.sum([r_600_446, r_473_778, r_459_14, r_386_612], axis=0) / 11.
-        result = list(np.array(result).transpose() > thres_ens)
+        # result = np.sum([r_600_446, r_473_778, r_459_14, r_386_612], axis=0) / 11.
+        # result = list(np.array(result).transpose() > thres_ens)
         # Weighing the results
-        # result = common.ensemble(np.array([result_600_446, result_459_14, result_473_778, result_473_778, result_386_612, result_386_612, result_386_612]))
+        result = common.ensemble(np.array([result_600_446, result_459_14, result_473_778, result_473_778, result_386_612, result_386_612, result_386_612]))
 
         # print result1
         # print result2
