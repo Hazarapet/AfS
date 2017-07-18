@@ -15,8 +15,8 @@ from models.nm.resnet50 import model as resnet_model
 from models.nm.mix import model as mixnet_model
 
 st_time = time.time()
-N_EPOCH = 25
-BATCH_SIZE = 140
+N_EPOCH = 20
+BATCH_SIZE = 180
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
 AUGMENT_SCALE = 5
@@ -290,7 +290,7 @@ for epoch in range(N_EPOCH):
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(1e-2)
 
-    if epoch == 9:
+    if epoch == 10:
         lr = model.optimizer.lr.get_value()
         model.optimizer.lr.set_value(3e-3)
 
