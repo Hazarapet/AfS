@@ -54,7 +54,7 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=2e-2, momentum=.9, decay=1e-6, nesterov=True)
+sgd = SGD(lr=1e-2, momentum=.9, decay=1e-6, nesterov=True)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=1e-1),
 #               optimizer=sgd,
@@ -237,7 +237,7 @@ for epoch in range(N_EPOCH):
 
     if epoch == 5:
         lr = model.optimizer.lr.get_value()
-        model.optimizer.lr.set_value(1e-2)
+        model.optimizer.lr.set_value(3e-3)
 
     if epoch == 10:
         lr = model.optimizer.lr.get_value()
