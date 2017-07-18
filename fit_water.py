@@ -13,7 +13,7 @@ from models.water.resnet50 import model as resnet_model
 
 st_time = time.time()
 N_EPOCH = 15
-BATCH_SIZE = 128
+BATCH_SIZE = 140
 IMAGE_WIDTH = None
 IMAGE_HEIGHT = None
 AUGMENT_SCALE = 5
