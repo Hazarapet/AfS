@@ -20,8 +20,8 @@ AUGMENT_SCALE = 5
 
 AUGMENT = True  # TODO somethings wrong with this.It also makes train slower
 
-rare = ['conventional_mine', 'slash_burn', 'bare_ground', 'artisinal_mine',
-        'blooming', 'selective_logging', 'blow_down', 'cultivation', 'road', 'habitation', 'water']
+if not AUGMENT:
+    AUGMENT_SCALE = 0
 
 t_loss_graph = np.array([])
 t_f2_graph = np.array([])
@@ -52,7 +52,7 @@ print 'model loading...'
 
 print model.summary()
 
-sgd = SGD(lr=5e-2, momentum=.9, decay=1e-6, nesterov=True)
+sgd = SGD(lr=6e-2, momentum=.9, decay=1e-6, nesterov=True)
 
 # model.compile(loss=components.f2_binary_cross_entropy(l=1e-1),
 #               optimizer=sgd,
