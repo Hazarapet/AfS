@@ -158,7 +158,7 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
         # Weighing the results
         result = common.ensemble(np.array([result_600_446, result_459_14, result_473_778, result_473_778, result_386_612, result_386_612, result_386_612]))
 
-        result[label_map['water']] = result_water
+        result[label_map['water']] = result_water[0]
         # print result1
         # print result2
         # print result
