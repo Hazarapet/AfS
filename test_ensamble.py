@@ -3,10 +3,11 @@ import sys
 import cv2
 import time
 import json
+import predict
 import numpy as np
 import pandas as pd
-import predict
 import utils.common as common
+from utils import image as UtilImage
 from keras.models import model_from_json
 
 st_time = time.time()
@@ -50,10 +51,15 @@ model_structure_600_446 = 'models/nm/structures/tr_l:0.0912-tr_f2:0.9101-val_l:0
 weights_path_386_612 = 'models/nm/structures/tr_l:0.1016-tr_f2:0.9143-val_l:0.1081-val_f2:0.9094-time:12-07-2017-03:42:50-dur:386.612.h5'
 model_structure_386_612 = 'models/nm/structures/tr_l:0.1016-tr_f2:0.9143-val_l:0.1081-val_f2:0.9094-time:12-07-2017-03:42:50-dur:386.612.json'
 
+# 0.92475
+weights_path_water = 'models/water/structures/tr_l:0.1709-tr_acc:0.9309-tr_f2:0.9526-val_l:0.2558-val_acc:0.8929-val_f2:0.9231-time:19-07-2017-07:52:44-dur:688.066.h5'
+model_structure_water = 'models/water/structures/tr_l:0.1709-tr_acc:0.9309-tr_f2:0.9526-val_l:0.2558-val_acc:0.8929-val_f2:0.9231-time:19-07-2017-07:52:44-dur:688.066.json'
+
 tags = []
 with open(model_structure_459_14, 'r') as model_json_459_14, \
         open(model_structure_473_778, 'r') as model_json_473_778, \
         open(model_structure_386_612, 'r') as model_json_386_612, \
+        open(model_structure_water, 'r') as model_json_water, \
         open(model_structure_600_446, 'r') as model_json_600_446:
 
     # 224x224
@@ -72,6 +78,10 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
     model_386_612 = model_from_json(json.loads(model_json_386_612.read()))
     model_386_612.load_weights(weights_path_386_612)
 
+    # 198x198
+    model_water = model_from_json(json.loads(model_json_water.read()))
+    model_water.load_weights(weights_path_water)
+
     print 'models are loaded!'
 
     # loading the data
@@ -80,10 +90,19 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
     print 'start testing...'
 
     for f in common.iterate_minibatches(X_test, batchsize=1):
+        test_batch_inputs_water = []
         test_batch_inputs_224 = []
         test_batch_inputs_256 = []
 
-        img = cv2.imread('resource/test-jpg/{}'.format(f[0]))
+        file_name = f[0].split('.')[0]
+        img = cv2.imread('resource/test-jpg/{}.jpg'.format(file_name))
+
+        rgbn = UtilImage.process_tif('resource/test-tif-v2/{}.tif'.format(file_name))
+        ndvi = UtilImage.ndvi(rgbn)
+
+        img_water = cv2.resize(img, (224, 224)).astype(np.float32)
+        ndvi = cv2.resize(ndvi, (224, 224)).astype(np.float32)
+        img_water = img_water.transpose((2, 0, 1))
 
         img_224 = cv2.resize(img, (224, 224)).astype(np.float32)
         img_224 = img_224.transpose((2, 0, 1))
@@ -91,8 +110,12 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
         img_256 = cv2.resize(img, (256, 256)).astype(np.float32)
         img_256 = img_256.transpose((2, 0, 1))
 
+        inputs_water = np.append(img_water[1:], [ndvi], axis=0)
         inputs_224 = img_224
         inputs_256 = img_256
+
+        test_batch_inputs_water.append(inputs_water)
+        test_batch_inputs_water = common.tta(test_batch_inputs_water, inputs_water)
 
         test_batch_inputs_224.append(inputs_224)
         test_batch_inputs_224 = common.tta(test_batch_inputs_224, inputs_224)
@@ -100,6 +123,7 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
         test_batch_inputs_256.append(inputs_256)
         test_batch_inputs_256 = common.tta(test_batch_inputs_256, inputs_256)
 
+        test_batch_inputs_water = np.array(test_batch_inputs_water).astype(np.float32)
         test_batch_inputs_224 = np.array(test_batch_inputs_224).astype(np.float32)
         test_batch_inputs_256 = np.array(test_batch_inputs_256).astype(np.float32)
 
@@ -120,6 +144,10 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
         result_386_612 = common.agg(predict_386_612)
         result_386_612 = list(np.array(result_386_612).transpose() > thres_386_612)
 
+        predict_water = model_water.predict_on_batch(test_batch_inputs_water)
+        result_water = common.agg(predict_water)
+        result_water = list((np.array(result_water) > .5) * 1.)
+
         # r_600_446 = 1. * np.array(result_600_446)
         # r_473_778 = 3. * np.array(result_473_778)
         # r_459_14 = 2. * np.array(result_459_14)
@@ -130,6 +158,7 @@ with open(model_structure_459_14, 'r') as model_json_459_14, \
         # Weighing the results
         result = common.ensemble(np.array([result_600_446, result_459_14, result_473_778, result_473_778, result_386_612, result_386_612, result_386_612]))
 
+        result[label_map['water']] = result_water
         # print result1
         # print result2
         # print result
