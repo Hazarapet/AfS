@@ -9,7 +9,7 @@ import utils.common as common
 
 st_time = time.time()
 
-# loading the data
+#  loading the data
 df_val = pd.read_csv('val_split.csv')
 
 df_train = pd.read_csv('train_v2.csv')
